@@ -24,31 +24,65 @@ public class GreetingClient{
                 
             
             while(true) {
+                System.out.println("CHOOSE:\n[0] HOST \n[1] CLIENT");
                 Scanner scanner = new Scanner(System.in);
-                String message = scanner.nextLine();
+                System.out.println("enter option");
+                int opt = Integer.parseInt(scanner.nextLine());
 
-                OutputStream outToServer = server.getOutputStream();
-                DataOutputStream out = new DataOutputStream(outToServer);
-                out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
-            }
+                switch(opt){
+                    case 0: //HOST
+                        System.out.println("CHOOSE AN OPTION:\n[0] DISCONNECT \n[1] CONNECT\n[2] CREATE LOBBY\n[3] CHAT\n");
+                        System.out.println("enter option");
+                        int opt1 = Integer.parseInt(scanner.nextLine());
 
-            // System.out.println("Just connected to " + server.getRemoteSocketAddress());
-            
-			/* Send data to the ServerSocket */
+                        if(opt1==1){
+                            System.out.println("player disconnected\n");
+                        }else if (opt1==2) {
+                            System.out.println("host will add player\n");
+                        }else if (opt1==3) {
+                            System.out.println("create lobby\n");
+                        }else{
+                            System.out.println("entered chat\n");
+                        }
 
-            /* Receive data from the ServerSocket */
-            // InputStream inFromServer = server.getInputStream();
-            // DataInputStream in = new DataInputStream(inFromServer);
-            // System.out.println("Server says " + in.readUTF());
-            
-			//closing the socket of the client
-            // server.close();
+                        break;
+                    case 1: //CLIENT
+                        System.out.println("CHOOSE:\n[0] DISCONNECT \n[1] CONNECT\n[2] CHAT\n");
+                        System.out.println("enter option");
+                        int opt2 = Integer.parseInt(scanner.nextLine());
+
+                        if(opt2==1){
+                            System.out.println("player disconnected\n");
+                        }else if (opt2==2) {
+                            System.out.println("host will add player\n");
+                        }else if (opt2==3) {
+                            System.out.println("create lobby\n");
+                        }else{
+                            System.out.println("entered chat\n");
+                        }
+
+                        break;
+                    default:
+                        break;
+
+
+                // SEND SOMETHING TO SERVER
+                // Scanner scanner = new Scanner(System.in);
+                // String message = scanner.nextLine();
+
+                // OutputStream outToServer = server.getOutputStream();
+                // DataOutputStream out = new DataOutputStream(outToServer);
+                // out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
+                }
+
+           }
         }catch(IOException e){
             e.printStackTrace();
             System.out.println("Cannot find (or disconnected from) Server");
         }catch(ArrayIndexOutOfBoundsException e){
             System.out.println("Usage: java GreetingClient <server ip> <port no.> '<your message to the server>'");
         }
+
     }
 
     // public void send(String message) {
