@@ -31,48 +31,46 @@ public class GreetingClient{
 
                 switch(opt){
                     case 0: //HOST
-                        System.out.println("CHOOSE AN OPTION:\n[0] DISCONNECT \n[1] CONNECT\n[2] CREATE LOBBY\n[3] CHAT\n");
+                        //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
+
+                        sendPacket(); //modufy na lang, like yung parameters
+
+                        System.out.println("[0] CHAT\n");
                         System.out.println("enter option");
                         int opt1 = Integer.parseInt(scanner.nextLine());
-
-                        if(opt1==1){
-                            System.out.println("player disconnected\n");
-                        }else if (opt1==2) {
-                            System.out.println("host will add player\n");
-                        }else if (opt1==3) {
-                            System.out.println("create lobby\n");
-                        }else{
+                        if(opt1==2){ 
+                            sendPacket();
                             System.out.println("entered chat\n");
                         }
 
                         break;
                     case 1: //CLIENT
-                        System.out.println("CHOOSE:\n[0] DISCONNECT \n[1] CONNECT\n[2] CHAT\n");
+                        System.out.println("CHOOSE:\n[0] CONNECT\n");
                         System.out.println("enter option");
                         int opt2 = Integer.parseInt(scanner.nextLine());
 
-                        if(opt2==1){
-                            System.out.println("player disconnected\n");
-                        }else if (opt2==2) {
-                            System.out.println("host will add player\n");
-                        }else if (opt2==3) {
-                            System.out.println("create lobby\n");
-                        }else{
-                            System.out.println("entered chat\n");
+                        if(opt2==0){
+                            sendPacket();
+                            System.out.println("CONNECTED TO A LOOBY\n");
+
+                            System.out.println("CHOOSE:\n[0] DISCONNECT\n[2] CHAT\n");
+                            System.out.println("enter option");
+                            int opt3 = Integer.parseInt(scanner.nextLine());
+
+                            if(opt3==0){
+                                sendPacket();
+                                System.out.println("DISCONNECTED\n");
+                            }
+
+                            if(opt3==1){
+                                sendPacket();
+                                System.out.println("entered chat\n");
+                            }
                         }
 
                         break;
                     default:
                         break;
-
-
-                // SEND SOMETHING TO SERVER
-                // Scanner scanner = new Scanner(System.in);
-                // String message = scanner.nextLine();
-
-                // OutputStream outToServer = server.getOutputStream();
-                // DataOutputStream out = new DataOutputStream(outToServer);
-                // out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
                 }
 
            }
@@ -88,6 +86,19 @@ public class GreetingClient{
     // public void send(String message) {
     //     
     // }   
+
+    public static void sendPacket (){
+            
+        System.out.println("PACKET SENT TO SERVER\n");
+
+        // SEND SOMETHING TO SERVER
+        // Scanner scanner = new Scanner(System.in);
+        // String message = scanner.nextLine();
+
+        // OutputStream outToServer = server.getOutputStream();
+        // DataOutputStream out = new DataOutputStream(outToServer);
+        // out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
+    }
 
     public static void listenToServer(Socket server) {
         Thread thread = new Thread(){
