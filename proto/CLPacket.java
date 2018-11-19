@@ -17,6 +17,19 @@ public class CLPacket{
 											.build();
 	}
 
+	public CLPacket(byte[] b){
+		TcpPacketProtos.TcpPacket.CreateLobbyPacket n = null;		
+		try{
+
+			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(b);
+
+
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		this.clp = n;
+	}
+
 	public TcpPacketProtos.TcpPacket.CreateLobbyPacket getPacket(){
 		return this.clp;
 	}
@@ -27,22 +40,6 @@ public class CLPacket{
 
 	public byte[] serialize(){
 		return this.clp.toByteArray();
-	}
-
-	public TcpPacketProtos.TcpPacket.CreateLobbyPacket deserialize(byte[] b){
-
-		// returns null if there was an error
-
-		TcpPacketProtos.TcpPacket.CreateLobbyPacket n = null;		
-		try{
-
-			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(b);
-
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		return n;
 	}
 }
 
