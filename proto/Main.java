@@ -41,8 +41,29 @@ public class Main{
 
 	        outToServer = server.getOutputStream();
 	        dos = new DataOutputStream(outToServer);
+
 	        dos.writeInt(1024);
 			dos.write(toSend);
+			
+		}catch(Exception e){
+			System.out.println(e);
+		}
+	    System.out.println("PACKET SENT TO SERVER\n");
+
+
+    }
+
+    public static void sendPacket(Socket server, CLPacket toSend){
+            
+		OutputStream outToServer = null;
+		DataOutputStream dos = null;
+
+		// String s = toSend.toString();
+
+		try{
+
+	        outToServer = server.getOutputStream();
+	        toSend.send(outToServer);
 			
 		}catch(Exception e){
 			System.out.println(e);
@@ -58,14 +79,15 @@ public class Main{
             public void run(){
             	BufferedReader br = null;
             	String ss = null;
+            	DataInputStream in = null;
+            	byte[] toRead = new byte[1024];
+            	CLPacket n = null;
 
 
                 try{
+					n = new CLPacket(server.getInputStream());
+					n.self();
 
-                    br = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    ss = br.readLine();
-                    // if(ss != null)
-					System.out.println(ss);
 
                 } catch(SocketTimeoutException s){
                     System.out.println("Socket timed out!");
@@ -98,7 +120,7 @@ public class Main{
                         //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
 
                     	//creates a CLPacket, and sends it 
-	                    CLPacket c = new CLPacket(4);
+	                    CLPacket c = new CLPacket(7);
 						// c.self();
 						byte[] toSend = c.serialize();
 
