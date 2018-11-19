@@ -14,7 +14,7 @@ public class COPacket{
 		this.cop = TcpPacketProtos.TcpPacket.ConnectPacket.newBuilder()
 											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
 											.setPlayer(player)
-											.setLobbyID(lobbyid)
+											.setLobbyId(lobbyid)
 											.build();
 	}
 
