@@ -1,3 +1,13 @@
+/**
+Author: Aaron Magnaye,	Antonette Porca, Joshua Panganiban
+Subject: CMSC 137 Protobuf Milestone
+Description: Main Class that runs the whole chatting system
+	-- this will most probably moved to a class that would work like this
+		ChatSystem c = new ChatSystem();
+		c.start();
+		^-- still unsure about this
+**/
+
 import proto.*;
 
 import java.net.*;
@@ -11,31 +21,58 @@ public class Main{
         return Integer.parseInt(new Scanner(System.in).nextLine());
 	}
 
-	public static void sendPacket(/** Socket server, **/byte[] toSend){
+	public static String stringAsker(String args){
+		System.out.println(args+"> ");
+		return (new Scanner(System.in)).nextLine();
+	}
+
+	public static void sendPacket(byte[] toSend){
+		System.out.println("wow");
+	}
+
+	public static void sendPacket(Socket server, byte[] toSend){
             
-        System.out.println("PACKET SENT TO SERVER\n");
+		OutputStream outToServer = null;
+		DataOutputStream dos = null;
+
+		// String s = toSend.toString();
+
+		try{
+
+	        outToServer = server.getOutputStream();
+	        dos = new DataOutputStream(outToServer);
+	        dos.writeInt(1024);
+			dos.write(toSend);
+			
+		}catch(Exception e){
+			System.out.println(e);
+		}
+	    System.out.println("PACKET SENT TO SERVER\n");
 
 
-        // OutputStream outToServer = server.getOutputStream();
-        // DataOutputStream out = new DataOutputStream(outToServer);
-        // out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
     }
 
     public static void listenToServer(Socket server) {
         Thread thread = new Thread(){
+
             public void run(){
-                while(true) {
-                    try{
-                        InputStream inFromServer = server.getInputStream();
-                        DataInputStream in = new DataInputStream(inFromServer);
-                        System.out.println("Server says " + in.readUTF());
-                    } catch(SocketTimeoutException s){
-                        System.out.println("Socket timed out!");
-                    } catch(IOException e){
-                        e.printStackTrace();
-                        System.out.println("Input/Output Error!");
-                    }
-                }        
+            	BufferedReader br = null;
+            	String ss = null;
+
+
+                try{
+
+                    br = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                    ss = br.readLine();
+                    // if(ss != null)
+					System.out.println(ss);
+
+                } catch(SocketTimeoutException s){
+                    System.out.println("Socket timed out!");
+                } catch(IOException e){
+                    e.printStackTrace();
+                    System.out.println("Input/Output Error!");
+                }
             }
         };
 
@@ -45,14 +82,12 @@ public class Main{
 
 	public static void main(String[] args) {
 
-		
-
 		String serverName = "202.92.144.45";
 		int port = 80, opt = 0, opt1 = 0, opt2 = 0;
 
 		try{
-			// Socket server = new Socket(serverName, port);
-   			// listenToServer(server);
+			Socket server = new Socket(serverName, port);
+   			listenToServer(server);
 			System.out.println("Connected!");
 
             while(true) {
@@ -64,18 +99,23 @@ public class Main{
 
                     	//creates a CLPacket, and sends it 
 	                    CLPacket c = new CLPacket(4);
-						c.self();
+						// c.self();
 						byte[] toSend = c.serialize();
 
-                        sendPacket(toSend); 
+                        sendPacket(server, toSend); 
 
                         // if successful
+                        System.out.println("Success: lobby_id - %% | You may now chat. Send \"logout\" to be stop chatting. ");
 
-                        opt1 = intAsker("[0] CHAT\nenter option");
-                        if(opt1==2){ 
-                            sendPacket(null);
-                            System.out.println("entered chat\n");
-                        }
+                        // opt1 = intAsker("[0] CHAT\nenter option");
+                        // if(opt1==2){ 
+                        //     sendPacket(null);
+                        //     System.out.println("entered chat\n");
+                        // }
+                        String message = stringAsker("name");
+                        do{
+                        	message = stringAsker("name");
+                        }while(!message.equals("logout"));
 
                         // if not successful	
                         	// enter code here
