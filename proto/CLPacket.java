@@ -6,6 +6,11 @@ Description: A class that acts as a wrapper for the Proto-generated class Create
 
 import proto.*;
 
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+
 public class CLPacket{
 
 	private TcpPacketProtos.TcpPacket.CreateLobbyPacket clp;
@@ -22,12 +27,36 @@ public class CLPacket{
 		try{
 
 			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(b);
-
+			// n.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2));
+			// System.out.println(n.getLobbyId());
 
 		}catch(Exception e){
 			System.out.println(e);
 		}
 		this.clp = n;
+	}
+
+	public CLPacket(InputStream in){
+		TcpPacketProtos.TcpPacket.CreateLobbyPacket n = null;		
+		try{
+
+			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(in);
+			// n.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2));
+			// System.out.println(n.getLobbyId());
+			// System.out.println(n.hasLobbyId());
+
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		this.clp = n;
+	}
+
+	public void send(OutputStream o){
+		try{
+			this.clp.writeTo(o);
+		}catch(Exception e){
+			System.out.println(e);
+		}
 	}
 
 	public TcpPacketProtos.TcpPacket.CreateLobbyPacket getPacket(){
