@@ -38,11 +38,15 @@ public class CHPacket{
 		System.out.println(this.packet);
 	}
 
+	public static boolean ashost(String mess){
+		return (mess.contains("!ALERT!"))?true:false;
+	}
+
 	public void showMessage(Player user){
 		Player p = new Player(this.packet.getPlayer());
-		// System.out.println("equals"+p.equals(user));
 		if(p.getName().equals(user.getName()))return;
-		System.out.println("\n"+p.getName()+": "+this.packet.getMessage());
+		else if(ashost(this.packet.getMessage()))System.out.println(this.packet.getMessage());
+		else System.out.println("\n"+p.getName()+": "+this.packet.getMessage());
 	}
 
 	public byte[] serialize(){

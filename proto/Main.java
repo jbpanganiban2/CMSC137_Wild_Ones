@@ -43,7 +43,6 @@ public class Main{
           }catch(Exception e){
                System.out.println(e);
           }
-          System.out.println("sent");
      }
 
      public static void ConnectToLobby(Socket server, ConnectPacket toSend){
@@ -54,10 +53,31 @@ public class Main{
           }catch(Exception e){
                System.out.println(e);
           }
-          System.out.println("sent");
      }
 
      public static void sendMessage(Socket server, CHPacket toSend){
+          OutputStream outToServer = null;
+          try{
+               outToServer = server.getOutputStream();
+               outToServer.write(toSend.serialize());      
+          }catch(Exception e){
+               System.out.println(e);
+          }
+     }
+
+     public static void sendMessage(Socket server, String str){
+          OutputStream outToServer = null;
+          Player p = new Player();
+          CHPacket toSend = new CHPacket(p,str);
+          try{
+               outToServer = server.getOutputStream();
+               outToServer.write(toSend.serialize());      
+          }catch(Exception e){
+               System.out.println(e);
+          }
+     }
+
+     public static void disconnect(Socket server, DCPacket toSend){
           OutputStream outToServer = null;
           try{
                outToServer = server.getOutputStream();
@@ -90,18 +110,19 @@ public class Main{
                               
                               switch(res.getType()){                                      
                                    case DISCONNECT:                                            // if packetType is DISCONNECT
-                                        System.out.println("disconnect packet received");
+                                        // System.out.println("disconnect packet received");
                                    break;
                                    case CONNECT:                                               // if packetType is CONNECT
-                                        // System.out.println("connect packet received");
                                         connectPacketReceived = new ConnectPacket(received);
-                                        // System.out.println(connectPacketReceived.getPacket().getUpdate());
-
-                                        if(connectPacketReceived.getPacket().getUpdate() == TcpPacketProtos.TcpPacket.ConnectPacket.Update.forNumber(1))System.out.println("\n"+connectPacketReceived.getPlayerName()+" connected to the Lobby.");
-
+                                        TcpPacketProtos.TcpPacket.ConnectPacket.Update up = connectPacketReceived.getPacket().getUpdate();
+                                        System.out.println(up);
+                                        if(up.equals(TcpPacketProtos.TcpPacket.ConnectPacket.Update.forNumber(1))){
+                                             String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" disconnected";
+;                                             sendMessage(server,temp);
+                                             System.out.println(temp);
+                                        }
                                    break;
                                    case CREATE_LOBBY:                                          // if packetType is CREATE_LOBBY
-                                        // System.out.println("create lobby packet received");
                                         createLobbyPacketReceived = new CLPacket(received);
                                    break;
                                    case CHAT:                                                  // if packetType is CHAT
@@ -138,6 +159,7 @@ public class Main{
      }
 
      public static void chatNow(Socket server, Player user, String lobby_id){
+
           ConnectPacket c = new ConnectPacket(user,lobby_id);   // packet to be sent to the server
           ConnectToLobby(server,c);
           System.out.println("Waiting for server response...");
@@ -146,7 +168,6 @@ public class Main{
                System.out.print("\0");
                if(lobbyfull)return;
           }
-          c = connectPacketReceived;
           connectPacketReceived = null;
           clear();
 
@@ -165,10 +186,7 @@ public class Main{
           }while(true);
 
           System.out.println("Disconnecting to lobby...");
-
-          /***
-               THIS IS WHERE SENDING THE DISCONNECT PACKET SHOULD BE
-          ***/
+          disconnect(server, new DCPacket(user));
      }
 
 
@@ -181,7 +199,7 @@ public class Main{
           try{
 
                Socket server = new Socket(serverName, port);
-
+               // System.out.println("lelelel");
                String lobby_id = null;
 
                String name = stringAsker("Enter Name");
@@ -196,12 +214,10 @@ public class Main{
                     switch(opt){
                          case 0:                                                               //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
                               CLPacket clpacket = new CLPacket(4);
-                              // CreateLobby(server, c); 
-                              System.out.println("Waiting for server response... clpacket");
-     
+
+                              System.out.println("Waiting for server response");
                               CreateNewLobby(server,clpacket);
-                              while(createLobbyPacketReceived == null)System.out.print("\0");
-                              clpacket = createLobbyPacketReceived;
+                              while(createLobbyPacketReceived == null)System.out.print("\0");  // waiting to receive createlobbypacket
                               createLobbyPacketReceived = null;
                               clear();
 
@@ -222,6 +238,7 @@ public class Main{
 
                          break;
                          default:
+                              System.out.println("ERROR: Enter correct values.");
                          break;
                     } 
                     // clear();

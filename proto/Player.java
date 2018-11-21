@@ -11,6 +11,12 @@ public class Player{
 						.build();
 	}
 
+	public Player(){
+		this.p = PlayerProtos.Player.newBuilder()
+						.setName("host")
+						.build();
+	}
+
 	public Player(PlayerProtos.Player p){
 		this.p = p;
 	}

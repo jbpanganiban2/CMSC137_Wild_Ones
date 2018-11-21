@@ -12,9 +12,10 @@ public class DCPacket{
 
 	public DCPacket(Player player){
 		this.dcp = TcpPacketProtos.TcpPacket.DisconnectPacket.newBuilder()
-											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player.getPlayer())
-											.build();
+					.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(0))
+					.setUpdate(TcpPacketProtos.TcpPacket.DisconnectPacket.Update.forNumber(0))
+					.setPlayer(player.getPlayer())
+					.build();
 	}
 
 	public TcpPacketProtos.TcpPacket.DisconnectPacket getPacket(){
@@ -32,13 +33,10 @@ public class DCPacket{
 	public TcpPacketProtos.TcpPacket.DisconnectPacket deserialize(byte[] b){
 
 		// returns null if there was an error
-
+		
 		TcpPacketProtos.TcpPacket.DisconnectPacket n = null;		
 		try{
-
 			n = TcpPacketProtos.TcpPacket.DisconnectPacket.parseFrom(b);
-
-
 		}catch(Exception e){
 			System.out.println(e);
 		}
