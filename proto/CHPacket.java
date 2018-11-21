@@ -25,7 +25,6 @@ public class CHPacket{
 			n = TcpPacket.ChatPacket.parseFrom(b);
 
 		}catch(Exception e){
-			System.out.println("dito error no");
 			System.out.println(e);
 		}
 		this.packet = n;
@@ -39,8 +38,10 @@ public class CHPacket{
 		System.out.println(this.packet);
 	}
 
-	public void showMessage(){
+	public void showMessage(Player user){
 		Player p = new Player(this.packet.getPlayer());
+		// System.out.println("equals"+p.equals(user));
+		if(p.getName().equals(user.getName()))return;
 		System.out.println("\n"+p.getName()+": "+this.packet.getMessage());
 	}
 
