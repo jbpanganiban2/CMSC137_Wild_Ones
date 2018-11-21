@@ -44,9 +44,12 @@ public class CHPacket{
 
 	public void showMessage(Player user){
 		Player p = new Player(this.packet.getPlayer());
-		if(p.getName().equals(user.getName()))return;
-		else if(ashost(this.packet.getMessage()))System.out.println(this.packet.getMessage());
-		else System.out.println("\n"+p.getName()+": "+this.packet.getMessage());
+		if(p.getName().equals(user.getName()))							// does not show if the user connected to the lobby
+			return;					
+		else if(ashost(this.packet.getMessage()))
+			System.out.println(this.packet.getMessage());				// does not show the name of the sender if the sender is a host
+		else
+			System.out.println(p.getName()+": "+this.packet.getMessage());	// normal show of chat
 	}
 
 	public byte[] serialize(){

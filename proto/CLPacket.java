@@ -17,12 +17,9 @@ public class CLPacket{
 
 	public CLPacket(int maxPlayers){
 		this.packet = TcpPacket.CreateLobbyPacket.newBuilder()
-											.setType(TcpPacket.PacketType.forNumber(2))
-											.setMaxPlayers(maxPlayers)
-											.build();
-
-		// System.out.println("trp[a"+this.packet);
-
+					.setType(TcpPacket.PacketType.forNumber(2))
+					.setMaxPlayers(maxPlayers)
+					.build();
 	}
 
 	public CLPacket(byte[] b){
@@ -30,11 +27,8 @@ public class CLPacket{
 		// transforms a byte stream to a CLPacket
 		
 		TcpPacket.CreateLobbyPacket n = null;		
-
 		try{
-
 			n = TcpPacket.CreateLobbyPacket.parseFrom(b);
-
 		}catch(Exception e){
 			System.out.println(e);
 		}
