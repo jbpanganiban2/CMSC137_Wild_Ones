@@ -13,7 +13,7 @@ public class DCPacket{
 	public DCPacket(Player player){
 		this.dcp = TcpPacketProtos.TcpPacket.DisconnectPacket.newBuilder()
 											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player)
+											.setPlayer(player.getPlayer())
 											.build();
 	}
 

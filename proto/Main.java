@@ -1,11 +1,11 @@
 /**
-Author: Aaron Magnaye,	Antonette Porca, Joshua Panganiban
+Author: Aaron Magnaye,  Antonette Porca, Joshua Panganiban
 Subject: CMSC 137 Protobuf Milestone
 Description: Main Class that runs the whole chatting system
-	-- this will most probably moved to a class that would work like this
-		ChatSystem c = new ChatSystem();
-		c.start();
-		^-- still unsure about this
+  -- this will most probably moved to a class that would work like this
+    ChatSystem c = new ChatSystem();
+    c.start();
+    ^-- still unsure about this
 **/
 
 import proto.*;
@@ -16,165 +16,236 @@ import java.util.Scanner;
 
 public class Main{
 
-	public static int intAsker(String args){
-		System.out.print(args+"> ");
-        return Integer.parseInt(new Scanner(System.in).nextLine());
-	}
+     // private static byte[] received;
+     private static boolean toChat;
 
-	public static String stringAsker(String args){
-		System.out.println(args+"> ");
-		return (new Scanner(System.in)).nextLine();
-	}
+     public static int intAsker(String args){
+          System.out.print(args+"> ");
+          return Integer.parseInt(new Scanner(System.in).nextLine());
+     }
 
-	public static void sendPacket(byte[] toSend){
-		System.out.println("wow");
-	}
+     public static String stringAsker(String args){
+          System.out.print(args+"> ");
+          return (new Scanner(System.in)).nextLine();
+     }
 
-	public static void sendPacket(Socket server, byte[] toSend){
-            
-		OutputStream outToServer = null;
-		DataOutputStream dos = null;
+     public static void clear() {  
+          System.out.print("\033[H\033[2J");  
+          System.out.flush();  
+     }
 
-		// String s = toSend.toString();
+     public static CLPacket CreateNewLobby(Socket server, CLPacket toSend){
+          OutputStream outToServer = null;
+          InputStream in = null;
+          CLPacket toret = null;
+          byte[] received = null;
+          
+          try{
+               outToServer = server.getOutputStream();
+               outToServer.write(toSend.serialize());
 
-		try{
+               in = server.getInputStream();
+               while(in.available() == 0){}                 // waits for a server response
+               received = new byte[in.available()];         // creates a byte array the size of the packet received
+               in.read(received);                           // reads the inputstream to the byte array
 
-	        outToServer = server.getOutputStream();
-	        dos = new DataOutputStream(outToServer);
+          }catch(SocketTimeoutException s){
+               System.out.println("Socket timed out!");
+          }catch(IOException e){
+               e.printStackTrace();
+               System.out.println("Input/Output Error!");
+          }catch(Exception e){
+               System.out.println(e);
+          }
 
-	        dos.writeInt(1024);
-			dos.write(toSend);
-			
-		}catch(Exception e){
-			System.out.println(e);
-		}
-	    System.out.println("PACKET SENT TO SERVER\n");
+          if(received == null)System.out.println("Error receiving packet");
+          else return new CLPacket(received);
+          return null;
+     }
+
+     public static ConnectPacket ConnectToLobby(Socket server, ConnectPacket toSend){
+          OutputStream outToServer = null;
+          InputStream in = null;
+          TcpPacketProtos.TcpPacket tcppacket = null;
+          CLPacket toret = null;
+          byte[] received = null;
+          
+          try{
+               outToServer = server.getOutputStream();
+               outToServer.write(toSend.serialize());
+
+               in = server.getInputStream();
+               while(in.available() == 0){}                 // waits for a server response
+               received = new byte[in.available()];         // creates a byte array the size of the packet received
+               in.read(received);                           // reads the inputstream to the byte array
+
+          }catch(SocketTimeoutException s){
+               System.out.println("Socket timed out!");
+          }catch(IOException e){
+               e.printStackTrace();
+               System.out.println("Input/Output Error!");
+          }catch(Exception e){
+               System.out.println(e);
+          }
+
+          if(received == null)System.out.println("Error receiving packet");
+          else return new ConnectPacket(received);
+          return null;
+     }
+
+     public static void sendMessage(Socket server, CHPacket toSend){
+          OutputStream outToServer = null;
+          try{
+               outToServer = server.getOutputStream();
+               outToServer.write(toSend.serialize());      
+          }catch(Exception e){
+               System.out.println(e);
+          }
+          // System.out.println("PACKET SENT TO SERVER\n");
+     }
+
+     public static TcpPacketProtos.TcpPacket.PacketType packetType(int i){
+          return TcpPacketProtos.TcpPacket.PacketType.forNumber(i);
+     }
+
+     synchronized public static void chatListen(Socket server) {
+          Thread thread = new Thread(){
+               public void run(){
+
+                    InputStream in = null;
+                    byte[] received = null;
+                    CHPacket toPrint = null;
+ 
+                    while(toChat == true){
+                         // Main.received = null;
+                         try{
+                              in = server.getInputStream();
+                              while(in.available() == 0){}                 // waits for a server response
+                              received = new byte[in.available()];         // creates a byte array the size of the packet received
+                              in.read(received);                           // reads the inputstream to the byte array
+                              toPrint = new CHPacket(received);
+                              toPrint.showMessage();
+
+                         }catch(SocketTimeoutException s){
+                              System.out.println("Socket timed out!");
+                         }catch(IOException e){
+                              e.printStackTrace();
+                              System.out.println("Input/Output Error!");
+                         }
+                    }
+               }
+          };
+
+          thread.start();       
+     }
 
 
-    }
 
-    public static void sendPacket(Socket server, CLPacket toSend){
-            
-		OutputStream outToServer = null;
-		DataOutputStream dos = null;
+     public static void main(String[] args) {
 
-		// String s = toSend.toString();
+          String serverName = "202.92.144.45";
+          int port = 80, opt = 0, opt1 = 0, opt2 = 0;
 
-		try{
+          try{
 
-	        outToServer = server.getOutputStream();
-	        toSend.send(outToServer);
-			
-		}catch(Exception e){
-			System.out.println(e);
-		}
-	    System.out.println("PACKET SENT TO SERVER\n");
+               Socket server = new Socket(serverName, port);
+               // listenToServer(server);                           //listens to clpackets
 
+               // strings needed for chatting
+               String lobby_id = null;
+               String message = null;                            // to be sent to the server
+               String input = null;                              // explicitly what the user has typed
 
-    }
+               String name = stringAsker("Enter Name");
+               Player user = new Player(name);
+               clear();
 
-    public static void listenToServer(Socket server) {
-        Thread thread = new Thread(){
+               while(true) {
+                    opt = intAsker("Welcome, "+name+"\nChoose:\n\t[0] HOST \n\t[1] CLIENT\n");
+                    clear();
 
-            public void run(){
-            	BufferedReader br = null;
-            	String ss = null;
-            	DataInputStream in = null;
-            	byte[] toRead = new byte[1024];
-            	CLPacket n = null;
+                    switch(opt){
+                         case 0:                                                          //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
+                              CLPacket c = new CLPacket(4);
+                              // CreateLobby(server, c); 
+                              System.out.println("Waiting for server response...");
+     
+                              CLPacket clpacket = CreateNewLobby(server,c);
+                              clear();
 
+                              if(clpacket != null){
+                                   lobby_id = clpacket.getLobbyId();
 
-                try{
-					n = new CLPacket(server.getInputStream());
-					n.self();
+                                   if(!lobby_id.equals("You are not part of any lobby.")){     // if successfully created lobby
+                              
+                                        ConnectPacket c2 = new ConnectPacket(user,lobby_id);   // packet to be sent to the server
+                                        ConnectToLobby(server,c2);
 
+                                        ConnectPacket cpacket = ConnectToLobby(server,c2);
+                                        // Main.received = null;
+                                        clear();
 
-                } catch(SocketTimeoutException s){
-                    System.out.println("Socket timed out!");
-                } catch(IOException e){
-                    e.printStackTrace();
-                    System.out.println("Input/Output Error!");
-                }
-            }
-        };
+                                        System.out.println("Success! Connected to lobby "+lobby_id);
+                                        System.out.println("You may now chat. Send \"!quit\" to DISCONNECT. ");
+                             
+                                        CHPacket chatMessage = null;
+                                        toChat = true;
+                                        chatListen(server);
+                                        do{
+                                             input = stringAsker(name);
+                                             if(input.equals("!quit")){
+                                                  toChat = false;
+                                                  break;
+                                             }
 
-        thread.start();       
-            
-    }
+                                             message = name+": "+input;
 
-	public static void main(String[] args) {
+                                             chatMessage = new CHPacket(user,input);
+                                             sendMessage(server, chatMessage);
 
-		String serverName = "202.92.144.45";
-		int port = 80, opt = 0, opt1 = 0, opt2 = 0;
+                                        }while(true);
 
-		try{
-			Socket server = new Socket(serverName, port);
-   			listenToServer(server);
-			System.out.println("Connected!");
+                                        /***
+                                             THIS IS WHERE SENDING THE DISCONNECT PACKET SHOULD BE
+                                        ***/
+                                        }else{
+                                             System.out.println("Error: "+lobby_id);
+                                        }
+                              }else System.out.println("LobbyId not received properly.");
 
-            while(true) {
-                opt = intAsker("CHOOSE:\n[0] HOST \n[1] CLIENT\nenter option");
+                         break;
+                         case 1: //CLIENT
+                              lobby_id = stringAsker("Welcome, "+name+"\nPlease enter the lobby_id");
+                              clear();
 
-                switch(opt){
-                    case 0: //HOST
-                        //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
+                              ConnectPacket connectpacket = new ConnectPacket(user,lobby_id);
+                              /***
+                                   THIS IS WHERE SENDING THE CONNECT PACKET SHOULD BE
+                               ***/
 
-                    	//creates a CLPacket, and sends it 
-	                    CLPacket c = new CLPacket(7);
-						// c.self();
-						byte[] toSend = c.serialize();
+                              Thread.sleep(1000);
 
-                        sendPacket(server, toSend); 
+                              System.out.println("Success! lobby_id "+lobby_id);
+                              System.out.println("You may now chat. Send \"!quit\" to DISCONNECT. ");
+                           
+                              do{
 
-                        // if successful
-                        System.out.println("Success: lobby_id - %% | You may now chat. Send \"logout\" to be stop chatting. ");
+                                   input = stringAsker(name);
+                                   message = name+": "+input;
 
-                        // opt1 = intAsker("[0] CHAT\nenter option");
-                        // if(opt1==2){ 
-                        //     sendPacket(null);
-                        //     System.out.println("entered chat\n");
-                        // }
-                        String message = stringAsker("name");
-                        do{
-                        	message = stringAsker("name");
-                        }while(!message.equals("logout"));
+                              }while(!input.equals("!quit"));
 
-                        // if not successful	
-                        	// enter code here
+                              /***
+                                   THIS IS WHERE SENDING THE DISCONNECT PACKET SHOULD BE
+                              ***/
 
-                        break;
-                    case 1: //CLIENT
-                        opt1 = intAsker("CHOOSE:\n[0] CONNECT\nenter option");
-
-                        // client sends packet to host, given the lobby_id
-
-                        if(opt1==0){
-                            sendPacket(null);
-                            System.out.println("CONNECTED TO A LOBBY\n");
-
-                            opt2 = intAsker("CHOOSE:\n[0] DISCONNECT\n[1] CHAT\nenter option");
-
-                            if(opt2==0){
-                                sendPacket(null);
-                                System.out.println("DISCONNECTED\n");
-                            }
-
-                            if(opt2==1){
-                                sendPacket(null);
-                                System.out.println("entered chat\n");
-                            }
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-
-           }
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-
-	}
+                         break;
+                         default:
+                         break;
+                    } clear();
+               }
+          }catch(Exception e){
+               System.out.println(e);
+          }
+     }
 }

@@ -4,45 +4,49 @@ Subject: CMSC 137 Protobuf Milestone
 Description: A class that acts as a wrapper for the Proto-generated class ChatPacket
 **/
 
-import proto.*;
+import proto.TcpPacketProtos.*;
 
 public class CHPacket{
 
-	private TcpPacketProtos.TcpPacket.ChatPacket chp;
+	private TcpPacket.ChatPacket packet;
 
-	public CHPacket(Player player){
-		this.chp = TcpPacketProtos.TcpPacket.ChatPacket.newBuilder()
-											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player)
+	public CHPacket(Player player,String message){
+		this.packet = TcpPacket.ChatPacket.newBuilder()
+											.setType(TcpPacket.PacketType.forNumber(3))
+											.setPlayer(player.getPlayer())
+											.setMessage(message)
 											.build();
 	}
 
-	public TcpPacketProtos.TcpPacket.ChatPacket getPacket(){
-		return this.chp;
+	public CHPacket(byte[] b){
+		TcpPacket.ChatPacket n = null;		
+		try{
+
+			n = TcpPacket.ChatPacket.parseFrom(b);
+
+		}catch(Exception e){
+			System.out.println("dito error no");
+			System.out.println(e);
+		}
+		this.packet = n;
+	}
+
+	public TcpPacket.ChatPacket getPacket(){
+		return this.packet;
 	}
 
 	public void self(){
-		System.out.println(this.chp);
+		System.out.println(this.packet);
+	}
+
+	public void showMessage(){
+		Player p = new Player(this.packet.getPlayer());
+		System.out.println("\n"+p.getName()+": "+this.packet.getMessage());
 	}
 
 	public byte[] serialize(){
-		return this.chp.toByteArray();
+		return this.packet.toByteArray();
 	}
 
-	public TcpPacketProtos.TcpPacket.ChatPacket deserialize(byte[] b){
-
-		// returns null if there was an error
-
-		TcpPacketProtos.TcpPacket.ChatPacket n = null;		
-		try{
-
-			n = TcpPacketProtos.TcpPacket.ChatPacket.parseFrom(b);
-
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		return n;
-	}
 
 }

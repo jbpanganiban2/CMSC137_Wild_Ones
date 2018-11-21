@@ -13,7 +13,6 @@ public class PLPacket{
 	public PLPacket(Player playerList){
 		this.plp = TcpPacketProtos.TcpPacket.PlayerListPacket.newBuilder()
 											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(playerList)
 											.build();
 	}
 
