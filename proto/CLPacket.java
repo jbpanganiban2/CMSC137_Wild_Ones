@@ -4,7 +4,7 @@ Subject: CMSC 137 Protobuf Milestone
 Description: A class that acts as a wrapper for the Proto-generated class CreateLobbyPacket
 **/
 
-import proto.*;
+import proto.TcpPacketProtos.*;
 
 import java.net.*;
 import java.io.*;
@@ -13,62 +13,43 @@ import java.util.Scanner;
 
 public class CLPacket{
 
-	private TcpPacketProtos.TcpPacket.CreateLobbyPacket clp;
+	private TcpPacket.CreateLobbyPacket packet;
 
 	public CLPacket(int maxPlayers){
-		this.clp = TcpPacketProtos.TcpPacket.CreateLobbyPacket.newBuilder()
-											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setMaxPlayers(maxPlayers)
-											.build();
+		this.packet = TcpPacket.CreateLobbyPacket.newBuilder()
+					.setType(TcpPacket.PacketType.forNumber(2))
+					.setMaxPlayers(maxPlayers)
+					.build();
 	}
 
 	public CLPacket(byte[] b){
-		TcpPacketProtos.TcpPacket.CreateLobbyPacket n = null;		
+
+		// transforms a byte stream to a CLPacket
+		
+		TcpPacket.CreateLobbyPacket n = null;		
 		try{
-
-			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(b);
-			// n.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2));
-			// System.out.println(n.getLobbyId());
-
+			n = TcpPacket.CreateLobbyPacket.parseFrom(b);
 		}catch(Exception e){
 			System.out.println(e);
 		}
-		this.clp = n;
+		this.packet = n;
 	}
 
-	public CLPacket(InputStream in){
-		TcpPacketProtos.TcpPacket.CreateLobbyPacket n = null;		
-		try{
-
-			n = TcpPacketProtos.TcpPacket.CreateLobbyPacket.parseFrom(in);
-			// n.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2));
-			// System.out.println(n.getLobbyId());
-			// System.out.println(n.hasLobbyId());
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		this.clp = n;
+	public TcpPacket.CreateLobbyPacket getPacket(){
+		return this.packet;
 	}
 
-	public void send(OutputStream o){
-		try{
-			this.clp.writeTo(o);
-		}catch(Exception e){
-			System.out.println(e);
-		}
-	}
-
-	public TcpPacketProtos.TcpPacket.CreateLobbyPacket getPacket(){
-		return this.clp;
+	public String getLobbyId(){
+		return this.packet.getLobbyId();
 	}
 
 	public void self(){
-		System.out.println(this.clp);
+		System.out.println(this.packet);
 	}
 
 	public byte[] serialize(){
-		return this.clp.toByteArray();
+
+		return this.packet.toByteArray();
 	}
 }
 
