@@ -12,10 +12,10 @@ public class CHPacket{
 
 	public CHPacket(Player player,String message){
 		this.packet = TcpPacket.ChatPacket.newBuilder()
-											.setType(TcpPacket.PacketType.forNumber(3))
-											.setPlayer(player.getPlayer())
-											.setMessage(message)
-											.build();
+						.setType(TcpPacket.PacketType.forNumber(3))
+						.setPlayer(player.getPlayer())
+						.setMessage(message)
+						.build();
 	}
 
 	public CHPacket(byte[] b){
