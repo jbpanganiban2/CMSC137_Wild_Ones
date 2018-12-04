@@ -4,115 +4,68 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class Main{
+// import ChatUtils.;
 
-	public static int intAsker(String args){
-		System.out.print(args+"> ");
-        return Integer.parseInt(new Scanner(System.in).nextLine());
-	}
+public class Main {
+  public static void main(String[] args) {
 
-	public static void sendPacket(/** Socket server, **/byte[] toSend){
-            
-        System.out.println("PACKET SENT TO SERVER\n");
+          String serverName = "202.92.144.45";
+          int port = 80, opt = 0, opt1 = 0, opt2 = 0;
 
+          try{
 
-        // OutputStream outToServer = server.getOutputStream();
-        // DataOutputStream out = new DataOutputStream(outToServer);
-        // out.writeUTF("Client " + server.getLocalSocketAddress()+" says: " +message);
-    }
+               Socket server = new Socket(serverName, port);
+               String lobby_id = null;
 
-    public static void listenToServer(Socket server) {
-        Thread thread = new Thread(){
-            public void run(){
-                while(true) {
-                    try{
-                        InputStream inFromServer = server.getInputStream();
-                        DataInputStream in = new DataInputStream(inFromServer);
-                        System.out.println("Server says " + in.readUTF());
-                    } catch(SocketTimeoutException s){
-                        System.out.println("Socket timed out!");
-                    } catch(IOException e){
-                        e.printStackTrace();
-                        System.out.println("Input/Output Error!");
-                    }
-                }        
-            }
-        };
+               String name = ChatUtils.stringAsker("Enter Name");
+               Player user = new Player(name);
+               ChatUtils.listenToServer(server,user);                                                    //listens to all possible packets
+               // getOnlinePlayers(server);
+               ChatUtils.clear();
 
-        thread.start();       
-            
-    }
+               while(true) {
+                    opt = ChatUtils.intAsker("Welcome, "+name+"\nChoose:\n\t[0] HOST \n\t[1] CLIENT\n\t[2] Exit\n");
+                    ChatUtils.clear();
 
-	public static void main(String[] args) {
+                    if(opt == 2)break;
+                    switch(opt){
+                         case 0:                                                               //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
+                              CLPacket clpacket = new CLPacket(4);
+                              System.out.println("Waiting for server response(clpacket)");
+                              ChatUtils.CreateNewLobby(server,clpacket);
+                              while(ChatUtils.createLobbyPacketReceived == null)                         // waiting to receive createlobbypacket
+                                   System.out.print("\0");  
+                              clpacket = ChatUtils.createLobbyPacketReceived;
+                              ChatUtils.createLobbyPacketReceived = null;
+                              ChatUtils.clear();
 
-		
+                              if(clpacket != null){
+                                   lobby_id = clpacket.getLobbyId();
 
-		String serverName = "202.92.144.45";
-		int port = 80, opt = 0, opt1 = 0, opt2 = 0;
+                                   if(!lobby_id.equals("You are not part of any lobby."))      // if successfully created lobby
+                                        ChatUtils.chatNow(server,user,lobby_id);                    
+                                   else                                                        
+                                        System.out.println("Error: "+lobby_id);
+                                   
+                              }else System.out.println("LobbyId not received properly.");
 
-		try{
-			// Socket server = new Socket(serverName, port);
-   			// listenToServer(server);
-			System.out.println("Connected!");
+                         break;
+                         case 1: 
+                              lobby_id = ChatUtils.stringAsker("Welcome, "+name+"\nPlease enter the lobby_id");
+                              ChatUtils.clear();
+                              
+                              ChatUtils.chatNow(server,user,lobby_id);                              
 
-            while(true) {
-                opt = intAsker("CHOOSE:\n[0] HOST \n[1] CLIENT\nenter option");
-
-                switch(opt){
-                    case 0: //HOST
-                        //Automatically send a CREATE_LOBBY PACKET and CONNECT_PACKET
-
-                    	//creates a CLPacket, and sends it 
-	                    CLPacket c = new CLPacket(4);
-						c.self();
-						byte[] toSend = c.serialize();
-
-                        sendPacket(toSend); 
-
-                        // if successful
-
-                        opt1 = intAsker("[0] CHAT\nenter option");
-                        if(opt1==2){ 
-                            sendPacket(null);
-                            System.out.println("entered chat\n");
-                        }
-
-                        // if not successful	
-                        	// enter code here
-
-                        break;
-                    case 1: //CLIENT
-                        opt1 = intAsker("CHOOSE:\n[0] CONNECT\nenter option");
-
-                        // client sends packet to host, given the lobby_id
-
-                        if(opt1==0){
-                            sendPacket(null);
-                            System.out.println("CONNECTED TO A LOBBY\n");
-
-                            opt2 = intAsker("CHOOSE:\n[0] DISCONNECT\n[1] CHAT\nenter option");
-
-                            if(opt2==0){
-                                sendPacket(null);
-                                System.out.println("DISCONNECTED\n");
-                            }
-
-                            if(opt2==1){
-                                sendPacket(null);
-                                System.out.println("entered chat\n");
-                            }
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-
-           }
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-
-	}
+                         break;
+                         default:
+                              System.out.println("ERROR: Enter correct values.");
+                         break;
+                    } 
+                    ChatUtils.clear();
+               }
+               System.out.println("byee");
+          }catch(Exception e){
+               System.out.println(e);
+          }
+     }
 }

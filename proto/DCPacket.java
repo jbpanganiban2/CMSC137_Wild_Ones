@@ -8,41 +8,43 @@ import proto.*;
 
 public class DCPacket{
 
-	private TcpPacketProtos.TcpPacket.DisconnectPacket dcp;
+	private TcpPacketProtos.TcpPacket.DisconnectPacket packet;
 
 	public DCPacket(Player player){
-		this.dcp = TcpPacketProtos.TcpPacket.DisconnectPacket.newBuilder()
-											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player)
-											.build();
+		this.packet = TcpPacketProtos.TcpPacket.DisconnectPacket.newBuilder()
+					.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(0))
+					.setUpdate(TcpPacketProtos.TcpPacket.DisconnectPacket.Update.forNumber(0))
+					.setPlayer(player.getPlayer())
+					.build();
 	}
 
+	public DCPacket(byte[] b){                                           // receiving constructor
+          TcpPacketProtos.TcpPacket.DisconnectPacket n = null;    
+
+          try{
+               n = TcpPacketProtos.TcpPacket.DisconnectPacket.parseFrom(b);
+          }catch(Exception e){
+               System.out.println(e);
+          }
+          this.packet = n;
+
+          // System.out.println(this.packet);
+     }
+
+     public String getPlayerName(){
+     	return (this.packet.getPlayer().getName());
+     }
+
 	public TcpPacketProtos.TcpPacket.DisconnectPacket getPacket(){
-		return this.dcp;
+		return this.packet;
 	}
 
 	public void self(){
-		System.out.println(this.dcp);
+		System.out.println(this.packet);
 	}
 
 	public byte[] serialize(){
-		return this.dcp.toByteArray();
-	}
-
-	public TcpPacketProtos.TcpPacket.DisconnectPacket deserialize(byte[] b){
-
-		// returns null if there was an error
-
-		TcpPacketProtos.TcpPacket.DisconnectPacket n = null;		
-		try{
-
-			n = TcpPacketProtos.TcpPacket.DisconnectPacket.parseFrom(b);
-
-
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		return n;
+		return this.packet.toByteArray();
 	}
 
 }

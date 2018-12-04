@@ -10,10 +10,10 @@ public class COPacket{
 
 	private TcpPacketProtos.TcpPacket.ConnectPacket cop;
 
-	public COPacket(Player player, string lobbyid){
+	public COPacket(Player player, String lobbyid){
 		this.cop = TcpPacketProtos.TcpPacket.ConnectPacket.newBuilder()
 											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player)
+											.setPlayer(player.getPlayer())
 											.setLobbyId(lobbyid)
 											.build();
 	}

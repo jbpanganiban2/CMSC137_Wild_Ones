@@ -4,45 +4,67 @@ Subject: CMSC 137 Protobuf Milestone
 Description: A class that acts as a wrapper for the Proto-generated class ChatPacket
 **/
 
-import proto.*;
+import proto.TcpPacketProtos.*;
 
 public class CHPacket{
 
-	private TcpPacketProtos.TcpPacket.ChatPacket chp;
+	private TcpPacket.ChatPacket packet;
 
-	public CHPacket(Player player){
-		this.chp = TcpPacketProtos.TcpPacket.ChatPacket.newBuilder()
-											.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(2))
-											.setPlayer(player)
+	public CHPacket(Player player,String message){
+		this.packet = TcpPacket.ChatPacket.newBuilder()
+											.setType(TcpPacket.PacketType.forNumber(3))
+											.setPlayer(player.getPlayer())
+											.setMessage(message)
 											.build();
 	}
 
-	public TcpPacketProtos.TcpPacket.ChatPacket getPacket(){
-		return this.chp;
-	}
-
-	public void self(){
-		System.out.println(this.chp);
-	}
-
-	public byte[] serialize(){
-		return this.chp.toByteArray();
-	}
-
-	public TcpPacketProtos.TcpPacket.ChatPacket deserialize(byte[] b){
-
-		// returns null if there was an error
-
-		TcpPacketProtos.TcpPacket.ChatPacket n = null;		
+	public CHPacket(byte[] b){
+		TcpPacket.ChatPacket n = null;		
 		try{
 
-			n = TcpPacketProtos.TcpPacket.ChatPacket.parseFrom(b);
-
+			n = TcpPacket.ChatPacket.parseFrom(b);
 
 		}catch(Exception e){
 			System.out.println(e);
 		}
-		return n;
+		this.packet = n;
 	}
+
+	public TcpPacket.ChatPacket getPacket(){
+		return this.packet;
+	}
+
+	public void self(){
+		System.out.println(this.packet);
+	}
+
+	public static boolean ashost(String mess){
+		return (mess.contains("!ALERT!"))?true:false;
+	}
+
+	public void showMessage(Player user){
+		Player p = new Player(this.packet.getPlayer());
+		if(p.getName().equals(user.getName()))							// does not show if the user connected to the lobby
+			return;					
+		else if(ashost(this.packet.getMessage()))
+			System.out.println(this.packet.getMessage());				// does not show the name of the sender if the sender is a host
+		else
+			System.out.println(p.getName()+": "+this.packet.getMessage());	// normal show of chat
+	}
+
+	public String getMessage(){
+		return this.packet.getMessage();
+	}
+
+	public void addMessageToBox(String message, Chat chat){
+		Player p = new Player(this.packet.getPlayer());
+		String username = p.getName();
+		chat.addMessageToBox(username, message);
+	}
+
+	public byte[] serialize(){
+		return this.packet.toByteArray();
+	}
+
 
 }
