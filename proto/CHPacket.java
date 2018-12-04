@@ -52,6 +52,16 @@ public class CHPacket{
 			System.out.println(p.getName()+": "+this.packet.getMessage());	// normal show of chat
 	}
 
+	public String getMessage(){
+		return this.packet.getMessage();
+	}
+
+	public void addMessageToBox(String message, Chat chat){
+		Player p = new Player(this.packet.getPlayer());
+		String username = p.getName();
+		chat.addMessageToBox(username, message);
+	}
+
 	public byte[] serialize(){
 		return this.packet.toByteArray();
 	}
