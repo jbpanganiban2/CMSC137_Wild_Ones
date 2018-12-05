@@ -27,7 +27,7 @@ public class Chat extends JPanel{
     //  CONSTRUCTORS
     //
 
-    Chat(Socket s,String pu){
+    Chat(Socket s, String pu){
         
         createChat(s, pu);
     }
