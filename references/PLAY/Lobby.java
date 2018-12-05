@@ -69,7 +69,7 @@ public class Lobby{
         }
     }
 
-    static class startGame implements ActionListener {
+    class startGame implements ActionListener {
     	@Override
         public void actionPerformed(ActionEvent event) {
         	// Character ch = new Character();
@@ -77,7 +77,6 @@ public class Lobby{
 
             lobbyFrame.setVisible(false);
         }
-
     }
 
     class ImagePanel extends JPanel {
