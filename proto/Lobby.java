@@ -8,8 +8,8 @@ import java.io.*;
 import java.util.Scanner;
 
 
-// public class Lobby{
-public class Lobby extends JPanel{
+public class Lobby{
+
      //
      // ATTRIBUTES
      //
@@ -21,18 +21,17 @@ public class Lobby extends JPanel{
      ImageIcon newIcon;
      Image newimg;
 
-     // JFrame lobbyFrame;
+     JFrame mainFrame;
+     JFrame lobbyFrame;
+     JPanel top;
      JButton start;
      JButton exit;
-     JPanel top;
-     JPanel cardPanel;
 
      GridBagConstraints left;
      GridBagConstraints right;
      ImagePanel bg;
-     Socket server;
+
      Chat chat;
-     CardLayout cl;
 
      //   Chat needed Attributes
      public static final String SERVERNAME = "202.92.144.45";
@@ -44,28 +43,23 @@ public class Lobby extends JPanel{
      //  CONSTRUCTORS
      //
 
-
-     Lobby(String username, CardLayout cl, JPanel cardPanel){
-          this.cl = cl;
-          this.cardPanel = cardPanel;
-          createLobby(username);
+     Lobby( JFrame mainFrame, String username){                                                              //   host constructor
+          this.mainFrame = mainFrame;
+          this.server = null;
+          this.user = new Player(username);
+          try{this.server = new Socket(SERVERNAME, PORT);}catch(Exception e){e.printStackTrace();};
+          createLobby();
      }
 
-     Lobby(String username, String lobby_Id,CardLayout cl, JPanel cardPanel){
-          this.cl = cl;
-          this.cardPanel = cardPanel;
-          connectToLobby(username, lobby_Id);
+     Lobby( JFrame mainFrame, String username, String lobby_Id){                                             //   client constructor
+          this.mainFrame = mainFrame;
+          this.user = new Player(username);
+          this.server = null;
+          try{this.server = new Socket(SERVERNAME, PORT);}catch(Exception e){e.printStackTrace();};
+          connectToLobby(lobby_Id);
      }
 
-     public void createLobby(String username) {
-
-                                                                      // initializes the ChatLobby
-          String serverName = "202.92.144.45";
-          int port = 80;
-          this.server = new Socket(serverName, port);
-
-          this.initUIComponents(server, username);                                   // initializes all ui components
-
+     public void createLobby() {
                                                    
           String lobby_id = null;
           ChatUtils.listenToServer(server, user);
@@ -84,7 +78,7 @@ public class Lobby extends JPanel{
                if(!lobby_id.equals("You are not part of any lobby.")){     
 
                     ChatUtils.setChat(this.chat);
-                    
+
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                     if(!connected){
                          // create prompt that shows error
@@ -98,6 +92,7 @@ public class Lobby extends JPanel{
           }else System.out.println("LobbyId not received properly.");
 
           this.initUIComponents(server);                                                       //   initializes all ui components
+
 
      }
 
@@ -145,9 +140,9 @@ public class Lobby extends JPanel{
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
+               Game game = new Game();
 
-               cl.next(cardPanel);
-          
+               lobbyFrame.setVisible(false);
           }
      }
 
@@ -165,13 +160,14 @@ public class Lobby extends JPanel{
      //  METHODS FOR GUI COMPONENTS INITIALIZATION
      //
      
-
-     private void initUIComponents(Socket server, String username){        // Inintializes all UI components
+     private void initUIComponents(Socket server){        // Inintializes all UI components
+          this.chat = new Chat(server, user.getName());
+          this.chat.setOpaque(false);
 
           this.startIcon = new ImageIcon("./src/START.png");  
           this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
           this.icon = new ImageIcon("./src/LobbyBG.png"); 
-          this.newimg = this.icon.getImage().getScaledInstance(730, 550,  java.awt.Image.SCALE_SMOOTH);
+          this.newimg = this.icon.getImage().getScaledInstance(730, 700,  java.awt.Image.SCALE_SMOOTH);
           this.newIcon = new ImageIcon(this.newimg);
 
           this.start = createNewButton(this.startIcon);
@@ -181,10 +177,7 @@ public class Lobby extends JPanel{
           this.exit.addActionListener(new backToMainGUI());
           
           this.left = new GridBagConstraints(); 
-
-          this.right = new GridBagConstraints();
-          this.left.insets = new Insets(0,0,0,300);
-
+          this.left.insets = new Insets(0,0,0,370);
           this.left.anchor = GridBagConstraints.LINE_START;
           
           this.right = new GridBagConstraints();
@@ -192,14 +185,10 @@ public class Lobby extends JPanel{
           
           this.top = newTop(this.start, this.exit, this.right, this.left);
           this.bg = newBG(this.newIcon, this.top, this.chat);
-          this.setPreferredSize(new Dimension(730,550));
-          this.setOpaque(false);
-          this.add(bg);
+          this.lobbyFrame = newLobbyFrame(this.bg);
      }
      
-     public Socket getSocket(){
-          return this.server;
-     }
+
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
           JButton toReturn = new JButton();
@@ -208,9 +197,6 @@ public class Lobby extends JPanel{
           toReturn.setPreferredSize(new Dimension(160,50));
           toReturn.setBorderPainted(false);
           toReturn.setIcon(icn);
-
-          toReturn.addActionListener(new startGame());
-
           return toReturn;
      }
 
@@ -226,11 +212,11 @@ public class Lobby extends JPanel{
 
      private ImagePanel newBG(ImageIcon newIcon, JPanel top, Chat chat){   // creates a new Background
           ImagePanel bg = new ImagePanel(newIcon.getImage());
-          bg.setPreferredSize(new Dimension(730,550));
+          bg.setPreferredSize(new Dimension(730,700));
           bg.setLayout(new BorderLayout());
-          // bg.add(top);
+
           bg.add(top,BorderLayout.NORTH); 
-          // bg.add(this.chat,BorderLayout.SOUTH); 
+          bg.add(this.chat,BorderLayout.SOUTH); 
           return bg;
      }
 
