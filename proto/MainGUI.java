@@ -16,44 +16,26 @@ import javax.swing.*;
 //        
 //        
 
-public class MainGUI {
+public class MainGUI{
 
-     static JFrame mainFrame;
-     static JTextField name;
+     private static JFrame mainFrame;
+     private static JTextField name;
+     private static JButton host;
+     private static JButton client;
+     private static JPanel container;
 
-     static void create(){                                            // sets the Main GUI
-
+     MainGUI(){
           mainFrame = new JFrame("Wild Ones");
+          create();
+     }
 
+     void create(){                                            // sets the Main GUI
                                                                       //buttons and textfields
-          ImageIcon hostIcon = new ImageIcon("./src/HOST.png");
-          ImageIcon clientIcon = new ImageIcon("./src/CLIENT.png"); 
 
-          name = new JTextField();
-          name.setPreferredSize(new Dimension(135,50));
-          name.setOpaque(false);
-          name.requestFocus();
-
-          JButton host = new JButton("HOST");
-          host.setPreferredSize(new Dimension(140,50));
-          host.setOpaque(false);
-          host.setContentAreaFilled(false);
-          host.setBorderPainted(false);
-          host.setIcon(hostIcon);
-          host.addActionListener(new hostChar());
-          
-          JButton client = new JButton("CLIENT");
-          client.setPreferredSize(new Dimension(150,50));
-          client.setOpaque(false);
-          client.setContentAreaFilled(false);
-          client.setBorderPainted(false);
-          client.setIcon(clientIcon);
-          client.addActionListener(new clientChar());
-                                                                      //container
-          JPanel container = new JPanel();
-          container.setLayout(new GridBagLayout());
-          container.setPreferredSize(new Dimension(150,170));
-          container.setOpaque(false);
+          name = newNameTextField();
+          host = newHostButton();
+          client = newClientButton();
+          container = newGridContainer();
 
           GridBagConstraints center = new GridBagConstraints();
           center.gridx = 0;
@@ -109,7 +91,7 @@ public class MainGUI {
 
                if(name.getText().equals(""))return;
 
-               Lobby lobby = new Lobby(mainFrame, name.getText());
+               ChatGameWindow window = new ChatGameWindow(mainFrame, name.getText());
                mainFrame.setVisible(false);
           }
      }
@@ -121,22 +103,9 @@ public class MainGUI {
 
                if(name.getText().equals(""))return;
 
-               JTextField lobby_id_area = new JTextField();
-               lobby_id_area.setPreferredSize(new Dimension(300,150));
-               lobby_id_area.setOpaque(false);
-               lobby_id_area.requestFocus();
-               
+               JTextField lobby_id_area = newLobbyAreaTextField();
                JButton connect = new JButton("Connect");
-
-               JFrame getLobbyId = new JFrame("Enter Lobby ID");
-               getLobbyId.setLayout(new FlowLayout());
-               getLobbyId.setResizable(false);
-               getLobbyId.setDefaultCloseOperation(0);
-               getLobbyId.add(lobby_id_area);
-               getLobbyId.add(connect);
-
-               getLobbyId.setSize(300,200);
-               getLobbyId.setVisible(true);
+               JFrame getLobbyId = newGetLobbyIdFrame(lobby_id_area, connect);
 
                connect.addActionListener(new ActionListener(){
                     @Override
@@ -146,13 +115,77 @@ public class MainGUI {
 
                          if(l_id.equals(""))return;
 
-                         Lobby lobby = new Lobby(mainFrame, name.getText(), l_id);
+                         ChatGameWindow window = new ChatGameWindow(mainFrame, name.getText(), l_id);
                          getLobbyId.dispose();
                     }
                });
+
           }
      }
 
+     //
+     //   UI Inintialization Methods
+     //
+
+     private JTextField newNameTextField(){
+          JTextField name = new JTextField();
+          name.setPreferredSize(new Dimension(135,50));
+          name.setOpaque(false);
+          name.requestFocus();
+          return name;
+     }
+
+     private JButton newHostButton(){
+          ImageIcon hostIcon = new ImageIcon("./src/HOST.png");
+          JButton host = new JButton("HOST");
+          host.setPreferredSize(new Dimension(140,50));
+          host.setOpaque(false);
+          host.setContentAreaFilled(false);
+          host.setBorderPainted(false);
+          host.setIcon(hostIcon);
+          host.addActionListener(new hostChar());
+          return host;
+     }
+
+     private JButton newClientButton(){
+          ImageIcon clientIcon = new ImageIcon("./src/CLIENT.png"); 
+          JButton client = new JButton("CLIENT");
+          client.setPreferredSize(new Dimension(150,50));
+          client.setOpaque(false);
+          client.setContentAreaFilled(false);
+          client.setBorderPainted(false);
+          client.setIcon(clientIcon);
+          client.addActionListener(new clientChar());
+          return client;
+     }
+
+     private JPanel newGridContainer(){
+          JPanel container = new JPanel();
+          container.setLayout(new GridBagLayout());
+          container.setPreferredSize(new Dimension(150,170));
+          container.setOpaque(false);
+          return container;
+     }
+
+     private static JFrame newGetLobbyIdFrame(JTextField lobby_id_area, JButton connect){
+          JFrame getLobbyId = new JFrame("Enter Lobby ID");
+          getLobbyId.setLayout(new FlowLayout());
+          getLobbyId.setResizable(false);
+          getLobbyId.setDefaultCloseOperation(0);
+          getLobbyId.add(lobby_id_area);
+          getLobbyId.add(connect);
+          getLobbyId.setSize(300,200);
+          getLobbyId.setVisible(true);
+          return getLobbyId;
+     }
+
+     private static JTextField newLobbyAreaTextField(){
+          JTextField lobby_id_area = new JTextField();
+          lobby_id_area.setPreferredSize(new Dimension(300,150));
+          lobby_id_area.setOpaque(false);
+          lobby_id_area.requestFocus();
+          return lobby_id_area;
+     }
 
 
      //
@@ -164,7 +197,9 @@ public class MainGUI {
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
           } catch (Exception e) {
                e.printStackTrace();
-          }create();
+          }
+
+          MainGUI mg = new MainGUI();
      }
 
 }
