@@ -96,8 +96,8 @@ public class MainGUI {
           public void actionPerformed(ActionEvent event) {
 
                if(name.getText().equals(""))return;
-
-               Lobby lobby = new Lobby(name.getText());
+               Window window = new Window(name.getText());
+               // Lobby lobby = new Lobby(name.getText());
                mainFrame.setVisible(false);
           }
      }
@@ -135,8 +135,8 @@ public class MainGUI {
                          // System.out.println(l_id+" eoasdgasd");
 
                          if(l_id.equals(""))return;
-
-                         Lobby lobby = new Lobby(name.getText(), l_id);
+                         Window window = new Window(name.getText(), l_id);
+                         // Lobby lobby = new Lobby(name.getText(), l_id);
                          getLobbyId.dispose();
                     }
                });
