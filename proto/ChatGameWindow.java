@@ -54,7 +54,7 @@ public class ChatGameWindow extends JFrame{
 
           this.lobby = new Lobby(this);
           if(this.lobby.connected())
-               createWindow();
+          createWindow();
 
      }
 
@@ -133,6 +133,10 @@ public class ChatGameWindow extends JFrame{
 
      public JFrame getMainGUI(){
           return this.mainGUI;
+     }
+
+     public Game getGame(){
+          return this.game;
      }
 
      //
