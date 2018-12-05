@@ -129,6 +129,15 @@ public class Lobby{
           }
      }
 
+     class startGame implements ActionListener {
+          @Override
+          public void actionPerformed(ActionEvent event) {
+               Game game = new Game();
+
+               lobbyFrame.setVisible(false);
+          }
+     }
+
      //
      //  METHODS FOR GUI COMPONENTS INITIALIZATION
      //
@@ -157,6 +166,7 @@ public class Lobby{
           toReturn.setPreferredSize(new Dimension(160,70));
           toReturn.setBorderPainted(false);
           toReturn.setIcon(startIcon);
+          toReturn.addActionListener(new startGame());
           return toReturn;
      }
 
