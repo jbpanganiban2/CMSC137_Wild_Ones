@@ -9,28 +9,28 @@ public class Rocket extends MovingObject{
      //  Attributes
      //
 
-     private Character ch;
+     private Point charPosition;
+     private Point cursorPosition;
      private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
-     private Point cursorPosition;
 
      //
      //  Constructors
      //
 
-     public Rocket(Character ch, Point cursorPosition, JFrame gameFrame, int type){
-          super(ch.getPosition(), new Dimension(10, 10), gameFrame);
-          this.ch = ch;
+     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
+          super(name, charPosition, new Dimension(10, 10), gamePanel);
+          this.charPosition = charPosition;
           this.type = type;
           this.trajectory = new ArrayList<Point>();
           this.cursorPosition = cursorPosition;
 
+          this.setLoc(charPosition);
+          this.gamePanel.add(this);
+
           this.getTrajectory();
+          this.deploy();
 
-
-          //  runs a thread that immediately starts and moves the rocket to a certain angle relative to the getPostition
-          //  When it hits object or bounds, explodes
-          //    if object is hit, damages the object
      }
 
      //
@@ -38,23 +38,36 @@ public class Rocket extends MovingObject{
      //
 
      private void getTrajectory(){
-          int start = (int)this.ch.getPosition().getX();
-          int end = (int)this.cursorPosition.getX();
+          int start = (int)this.charPosition.getX();                  //   character X pos
+          int cX = (int)cursorPosition.getX();                        //   cursor X pos
+          int right = 720;                                            //   right bound of the window 
+          int left = 0;                                               //   left bound of the window
+          int increment = 0;                                          //   increment of domain
+          int end = 720;
 
-          System.out.println(start + " < " + end);
+          if(start < cX){
+               System.out.println("going right");
+               end = 720;
+               increment = 1;
+          }else if(start > cX){
+               System.out.println("going left");
+               end = 10;
+               increment = -1;
+          }else{
+               // rocket is perfectly going down/up
+               // setTrajectory to a downard/upward line
+               return;
+          }
 
-          if(start < end){
-               for(int i = start; i < end; i++ ){
-                    System.out.println(i);
-                    this.trajectory.add(getPositionAtX(i));
-               }
+          for(int i = start; i != end; i+=increment ){
+               this.trajectory.add(getPositionAtX(i));
           }
      }
 
      private Point getPositionAtX(int x){
 
-          double x1 = this.ch.getPosition().getX();
-          double y1 = this.ch.getPosition().getY();
+          double x1 = this.charPosition.getX();
+          double y1 = this.charPosition.getY();
           double x2 = this.cursorPosition.getX();
           double y2 = this.cursorPosition.getY();
 
@@ -69,15 +82,19 @@ public class Rocket extends MovingObject{
           }
      }
 
-     public void deploy(){
+     public void run(){
+          for(Point p : trajectory){
 
-          for(Point p : this.trajectory){
-               try{Thread.sleep(100);}catch(Exception e){e.printStackTrace();};
-               // System.out.println(p);
+               try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
                this.setLoc(p);
-               // this.repaint();
-               // this.movePosition(, );
+               
           }
+          setVisible(false);
      }
+
+     //
+     //   Internal Classes
+     //
+
 
 }

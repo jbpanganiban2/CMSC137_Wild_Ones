@@ -7,31 +7,32 @@ import javax.swing.*;
 //        a general class that is extended by all components to be rendered in-game
 //
 
-public class MovingObject extends JPanel{
+public class MovingObject extends JPanel implements Runnable{
 
      //
      //   Attributes
      //
 
-     protected JFrame gameFrame;
+     protected JPanel gamePanel;
      protected Point position;
      protected Dimension size;
      protected Rectangle rect;
+     protected String name;
 
      //
      //   Constructors
      //
 
-     public MovingObject(Point initial, Dimension init_size, JFrame gameFrame){
+     public MovingObject(String name, Point initial, Dimension init_size, JPanel gamePanel){
           this.position = initial;
           this.size = init_size;
+          this.name = name;
 
           this.setBackground(Color.BLACK);
-          this.setSize(this.size); 
+          this.setPreferredSize(this.size); 
           this.rect = new Rectangle(this.position, this.size);
 
-          this.gameFrame = gameFrame;
-          // this.gameFrame.add(this);
+          this.gamePanel = gamePanel;
      }
 
      //
@@ -40,14 +41,14 @@ public class MovingObject extends JPanel{
      
      private void refresh(){                      // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
-          // this.gameFrame.add(this);
+          // this.gamePanel.add(this);
      }
 
      //   methods used locally
      
      protected void movePosition(int x, int y){
           this.position.translate(x, y);
-          this.refresh();
+          this.refresh();     
      }
 
      //   methods used by other players
@@ -55,7 +56,7 @@ public class MovingObject extends JPanel{
      public void setLoc(Point p){
           // System.out.println(p);
           this.position.setLocation(p);
-          // System.out.println("rocket position"+this.position);
+          // System.out.println(this.position);
           this.refresh();
      }
 
@@ -75,6 +76,15 @@ public class MovingObject extends JPanel{
 
      public Point getPosition(){
           return this.position;
+     }
+
+     public void run(){
+          /*none*/
+     }
+
+     public void deploy(){
+          Thread t = new Thread(this);
+          t.start();
      }
 
 }
