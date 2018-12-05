@@ -16,12 +16,15 @@ public class Lobby{
 
      // gui components
      ImageIcon startIcon;
+     ImageIcon exitIcon;
      ImageIcon icon;
      ImageIcon newIcon;
      Image newimg;
      JFrame lobbyFrame;
      JButton start;
+     JButton exit;
      JPanel top;
+     GridBagConstraints left;
      GridBagConstraints right;
      ImagePanel bg;
 
@@ -110,7 +113,7 @@ public class Lobby{
      //
      //  INTERNAL CLASSES
      //
-
+     
      class ImagePanel extends JPanel {
 
           private Image img;
@@ -145,34 +148,42 @@ public class Lobby{
      private void initUIComponents(Socket server, String username){        // Inintializes all UI components
           this.chat = new Chat(server, username);
           this.chat.setOpaque(false);
-          this.startIcon = new ImageIcon("./src/START.png");                    
+
+          this.startIcon = new ImageIcon("./src/START.png");  
+          this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
           this.icon = new ImageIcon("./src/LobbyBG.png"); 
           this.newimg = this.icon.getImage().getScaledInstance(730, 700,  java.awt.Image.SCALE_SMOOTH);
           this.newIcon = new ImageIcon(this.newimg);
-          this.start = createNewStart(this.startIcon); 
+          this.start = createNewButton(this.startIcon); 
+          this.exit = createNewButton(this.exitIcon);
+          this.left = new GridBagConstraints(); 
           this.right = new GridBagConstraints();
-          this.right.insets = new Insets(30,520,0,0);
-          this.top = newTop(this.start, this.right);
+          this.left.insets = new Insets(0,0,0,370);
+          this.left.anchor = GridBagConstraints.LINE_START;
+          this.right.anchor = GridBagConstraints.LINE_END;
+          this.top = newTop(this.start, this.exit, this.right, this.left);
           this.bg = newBG(this.newIcon, this.top, this.chat);
           this.lobbyFrame = newLobbyFrame(this.bg);
      }
      
 
 
-     private JButton createNewStart(ImageIcon startIcon){                  // creates a new Start button
+     private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
           JButton toReturn = new JButton();
           toReturn.setOpaque(false);
           toReturn.setContentAreaFilled(false);
-          toReturn.setPreferredSize(new Dimension(160,70));
+          toReturn.setPreferredSize(new Dimension(160,50));
           toReturn.setBorderPainted(false);
           toReturn.setIcon(startIcon);
           toReturn.addActionListener(new startGame());
           return toReturn;
      }
 
-     private JPanel newTop(JButton start, GridBagConstraints right){       // creates a new Top
+     private JPanel newTop(JButton start, JButton exit, GridBagConstraints right, GridBagConstraints left){       // creates a new Top
           JPanel top = new JPanel();
           top.setLayout(new GridBagLayout());
+          top.setPreferredSize(new Dimension(730,70));
+          top.add(exit,left);
           top.add(start,right);
           top.setOpaque(false);
           return top;
