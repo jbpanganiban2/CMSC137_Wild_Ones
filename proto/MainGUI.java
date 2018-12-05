@@ -2,18 +2,30 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+//
+//   MainGUI
+//        the class that produces the main "login" window as well as has the main method
+//
 
+//   List of things to do
+//        connect game to MainLogin
+//        add logout feature
+//        fix turn based game
+//        merge Character to Player Class
+//        create udp server
+//        
+//        
 
 public class MainGUI {
 
      static JFrame mainFrame;
      static JTextField name;
 
-     static void create(){                             // sets the Main GUI
+     static void create(){                                            // sets the Main GUI
 
           mainFrame = new JFrame("Wild Ones");
 
-                                                          //buttons and textfields
+                                                                      //buttons and textfields
           ImageIcon hostIcon = new ImageIcon("./src/HOST.png");
           ImageIcon clientIcon = new ImageIcon("./src/CLIENT.png"); 
 
@@ -37,7 +49,7 @@ public class MainGUI {
           client.setBorderPainted(false);
           client.setIcon(clientIcon);
           client.addActionListener(new clientChar());
-                                                          //container
+                                                                      //container
           JPanel container = new JPanel();
           container.setLayout(new GridBagLayout());
           container.setPreferredSize(new Dimension(150,170));
@@ -46,24 +58,24 @@ public class MainGUI {
           GridBagConstraints center = new GridBagConstraints();
           center.gridx = 0;
 
-          center.insets = new Insets(0,0,10,0);                    //top padding
+          center.insets = new Insets(0,0,10,0);                       //top padding
           center.anchor = GridBagConstraints.PAGE_START;
           container.add(name,center);
           center.anchor = GridBagConstraints.CENTER;
           container.add(host,center);
           center.anchor = GridBagConstraints.PAGE_END;
           
-          center.insets = new Insets(0,0,0,0);                     //top padding
+          center.insets = new Insets(0,0,0,0);                        //top padding
           container.add(client,center);
 
-                                                                 // for background
+                                                                      // for background
           ImageIcon icon = new ImageIcon("./src/BG.png"); 
           Image newimg = icon.getImage().getScaledInstance(600, 600,  java.awt.Image.SCALE_SMOOTH);
           ImageIcon newIcon = new ImageIcon(newimg);
           ImagePanel thumb = new ImagePanel(newIcon.getImage());
           thumb.setPreferredSize(new Dimension(600,600));
           thumb.setLayout(new GridBagLayout());
-          center.insets = new Insets(150,0,0,0);                  //top padding
+          center.insets = new Insets(150,0,0,0);                      //top padding
           thumb.add(container, center);
 
           mainFrame.setVisible(true);
@@ -97,7 +109,7 @@ public class MainGUI {
 
                if(name.getText().equals(""))return;
 
-               Lobby lobby = new Lobby(name.getText());
+               Lobby lobby = new Lobby(mainFrame, name.getText());
                mainFrame.setVisible(false);
           }
      }
@@ -106,7 +118,6 @@ public class MainGUI {
           @Override
           public void actionPerformed(ActionEvent event) {
 
-               // System.out.println("cliecker"+name.getText());
 
                if(name.getText().equals(""))return;
 
@@ -117,7 +128,7 @@ public class MainGUI {
                
                JButton connect = new JButton("Connect");
 
-               JFrame getLobbyId = new JFrame();
+               JFrame getLobbyId = new JFrame("Enter Lobby ID");
                getLobbyId.setLayout(new FlowLayout());
                getLobbyId.setResizable(false);
                getLobbyId.setDefaultCloseOperation(0);
@@ -132,20 +143,23 @@ public class MainGUI {
                     public void actionPerformed(ActionEvent e){
 
                          String l_id = lobby_id_area.getText();
-                         // System.out.println(l_id+" eoasdgasd");
 
                          if(l_id.equals(""))return;
 
-                         Lobby lobby = new Lobby(name.getText(), l_id);
+                         Lobby lobby = new Lobby(mainFrame, name.getText(), l_id);
                          getLobbyId.dispose();
                     }
                });
 
-               mainFrame.setVisible(false);
+               // mainFrame.setVisible(false);
           }
      }
 
 
+
+     //
+     //   Main Method
+     //
 
      public static void main(String[] args) {                    // starts the running of the program
           try {
