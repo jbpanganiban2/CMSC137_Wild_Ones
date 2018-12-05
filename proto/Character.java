@@ -18,6 +18,11 @@ public class Character extends MovingObject{
 	//	Attributes
 	//
 
+	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
+	static final int UP = 1;
+	static final int DOWN = 2;
+	static final int LEFT = 3;
+	static final int RIGHT = 4;
 	private static final int MOVEMENT = 5;
 	private final HashSet<Integer> moves;
 	private boolean alive;
@@ -26,7 +31,7 @@ public class Character extends MovingObject{
 	//	Constructors
 	//
 
-	public Character(String name, Point init, JPanel gamePanel, JFrame gameFrame){
+	public Character(String name, Point init, JPanel gamePanel){
 		super(name, init, new Dimension(30, 50), gamePanel);
 
 		this.moves = new HashSet<Integer>();
@@ -35,7 +40,8 @@ public class Character extends MovingObject{
 		this.setLoc();
 		this.gamePanel.add(this);
 		this.gamePanel.addMouseListener(new RocketListener());
-		gameFrame.addKeyListener(new MovementListener(this));
+
+		this.addKeyBindings();
 	}
 
 	//
@@ -59,6 +65,43 @@ public class Character extends MovingObject{
 		return this.moves;
 	}
 
+	public void addKeyBindings(){
+
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("W"), UP);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("S"), DOWN);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("A"), LEFT);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("D"), RIGHT);
+
+		this.getActionMap().put(UP, new Move(this, UP));
+        	this.getActionMap().put(DOWN, new Move(this, DOWN));
+        	this.getActionMap().put(LEFT, new Move(this, LEFT));
+        	this.getActionMap().put(RIGHT, new Move(this, RIGHT));
+
+	}
+
+	public void disable(){
+
+		System.out.println("disabled");
+		Action a = null; 
+		ActionMap aa = this.getActionMap();
+		for(Object o : aa.allKeys()){
+			a = aa.get(o);
+			a.setEnabled(false);
+		}
+
+	}
+
+	public void enable(){
+
+		Action a = null; 
+		ActionMap aa = this.getActionMap();
+		for(Object o : aa.allKeys()){
+			a = aa.get(o);
+			a.setEnabled(true);
+		}
+
+	}
+
 	public synchronized void run(){
 		
 	}
@@ -79,51 +122,38 @@ public class Character extends MovingObject{
           }
      }
 
-     class MovementListener extends KeyAdapter{
-		// Set of currently pressed keys
-		private final Set<Integer> pressed;
-		private Character ch;
+     class Move extends AbstractAction {
 
+     	Character ch;
+     	int moveType;
 
-		MovementListener(Character ch){
-			super();
-			this.ch = ch;
-			this.pressed = ch.getMoves();
-			System.out.println("movementListener added");
+     	Move(Character ch, int moveType){
+     		this.ch = ch;
+     		this.moveType = moveType;
+     	}
+
+     	@Override
+		public void actionPerformed(ActionEvent e) {
+			switch(this.moveType){
+				case UP:
+					this.ch.moveUp();
+				break;
+				case DOWN:
+					this.ch.moveDown();
+				break;
+				case LEFT:
+					this.ch.moveLeft();
+				break;
+				case RIGHT:
+					this.ch.moveRight();
+				break;
+				default:
+
+				break;
+			}
 		}
 
-		@Override
-		public synchronized void keyPressed(KeyEvent e) {
-			pressed.add(e.getKeyCode());
-			if(ch.alive){
-				for( Integer k : pressed ){
-					switch(k){
-						case KeyEvent.VK_A:
-							ch.moveLeft();
-						break;
-						case KeyEvent.VK_D:
-							ch.moveRight();
-						break;
-						case KeyEvent.VK_W:
-							ch.moveUp();
-						break;
-						case KeyEvent.VK_S:
-							ch.moveDown();
-						break;
-						case KeyEvent.VK_SPACE:
-							ch.moveUp();			// supposed to be jump
-						break;
-					}
-				}
-			}	
-		}
 
-		@Override
-		public synchronized void keyReleased(KeyEvent e) {
-			pressed.remove(e.getKeyCode());
-		}
+     }
 
-		@Override
-		public void keyTyped(KeyEvent e) {/* Not used */ }
-	}
 }

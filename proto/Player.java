@@ -1,4 +1,3 @@
-
 import proto.*;
 
 public class Player{
