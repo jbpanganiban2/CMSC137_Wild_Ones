@@ -25,7 +25,7 @@ public class Game extends JPanel{
 
 		this.mainPanel = new JPanel();
 		this.gamePanel = new JPanel();
-		this.ch = new Character("Player", new Point(50,50), this.mainPanel, cgw);
+		this.ch = new Character("Player", new Point(50,50), this.mainPanel);
 
 		this.isFinished = true;
 		createGame();

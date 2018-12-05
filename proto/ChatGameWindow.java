@@ -38,6 +38,8 @@ public class ChatGameWindow extends JFrame{
      ChatGameWindow(JFrame mainGUI, String name){          // host ChatGameWindow constructor
           super("Wild Ones");
 
+          this.setFocusable(false);                         // prevents program to listen to the ChatGameWindow
+
           this.mainGUI = mainGUI;
           this.cardPanel = new JPanel(); // cardpanel is instantiated here since the CardLayout is needed to be passed to lobby
           this.cardPanel.setLayout(new CardLayout());
@@ -92,6 +94,7 @@ public class ChatGameWindow extends JFrame{
           this.cardPanel.setBounds(0,-10,730,550);
 
           this.chatPanel = new JPanel();
+          this.chatPanel.setFocusable(false);
           this.chatPanel.setPreferredSize(new Dimension(730,150));
           this.chatPanel.setOpaque(false);
           this.chatPanel.add(this.chat);

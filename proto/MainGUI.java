@@ -29,8 +29,7 @@ public class MainGUI{
           create();
      }
 
-     void create(){                                            // sets the Main GUI
-                                                                      //buttons and textfields
+     void create(){                                                   // sets the Main GUI
 
           name = newNameTextField();
           host = newHostButton();
@@ -119,7 +118,7 @@ public class MainGUI{
                          getLobbyId.dispose();
                     }
                });
-
+               mainFrame.setVisible(false);
           }
      }
 

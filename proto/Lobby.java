@@ -114,7 +114,9 @@ public class Lobby extends JPanel{
           if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
                
                ChatUtils.setChat(this.chat);
+               
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
+               
                System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
