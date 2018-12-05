@@ -1,11 +1,7 @@
 /**
 Author: Aaron Magnaye,  Antonette Porca, Joshua Panganiban
-Subject: CMSC 137 Protobuf Milestone
-Description: Main Class that runs the whole chatting system
-  -- this will most probably moved to a class that would work like this
-    ChatSystem c = new ChatSystem();
-    c.start();
-    ^-- still unsure about this
+Subject: CMSC 137
+Description: Class that runs the whole chatting system
 **/
 
 import proto.*;
@@ -259,7 +255,6 @@ public class ChatUtils{
           
           chatting = false;
           resetPackets();
-
           disconnect(server, new DCPacket(user));
 
      }

@@ -25,6 +25,8 @@ public class Lobby{
     this.chat.setOpaque(false);
 
     ImageIcon startIcon = new ImageIcon("./src/START.png");
+    ImageIcon exitIcon = new ImageIcon("./src/EXIT.png");
+
     ImageIcon icon = new ImageIcon("./src/LobbyBG.png"); 
     Image newimg = icon.getImage().getScaledInstance(730, 700,  java.awt.Image.SCALE_SMOOTH);
     ImageIcon newIcon = new ImageIcon(newimg);
@@ -36,11 +38,26 @@ public class Lobby{
     start.setBorderPainted(false);
     start.setIcon(startIcon);
 
+    JButton exit = new JButton();
+    exit.setPreferredSize(new Dimension(160,50));
+    exit.setOpaque(false);
+    exit.setContentAreaFilled(false);
+    exit.setBorderPainted(false);
+    exit.setIcon(exitIcon);
+
+
+    GridBagConstraints left = new GridBagConstraints();
     GridBagConstraints right = new GridBagConstraints();
-    right.insets = new Insets(30,520,0,0);  //top padding
+    left.anchor = GridBagConstraints.LINE_START;
+    left.insets = new Insets(0,0,0,370);  //top padding
+    right.anchor = GridBagConstraints.LINE_END;
+    // right.insets = new Insets(0,0,0,0);  //top padding
+
     
     JPanel top = new JPanel();
     top.setLayout(new GridBagLayout());
+    top.setPreferredSize(new Dimension(730,70));
+    top.add(exit,left);   
     top.add(start,right);
     top.setOpaque(false);
 
