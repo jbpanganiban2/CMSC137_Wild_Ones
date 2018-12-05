@@ -109,7 +109,8 @@ public class MainGUI {
 
                if(name.getText().equals(""))return;
 
-               Lobby lobby = new Lobby(mainFrame, name.getText());
+               Window window = new Window(name.getText());
+
                mainFrame.setVisible(false);
           }
      }
@@ -146,7 +147,9 @@ public class MainGUI {
 
                          if(l_id.equals(""))return;
 
-                         Lobby lobby = new Lobby(mainFrame, name.getText(), l_id);
+                         Window window = new Window(name.getText(), l_id);
+                         // Lobby lobby = new Lobby(name.getText(), l_id);
+
                          getLobbyId.dispose();
                     }
                });

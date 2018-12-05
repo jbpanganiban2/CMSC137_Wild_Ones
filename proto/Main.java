@@ -13,6 +13,8 @@ public class Main {
           int port = 80, opt = 0, opt1 = 0, opt2 = 0;
 
           try{
+               MainGUI main = new MainGUI();
+               main.create();
 
                Socket server = new Socket(serverName, port);
                String lobby_id = null;
@@ -22,8 +24,8 @@ public class Main {
                ChatUtils.listenToServer(server,user);                                                    //listens to all possible packets
                // getOnlinePlayers(server);
                ChatUtils.clear();
-
                while(true) {
+
                     opt = ChatUtils.intAsker("Welcome, "+name+"\nChoose:\n\t[0] HOST \n\t[1] CLIENT\n\t[2] Exit\n");
                     ChatUtils.clear();
 
