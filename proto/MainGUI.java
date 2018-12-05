@@ -150,8 +150,6 @@ public class MainGUI {
                          getLobbyId.dispose();
                     }
                });
-
-               // mainFrame.setVisible(false);
           }
      }
 
