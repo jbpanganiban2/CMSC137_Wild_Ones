@@ -28,10 +28,11 @@ public class MovingObject extends JPanel implements Runnable{
           this.size = init_size;
           this.name = name;
 
-          this.setBackground(Color.BLACK);
+          // this.setBackground(Color.BLACK);
           this.setPreferredSize(this.size); 
           this.rect = new Rectangle(this.position, this.size);
-
+          
+          this.setOpaque(true);
           this.gamePanel = gamePanel;
      }
 
