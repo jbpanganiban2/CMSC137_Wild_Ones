@@ -22,6 +22,7 @@ public class Game extends JPanel implements Runnable{
 	JPanel chatPanel;
 
 	ArrayList<Character> chars;
+	ArrayList<Obstacles> obstacles;
 	ArrayList<Point> respawns;
 	boolean isFinished;
 
@@ -34,6 +35,7 @@ public class Game extends JPanel implements Runnable{
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
+		this.obstacles = new ArrayList<Obstacles>();
 
 		for(Point p : this.respawns){
 			this.chars.add(new Character("nameu", p, gamePanel));
@@ -53,6 +55,13 @@ public class Game extends JPanel implements Runnable{
 		gamePanel.setLayout(null); 								//set layout to null so character can be anywhere
 		gamePanel.setOpaque(false); 
 		gamePanel.setPreferredSize(new Dimension(730,550));
+
+		for (int i=1;i<10 ;i++ ) {
+			Obstacles obs = new Obstacles(i);
+			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+			gamePanel.add(obs);
+			obstacles.add(obs);
+		}
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
 		bg.setPreferredSize(new Dimension(730,550));

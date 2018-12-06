@@ -32,7 +32,7 @@ public class MovingObject extends JPanel implements Runnable{
           this.setPreferredSize(this.size); 
           this.rect = new Rectangle(this.position, this.size);
           
-          this.setOpaque(troue);
+          this.setOpaque(true);
           this.gamePanel = gamePanel;
      }
 
