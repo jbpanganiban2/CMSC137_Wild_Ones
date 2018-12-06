@@ -241,10 +241,6 @@ public class Lobby extends JPanel{
      }
      
 
-     public Chat getChat(){
-          return this.chat;
-     }
-
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
           JButton toReturn = new JButton();
