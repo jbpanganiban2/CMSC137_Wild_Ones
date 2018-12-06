@@ -17,7 +17,12 @@ public class Game extends JPanel implements Runnable{
 	//
 	//	Attributes
 	//
+	private final static int FIRE = 0;
+	private final static int PIG = 1;
+	private final static int DYNAMIGHT = 2;
+	private final static int LUBGLUB = 3;
 
+	
 	JPanel gamePanel;
 	JPanel chatPanel;
 
@@ -37,9 +42,16 @@ public class Game extends JPanel implements Runnable{
 		this.chars = new ArrayList<Character>();
 		this.obstacles = new ArrayList<Obstacles>();
 
-		for(Point p : this.respawns){
-			this.chars.add(new Character("nameu", p, gamePanel));
-		}
+		// for(Point p : this.respawns){
+		// 	this.chars.add(new Character("nameu", p, gamePanel,1));
+		// }
+
+		this.chars.add(new Character("nameu",new Point(160,25), gamePanel,PIG));
+		this.chars.add(new Character("nameu",new Point(33,416), gamePanel,DYNAMIGHT));
+		this.chars.add(new Character("nameu",new Point(97,159), gamePanel,LUBGLUB));
+
+
+
 
 		this.isFinished = false;
 		createGame();
@@ -56,7 +68,7 @@ public class Game extends JPanel implements Runnable{
 		gamePanel.setOpaque(false); 
 		gamePanel.setPreferredSize(new Dimension(730,550));
 
-		for (int i=1;i<22 ;i++ ) {
+		for (int i=1;i<21 ;i++ ) {
 			Obstacles obs = new Obstacles(i);
 			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 			gamePanel.add(obs);
@@ -71,7 +83,7 @@ public class Game extends JPanel implements Runnable{
 		this.setSize(730,700);
 		this.add(bg);
 
-		// this.deploy();
+		this.deploy();
 	}
 
 	//

@@ -9,10 +9,21 @@ public class Character extends MovingObject{
 	//
 	//	Attributes
 	//
-	private final static Icon ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
-	private final static Icon STANDBY = new ImageIcon("src/pig/pigStandby.gif");
-	private final static Icon WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
-	private final static Icon WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
+	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+	private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
+	private final static Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
+	private final static Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
+
+	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
+	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+	private final static Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
+	private final static Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
+
+	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+	private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
+	private final static Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
+	private final static Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
+
 	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 	static final int JUMP = 0;
@@ -25,28 +36,31 @@ public class Character extends MovingObject{
 	private boolean alive;
 	private boolean jumping;
 	private boolean enabled;
+	private int type;
 	
 	//
 	//	Constructors
 	//
 
-	public Character(String name, Point init, JPanel gamePanel){
-		super(name, init, new Dimension(30, 50), gamePanel);
+	public Character(String name, Point init, JPanel gamePanel, int type){
+		super(name, init, new Dimension(48, 50), gamePanel);
 
 		this.moves = new HashSet<Integer>();
 		this.addKeyBindings();
 
+		this.type = type;
+
 		this.charr= new JLabel();
-		this.charr.setIcon(STANDBY);
+		this.charr.setOpaque(false);
+		this.setCharacter();
 		this.add(this.charr);
 
-		this.setOpaque(true);
 		this.setLoc();
 		this.gamePanel.add(this);
 		this.gamePanel.addMouseListener(new RocketListener());
 
 
-
+		this.setOpaque(false);
 		this.alive = true;
 		this.jumping = false;
 		this.disable();
@@ -56,6 +70,20 @@ public class Character extends MovingObject{
 	//
 	//	Methods
 	//
+	public int getType(){
+		return this.type;
+	}
+
+	public void setCharacter(){
+		if(this.type==1){
+			this.charr.setIcon(PIG_STANDBY);
+		}else if(this.type==2){
+			this.charr.setIcon(DYNA_STANDBY);
+		}else{
+			this.charr.setIcon(LUB_STANDBY);
+		}
+
+	}
 
 	public synchronized void moveRight(){
 		this.movePosition(MOVEMENT, 0);
@@ -162,9 +190,15 @@ public class Character extends MovingObject{
           @Override
           public void mouseReleased(MouseEvent e) {
           	if(enabled){
-               	Rocket r = new Rocket("rocket", new Point(position), e.getPoint(), gamePanel, 0);
+               	Rocket r = new Rocket("rocket", new Point(position), e.getPoint(), gamePanel);
           	}
           }
+     }
+
+     public void changeIcon(Character ch, JLabel icn){
+     	ch.removeAll();
+		ch.add(icn);
+		ch.revalidate();
      }
 
      class Move extends AbstractAction {
@@ -177,8 +211,10 @@ public class Character extends MovingObject{
      		this.moveType = moveType;
      	}
 
+
      	@Override
 		public void actionPerformed(ActionEvent e) {
+			JLabel nIcon = new JLabel();
 			switch(this.moveType){
 				case JUMP:
 					if(jumping)return;
@@ -191,15 +227,25 @@ public class Character extends MovingObject{
 					this.ch.moveDown();
 				break;
 				case LEFT:
-					JLabel nIcon = new JLabel();
-					nIcon.setIcon(WALKLEFT);
-					this.ch.removeAll();
-					this.ch.add(nIcon);
-					this.ch.revalidate();
+					if(this.ch.getType()==1){
+						nIcon.setIcon(PIG_WALKLEFT);
+					}else if(this.ch.getType()==2){
+						nIcon.setIcon(DYNA_WALKLEFT);
+					}else{
+						nIcon.setIcon(LUB_WALKLEFT);
+					}
+					this.ch.changeIcon(this.ch,nIcon);
 					this.ch.moveLeft();
-
 				break;
 				case RIGHT:
+					if(this.ch.getType()==1){
+						nIcon.setIcon(PIG_WALKRIGHT);
+					}else if(this.ch.getType()==2){
+						nIcon.setIcon(DYNA_WALKRIGHT);
+					}else{
+						nIcon.setIcon(LUB_WALKRIGHT);
+					}
+					this.ch.changeIcon(this.ch,nIcon);
 					this.ch.moveRight();
 				break;
 				default:
@@ -207,7 +253,7 @@ public class Character extends MovingObject{
 				break;
 			}
 
-			
+
 		}
 
 

@@ -8,24 +8,29 @@ public class Rocket extends MovingObject{
      //
      //  Attributes
      //
+     private final static Icon ROCKET = new ImageIcon("src/pig/pigStandby.gif");
 
      private Point charPosition;
      private Point cursorPosition;
-     private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
-
+     private  JLabel rocket;
      //
      //  Constructors
      //
 
-     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
-          super(name, charPosition, new Dimension(10, 10), gamePanel);
+     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel){
+          super(name, charPosition, new Dimension(20, 20), gamePanel);
           this.charPosition = charPosition;
-          this.type = type;
           this.trajectory = new ArrayList<Point>();
           this.cursorPosition = cursorPosition;
 
+          this.rocket=new JLabel();
+          this.rocket.setOpaque(false);
+          this.rocket.setIcon(ROCKET);
+          this.add(rocket);
           this.setLoc(charPosition);
+
+          this.setOpaque(false);
           this.gamePanel.add(this);
 
           this.getTrajectory();
