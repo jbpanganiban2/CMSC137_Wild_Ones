@@ -9,6 +9,9 @@ import javax.swing.*;
 
 //   List of things to do
 //        fix turn based game
+//             fix animations
+//             fix collisions
+//             
 //        merge Character to Player Class
 //        create udp server
 //        

@@ -14,8 +14,8 @@ public class Character extends MovingObject{
 	private final static Icon WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
 	private final static Icon WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
-	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
+	private static JLabel charr;
 	static final int JUMP = 0;
 	static final int UP = 1;
 	static final int DOWN = 2;
@@ -26,12 +26,11 @@ public class Character extends MovingObject{
 	private static int movement = 5;
 	private final HashSet<Integer> moves;
 
-
-	private boolean alive;
 	private boolean jumping;
 	private boolean movingRight;
 	private boolean movingLeft;
 	private boolean enabled;
+	private int time;
 	
 	//
 	//	Constructors
@@ -52,14 +51,35 @@ public class Character extends MovingObject{
 		this.charr.setIcon(STANDBY);
 		this.add(charr);
 		
-		this.alive = true;
 		this.jumping = false;
 		this.movingLeft = false;
 		this.movingRight = false;
 		
 		this.disable();
-
 	}
+
+	public Character(Player p, Point init, JPanel gamePanel){
+		super(p.getName(), init, new Dimension(30, 50), gamePanel);
+
+		this.moves = new HashSet<Integer>();
+		this.addKeyBindings();
+
+		this.setLoc();
+		this.gamePanel.add(this);
+		this.gamePanel.addMouseListener(new RocketListener());
+
+		this.charr = new JLabel();
+		this.charr.setOpaque(true);
+		this.charr.setIcon(STANDBY);
+		this.add(charr);
+		
+		this.jumping = false;
+		this.movingLeft = false;
+		this.movingRight = false;
+		
+		this.disable();
+	}
+
 
 	//
 	//	Methods
@@ -99,6 +119,7 @@ public class Character extends MovingObject{
 	}
 	public synchronized void jump(){
 		// thread that continuosly adds then subtracts y values at this position
+		// fix bounds arguments
 		(new Thread(){
 			@Override
 			public void run(){
@@ -106,14 +127,10 @@ public class Character extends MovingObject{
 				movement = 12;
 				int originalY = (int)position.getY(); 
 				while(position.getY() > originalY-200){		// moves upward
-					System.out.print("moving up");
-					System.out.println(position.getY());
 					moveUp(6);
 					try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
 				}
 				while(position.getY() != originalY){		// moves downwards
-					System.out.print("moving down");
-					System.out.println(position.getY());
 					moveDown(6);
 					try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
 				}
@@ -123,8 +140,35 @@ public class Character extends MovingObject{
 		}).start();
 	}
 
+	// 	rise(position, originalY-200);
+	// 			fall(position, originalY);
+	// 			jumping = false;
+	// 			movement = 12;
+	// 		}	
+	// 	}).start();
+	// }
+
+	// public synchronized rise(Point charPosition, int target){
+	// 	while(charPosition.getY() > target){		// moves upward
+	// 		moveUp(6);
+	// 		try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
+	// 	}
+	// }
+
+	// public synchronized fall(Point charPosition, int target){
+	// 	while(charPosition.getY() < target){		// moves downward
+	// 		moveDown(6);
+	// 		try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
+	// 	}
+	// }
+
+
 	public HashSet<Integer> getMoves(){
 		return this.moves;
+	}
+
+	public synchronized int getTimeLeft(){
+		return this.time--;
 	}
 
 	public void addKeyBindings(){
@@ -143,27 +187,33 @@ public class Character extends MovingObject{
 
 	}
 
-	public void disable(){	// disables keybindings for Character
+	public synchronized void disable(){	// disables keybindings for Character
 
 		this.enabled = false;
 		this.getActionMap().get(JUMP).setEnabled(false);
-        	this.getActionMap().get(LEFT0).setEnabled(false);
-        	this.getActionMap().get(LEFT1).setEnabled(false);
-        	this.getActionMap().get(RIGHT0).setEnabled(false);
-        	this.getActionMap().get(RIGHT1).setEnabled(false);
+	  	this.getActionMap().get(LEFT0).setEnabled(false);
+	  	this.getActionMap().get(LEFT1).setEnabled(false);
+	  	this.getActionMap().get(RIGHT0).setEnabled(false);
+	  	this.getActionMap().get(RIGHT1).setEnabled(false);
 
 	}
 
-	public void enable(){	// enables keyBindings for Character
+	public synchronized void enable(){	// enables keyBindings for Character
 
+		this.time = 25;
 		this.enabled = true;
 		this.getActionMap().get(JUMP).setEnabled(true);
-        	this.getActionMap().get(LEFT0).setEnabled(true);
-        	this.getActionMap().get(LEFT1).setEnabled(true);
-        	this.getActionMap().get(RIGHT0).setEnabled(true);        	
-        	this.getActionMap().get(RIGHT1).setEnabled(true);
+	  	this.getActionMap().get(LEFT0).setEnabled(true);
+	  	this.getActionMap().get(LEFT1).setEnabled(true);
+	  	this.getActionMap().get(RIGHT0).setEnabled(true);        	
+	  	this.getActionMap().get(RIGHT1).setEnabled(true);
 
 	}
+
+	public synchronized boolean isEnable(){
+		return this.enabled;
+	}
+
 
 	public synchronized void run(){
 		
@@ -185,10 +235,16 @@ public class Character extends MovingObject{
 		return this.movingRight;
 	}
 
+	private void deployRocket(MouseEvent e){
+		if(this.enabled && this.time != 0){
+          	new Rocket("rocket", this, new Point(this.position), e.getPoint(), this.gamePanel, 0).alwaysOnCollisionChecker(MovingObject.rnc);
+          	this.time = 0;
+     	}
+	}
+
 	//
 	//	Internal Classes
 	//
-
 
 
 	class RocketListener extends MouseAdapter{                  // listens to Rockets
@@ -198,14 +254,12 @@ public class Character extends MovingObject{
           }
 
           @Override
-          public void mouseReleased(MouseEvent e) {
-          	if(enabled){
-               	Rocket r = new Rocket("rocket", new Point(position), e.getPoint(), gamePanel, 0);
-          	}
+          public synchronized void mouseReleased(MouseEvent e) {
+          	deployRocket(e);
           }
      }
 
-     class Move extends AbstractAction {
+     class Move extends AbstractAction {				//	how the character will move
 
      	Character ch;
      	int moveType;
@@ -217,15 +271,14 @@ public class Character extends MovingObject{
 
      	@Override
 		public void actionPerformed(ActionEvent e) {
-			// System.out.println("pressed");
 			switch(this.moveType){
 				case JUMP:
 					if(jumping)return;
 					this.ch.jump();
 				break;
-				case LEFT0:
-					if(this.ch.isMovingLeft())return;
-					this.ch.toggleMovingLeft();	// encounters a false, then
+				case LEFT0:						// when key is pressed, enables the character to move 
+					if(this.ch.isMovingLeft())return;	// when key is ALREADY PRESSED, returns
+					this.ch.toggleMovingLeft();	
 					(new Thread(){
 
 						@Override
@@ -237,7 +290,7 @@ public class Character extends MovingObject{
 						}
 					}).start();
 				break;
-				case LEFT1:
+				case LEFT1:						// removes key's ALREADY PRESSED state
 					this.ch.toggleMovingLeft();
 				break;
 				case RIGHT0:

@@ -21,9 +21,12 @@ public class Game extends JPanel implements Runnable{
 	JPanel gamePanel;
 	JPanel chatPanel;
 
+	ArrayList<Player> players;
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
 	boolean isFinished;
+
+	ChatGameWindow cgw;
 
 	//
 	//	Constructors
@@ -34,9 +37,11 @@ public class Game extends JPanel implements Runnable{
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
+		this.cgw = cgw;
 
+		int i = 0;
 		for(Point p : this.respawns){
-			this.chars.add(new Character("nameu", p, gamePanel));
+			this.chars.add(new Character("nameu"+Integer.toString(i), p, gamePanel));
 		}
 
 		this.isFinished = false;
@@ -78,19 +83,21 @@ public class Game extends JPanel implements Runnable{
 						this.add(new Point(45, 450));
 						this.add(new Point(645, 450));
 						return this;
+
 					}
 				}).addAll();
 	}
 
-	public void run(){
-		int time;
+	public synchronized void run(){
+		this.cgw.getChat().setCharacter(this.chars.get(0));
 		while(!isFinished){
+			int time;
 			for(Character c : this.chars){
-				// play a turn
+				// play a turn -- this will only activate for player
+				new Prompt(c.getUserName()+"'s turn", 500);
 				c.enable();
-				time = 5;
-				while(time-- > 0){
-					// System.out.println(time+" left.");
+				while((time = c.getTimeLeft()) > 0){
+					// System.out.println(time+" left");
 					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
 				}c.endTurn();
 			}
