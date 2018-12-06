@@ -64,10 +64,7 @@ public class Rocket extends MovingObject{
           Point y = null;
           int yVal;
           for(int i = start; i != end; i+=increment ){
-               y = getPositionAtX(i);                                 // sets rocket bounds
-               yVal = (int)y.getY();
-               if(yVal > 550 || yVal < 10)break;
-               this.trajectory.add(y);
+               this.trajectory.add(getPositionAtX(i));
           }
      }
 

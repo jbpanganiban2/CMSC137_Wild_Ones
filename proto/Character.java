@@ -28,6 +28,7 @@ public class Character extends MovingObject{
 	private boolean jumping;
 	private boolean movingRight;
 	private boolean movingLeft;
+	private boolean movingDown;
 	private boolean enabled;
 	private boolean deployedRocket;
 	private int time;
@@ -105,7 +106,6 @@ public class Character extends MovingObject{
 		this.movePosition(-movement, 0);
 	}
 	public synchronized void moveUp(){
-		if(jumping)return;
 
 		// checks first if there will be a collision before moving
 		
@@ -118,7 +118,6 @@ public class Character extends MovingObject{
 		this.movePosition(0, -movement);
 	}
 	public synchronized void moveDown(){
-		if(jumping)return;
 
 		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+movement);
 		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
@@ -134,24 +133,40 @@ public class Character extends MovingObject{
 		(new Thread(){
 			@Override
 			public void run(){
-				// System.out.println("ran Thread");
+				jumping = true;
 				int originalY = (int)position.getY();
 				int target = originalY-100; 
+
 				while(position.getY() > target){							// moves upward
 					if(yCollide)break;
 					
 					try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
 					moveUp();
 				}
-				yCollide = false;
-				while(position.getY() < 550-((int)size.getHeight())){				// moves downwards
-					if(yCollide)break;
-					try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
-					moveDown();
-				}
-				yCollide = false;
+				yCollide = false;					// resets whatever made the jump stop going up
+				jumping = false;
 			}	
 		}).start();
+	}
+
+	public void gravity(){
+		(new Thread(){
+			@Override
+			public synchronized void run(){
+				if(!movingDown && !jumping){
+					movingDown = true;
+					while(position.getY() < 550-((int)size.getHeight())){				// moves downwards
+						if(yCollide)break;
+						try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
+						moveDown();
+						System.out.println("moved down");
+					}
+					yCollide = false;											// resets the jump stopper for next jump attempt
+					movingDown = false;
+				}
+			}
+		}).start();
+	
 	}
 
 	public synchronized void contMoveLeft(){
@@ -317,17 +332,15 @@ public class Character extends MovingObject{
 
      	@Override
 		public void actionPerformed(ActionEvent e) {
+			gravity();
 			switch(this.moveType){
-				case JUMP0:
-
-					if(jumping)return;
-					jumping = true;
+				case JUMP0:						// space pressed
+					if(jumping || this.ch.isMovingLeft() || this.ch.isMovingRight())return;
 					this.ch.jump();
 				break;
 
-				case JUMP1:
-
-					jumping = false;
+				case JUMP1:						// space released
+					this.ch.gravity();
 				break;
 
 				case LEFT0:						// when key is pressed, enables the character to move 
@@ -339,9 +352,9 @@ public class Character extends MovingObject{
 				break;
 
 				case LEFT1:						// removes key's ALREADY PRESSED state
-
 					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingLeft();
+					this.ch.gravity();
 				break;
 
 				case RIGHT0:
@@ -353,9 +366,9 @@ public class Character extends MovingObject{
 				break;
 
 				case RIGHT1:
-
 					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingRight();
+					this.ch.gravity();
 				break;
 
 				default:

@@ -107,7 +107,7 @@ public class Game extends JPanel implements Runnable{
 				// play a turn -- this will only activate for player
 				if(c.isAlive()){
 					alive += 1;
-					new Prompt(c.getUserName()+"'s turn", 1000);
+					new Prompt(c.getUserName()+"'s turn", 750);
 					c.enable();
 					while((time = c.getTimeLeft()) > 0){
 						// System.out.println(time+" left");
@@ -117,9 +117,7 @@ public class Game extends JPanel implements Runnable{
 			}
 			if(alive == 1)isFinished = true;
 		}
-		for(Character c : this.chars){
-			if(c.isAlive())System.out.println(c.getObjName()+" won.");
-		}
+		System.out.println("game is done.");
 	}
 
 	public void deploy(){
