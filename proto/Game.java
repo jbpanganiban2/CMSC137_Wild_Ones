@@ -23,6 +23,7 @@ public class Game extends JPanel implements Runnable{
 
 	ArrayList<Player> players;
 	ArrayList<Character> chars;
+	ArrayList<Obstacles> obstacles;
 	ArrayList<Point> respawns;
 	boolean isFinished;
 
@@ -38,6 +39,7 @@ public class Game extends JPanel implements Runnable{
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
 		this.cgw = cgw;
+		this.obstacles = new ArrayList<Obstacles>();
 
 		int i = 0;
 		for(Point p : this.respawns){
@@ -51,13 +53,20 @@ public class Game extends JPanel implements Runnable{
 
 	public void createGame(){
 															//background
-		ImageIcon icon = new ImageIcon("./src/LobbyBG.png"); 
+		ImageIcon icon = new ImageIcon("./src/GAMEBG.png"); 
 		Image newimg = icon.getImage().getScaledInstance(730, 550,  java.awt.Image.SCALE_SMOOTH);
 		ImageIcon newIcon = new ImageIcon(newimg);
 
 		gamePanel.setLayout(null); 								//set layout to null so character can be anywhere
 		gamePanel.setOpaque(false); 
 		gamePanel.setPreferredSize(new Dimension(730,550));
+
+		for (int i=1;i<22 ;i++ ) {
+			Obstacles obs = new Obstacles(i);
+			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+			gamePanel.add(obs);
+			obstacles.add(obs);
+		}
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
 		bg.setPreferredSize(new Dimension(730,550));
