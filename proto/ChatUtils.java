@@ -163,7 +163,7 @@ public class ChatUtils{
                                    break;
                                    case PLAYER_LIST:                                           // if packetType is PLAYER_LIST
                                         System.out.println("player list packet received");
-                                        // PLPacket r = new PLPacket(received);
+                                        PLPacket r = new PLPacket(received);
                                         // System.out.println();
                                         // int newPcount = r.getPlayerCount();
                                         // System.out.println(newPcount + " > " + oldPlayerCount);

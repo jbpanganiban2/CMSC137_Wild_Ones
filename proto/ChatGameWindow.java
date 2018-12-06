@@ -84,7 +84,7 @@ public class ChatGameWindow extends JFrame{
 
           this.game = new Game(this);
 
-          this.chat = new Chat(this.server,  this.user.getName());
+          this.chat = this.lobby.getChat();
           this.chat.setPreferredSize(new Dimension(730,150));
 
           this.cardPanel.setOpaque(false); 

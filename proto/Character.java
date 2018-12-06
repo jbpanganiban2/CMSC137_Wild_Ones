@@ -26,34 +26,47 @@ public class Character extends MovingObject{
 
 	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
-	static final int JUMP = 0;
-	static final int UP = 1;
-	static final int DOWN = 2;
-	static final int LEFT = 3;
-	static final int RIGHT = 4;
-	private static final int MOVEMENT = 5;
-	private final HashSet<Integer> moves;
-	private boolean alive;
+
+	private JLabel charr;
+	static final int JUMP0 = 01;
+	static final int JUMP1 = 02;
+	static final int LEFT0 = 30;	// pressed
+	static final int LEFT1 = 31;	// released
+	static final int RIGHT0 = 40;
+	static final int RIGHT1 = 41;
+	private static int movement = 3;
+
+	private int health;
 	private boolean jumping;
+	private boolean movingRight;
+	private boolean movingLeft;
+	private boolean movingDown;
 	private boolean enabled;
-	private int type;
+	private boolean deployedRocket;
+	private int time;
+	private boolean xCollide;
+	private boolean yCollide;
+
 	
 	//
 	//	Constructors
 	//
 
-	public Character(String name, Point init, JPanel gamePanel, int type){
-		super(name, init, new Dimension(48, 50), gamePanel);
 
-		this.moves = new HashSet<Integer>();
+	public Character(String name, Point init, Game g){
+		super(name, init, new Dimension(30, 50), g);
+		this.initchar();
+	}
+
+	public Character(Player p, Point init, Game g){
+		super(p.getName(), init, new Dimension(30, 50), g);
+		this.initchar();
+		
+	}
+
+	private void initchar(){
 		this.addKeyBindings();
 
-		this.type = type;
-
-		this.charr= new JLabel();
-		this.charr.setOpaque(false);
-		this.setCharacter();
-		this.add(this.charr);
 
 		this.setLoc();
 		this.gamePanel.add(this);
@@ -63,8 +76,14 @@ public class Character extends MovingObject{
 		this.setOpaque(false);
 		this.alive = true;
 		this.jumping = false;
-		this.disable();
 
+		this.movingLeft = false;
+		this.movingRight = false;
+		this.health = 10;
+		
+		this.setOpaque(false);
+
+		this.disable();
 	}
 
 	//
@@ -86,24 +105,49 @@ public class Character extends MovingObject{
 	}
 
 	public synchronized void moveRight(){
-		this.movePosition(MOVEMENT, 0);
+
+		Point test = new Point((int)this.position.getX()+movement, ((int)this.position.getY()));
+		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+			this.xCollide = true;
+			return;
+		}
+
+		this.movePosition(movement, 0);
 	}
+
 	public synchronized void moveLeft(){
-		this.movePosition(-MOVEMENT, 0);
+		Point test = new Point((int)this.position.getX()-movement, ((int)this.position.getY()));
+		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+			this.xCollide = true;
+			return;
+		}
+
+		this.movePosition(-movement, 0);
 	}
 	public synchronized void moveUp(){
-		if(jumping)return;
-		this.movePosition(0, -MOVEMENT);
-	}
-	public synchronized void moveUp(int i){
-		this.movePosition(0, -i);
+
+		// checks first if there will be a collision before moving
+		
+		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())-movement);
+		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+			this.yCollide = true;
+			return;
+		}
+
+		this.movePosition(0, -movement);
+
 	}
 	public synchronized void moveDown(){
-		if(jumping)return;
-		this.movePosition(0, MOVEMENT);
-	}
-	public synchronized void moveDown(int i){
-		this.movePosition(0, i);
+
+
+		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+movement);
+		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+			this.yCollide = true;
+			return;
+		}
+
+		this.movePosition(0, movement);
+
 	}
 	public synchronized void jump(){
 		// thread that continuosly adds then subtracts y values at this position
@@ -111,69 +155,175 @@ public class Character extends MovingObject{
 			@Override
 			public void run(){
 				jumping = true;
-				int originalY = (int)position.getY(); 
-				while(position.getY() > originalY-200){		// moves upward
-					try{Thread.sleep(25);}catch(Exception e){e.printStackTrace();};
-					System.out.print("moving up");
-					System.out.println(position.getY());
-					moveUp(5);
+
+				int originalY = (int)position.getY();
+				int target = originalY-100; 
+
+				while(position.getY() > target){							// moves upward
+					if(yCollide)break;
+					
+					try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
+					moveUp();
+
 				}
-				while(position.getY() != originalY){		// moves downwards
-					try{Thread.sleep(25);}catch(Exception e){e.printStackTrace();};
-					System.out.print("moving down");
-					System.out.println(position.getY());
-					moveDown(5);
-				}
+				yCollide = false;					// resets whatever made the jump stop going up
 				jumping = false;
 			}	
 		}).start();
 	}
 
-	public HashSet<Integer> getMoves(){
-		return this.moves;
+
+	public void gravity(){
+		(new Thread(){
+			@Override
+			public synchronized void run(){
+				if(!movingDown && !jumping){
+					movingDown = true;
+					while(position.getY() < 550-((int)size.getHeight())){				// moves downwards
+						if(yCollide)break;
+						try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
+						moveDown();
+						System.out.println("moved down");
+					}
+					yCollide = false;											// resets the jump stopper for next jump attempt
+					movingDown = false;
+				}
+			}
+		}).start();
+	
+	}
+
+	public synchronized void contMoveLeft(){
+		(new Thread(){
+
+			@Override
+			public void run(){
+				while(isMovingLeft()){
+					if(xCollide)break;
+					try{Thread.sleep(25);}catch(Exception exc){exc.printStackTrace();};
+					moveLeft();
+				}
+				xCollide = false;
+			}
+		}).start();
+	}
+
+	public synchronized void contMoveRight(){
+		(new Thread(){
+			@Override
+			public void run(){
+				while(isMovingRight()){
+					if(xCollide)break;
+					try{Thread.sleep(25);}catch(Exception exc){exc.printStackTrace();};
+					moveRight();
+				}
+				xCollide = false;
+			}
+		}).start();
+
 	}
 
 	public void addKeyBindings(){
 
-		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("SPACE"), JUMP);
-		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("W"), UP);
-		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("S"), DOWN);
-		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("A"), LEFT);
-		this.getInputMap(IFW).put(KeyStroke.getKeyStroke("D"), RIGHT);
 
-		this.getActionMap().put(JUMP, new Move(this, JUMP));
-		this.getActionMap().put(UP, new Move(this, UP));
-        	this.getActionMap().put(DOWN, new Move(this, DOWN));
-        	this.getActionMap().put(LEFT, new Move(this, LEFT));
-        	this.getActionMap().put(RIGHT, new Move(this, RIGHT));
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), JUMP0);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true), JUMP1);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, false), LEFT0);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, true), LEFT1);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D,0,false), RIGHT0);
+		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D,0,true), RIGHT1);
+
+		this.getActionMap().put(JUMP0, new Move(this, JUMP0));
+		this.getActionMap().put(JUMP1, new Move(this, JUMP1));		
+        	this.getActionMap().put(LEFT0, new Move(this, LEFT0));
+        	this.getActionMap().put(LEFT1, new Move(this, LEFT1));
+        	this.getActionMap().put(RIGHT0, new Move(this, RIGHT0));
+        	this.getActionMap().put(RIGHT1, new Move(this, RIGHT1));
+
 
 	}
 
 	public void disable(){	// disables keybindings for Character
 
 		this.enabled = false;
-		this.getActionMap().get(JUMP).setEnabled(false);
-		this.getActionMap().get(UP).setEnabled(false);
-        	this.getActionMap().get(DOWN).setEnabled(false);
-        	this.getActionMap().get(LEFT).setEnabled(false);
-        	this.getActionMap().get(RIGHT).setEnabled(false);
+	  	this.getActionMap().get(JUMP0).setEnabled(false);
+	  	this.getActionMap().get(JUMP1).setEnabled(false);
+	  	this.getActionMap().get(LEFT0).setEnabled(false);
+	  	this.getActionMap().get(LEFT1).setEnabled(false);
+	  	this.getActionMap().get(RIGHT0).setEnabled(false);
+	  	this.getActionMap().get(RIGHT1).setEnabled(false);
+
 
 	}
 
 	public void enable(){	// enables keyBindings for Character
 
 		this.enabled = true;
-		this.getActionMap().get(JUMP).setEnabled(true);
-		this.getActionMap().get(UP).setEnabled(true);
-        	this.getActionMap().get(DOWN).setEnabled(true);
-        	this.getActionMap().get(LEFT).setEnabled(true);
-        	this.getActionMap().get(RIGHT).setEnabled(true);
+		this.deployedRocket = false;
+	  	this.getActionMap().get(JUMP0).setEnabled(true);
+	  	this.getActionMap().get(JUMP1).setEnabled(true);
+	  	this.getActionMap().get(LEFT0).setEnabled(true);
+	  	this.getActionMap().get(LEFT1).setEnabled(true);
+	  	this.getActionMap().get(RIGHT0).setEnabled(true);        	
+	  	this.getActionMap().get(RIGHT1).setEnabled(true);
 
 	}
+
+	
 
 	public synchronized void run(){
 		
 	}
+
+
+	private synchronized void toggleMovingLeft(){
+		this.movingLeft = !this.movingLeft;
+	}
+
+	private boolean isMovingLeft(){
+		return this.movingLeft;
+	}
+
+	private synchronized void toggleMovingRight(){
+		this.movingRight = !this.movingRight;
+	}
+
+	private boolean isMovingRight(){
+		return this.movingRight;
+	}
+
+	private void deployRocket(MouseEvent e){
+
+		if(this.enabled && this.time != 0 && !this.deployedRocket){
+          	new Rocket("rocket", this, new Point(this.position), e.getPoint(), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+          	// this.time = 0;
+     		this.deployedRocket = true;
+     	}
+	}
+
+	public void setTimeZero(){
+		this.time = 0;
+	}
+
+	private static int rng(int max, int min){	// produces a random number between [max, min]
+		return (new Random()).nextInt((max - min) + 1) + min;
+	}
+
+	public synchronized void damaged(){
+		int dmg = rng(10,1);
+		System.out.println(this.name+" damaged by "+Integer.toString(dmg));
+		this.health -= dmg;
+		if(this.health <= 0){
+			System.out.println(this.name+" is now dead.");
+			this.alive = false;
+			this.g.getGameObjects().remove(this);
+			this.g.getGamePanel().remove(this);
+			this.setVisible(false);
+			this.g.getGamePanel().invalidate();
+			this.g.getGamePanel().validate();
+		}
+	}
+
 
 	//
 	//	Internal Classes
@@ -214,19 +364,21 @@ public class Character extends MovingObject{
 
      	@Override
 		public void actionPerformed(ActionEvent e) {
+			gravity();
 			JLabel nIcon = new JLabel();
 			switch(this.moveType){
-				case JUMP:
-					if(jumping)return;
+				case JUMP0:						// space pressed
+					if(jumping || this.ch.isMovingLeft() || this.ch.isMovingRight())return;
 					this.ch.jump();
 				break;
-				case UP:
-					this.ch.moveUp();
+
+				case JUMP1:						// space released
+					this.ch.gravity();
 				break;
-				case DOWN:
-					this.ch.moveDown();
-				break;
-				case LEFT:
+
+				case LEFT0:						// when key is pressed, enables the character to move 
+
+					if(this.ch.isMovingLeft())return;	// when key is ALREADY PRESSED, returns
 					if(this.ch.getType()==1){
 						nIcon.setIcon(PIG_WALKLEFT);
 					}else if(this.ch.getType()==2){
@@ -235,9 +387,18 @@ public class Character extends MovingObject{
 						nIcon.setIcon(LUB_WALKLEFT);
 					}
 					this.ch.changeIcon(this.ch,nIcon);
-					this.ch.moveLeft();
+					this.ch.toggleMovingLeft();	
+					this.ch.contMoveLeft();
 				break;
-				case RIGHT:
+
+				case LEFT1:						// removes key's ALREADY PRESSED state
+					this.ch.toggleMovingLeft();
+					this.ch.gravity();
+				break;
+
+				case RIGHT0:
+
+					if(this.ch.isMovingRight())return;
 					if(this.ch.getType()==1){
 						nIcon.setIcon(PIG_WALKRIGHT);
 					}else if(this.ch.getType()==2){
@@ -246,8 +407,16 @@ public class Character extends MovingObject{
 						nIcon.setIcon(LUB_WALKRIGHT);
 					}
 					this.ch.changeIcon(this.ch,nIcon);
-					this.ch.moveRight();
+					this.ch.toggleMovingRight();	
+					this.ch.contMoveRight();
 				break;
+
+				case RIGHT1:
+					this.ch.toggleMovingRight();
+					this.ch.gravity();
+
+				break;
+
 				default:
 
 				break;
