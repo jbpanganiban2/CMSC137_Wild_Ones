@@ -34,7 +34,7 @@ public class Game extends JPanel{
 
 	public void createGame(){
 															//background
-		ImageIcon icon = new ImageIcon("./src/LobbyBG.png"); 
+		ImageIcon icon = new ImageIcon("./src/GAMEBG.png"); 
 		Image newimg = icon.getImage().getScaledInstance(730, 550,  java.awt.Image.SCALE_SMOOTH);
 		ImageIcon newIcon = new ImageIcon(newimg);
 
