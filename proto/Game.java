@@ -43,7 +43,7 @@ public class Game extends JPanel implements Runnable{
 
 		int i = 0;
 		for(Point p : this.respawns){
-			this.chars.add(new Character("nameu"+Integer.toString(i), p, this));
+			this.chars.add(new Character("nameu"+Integer.toString(i++), p, this));
 		}
 
 		this.isFinished = false;
@@ -89,7 +89,7 @@ public class Game extends JPanel implements Runnable{
 					ArrayList<Point> addAll(){
 						this.add(new Point(160, 10));
 						this.add(new Point(626, 104));
-						this.add(new Point(97, 166));
+						this.add(new Point(97, 146));
 						this.add(new Point(549, 361));
 						this.add(new Point(33, 416));
 						return this;
@@ -102,15 +102,23 @@ public class Game extends JPanel implements Runnable{
 		this.cgw.getChat().setCharacter(this.chars.get(0));
 		while(!isFinished){
 			int time;
+			int alive = 0;
 			for(Character c : this.chars){
 				// play a turn -- this will only activate for player
-				new Prompt(c.getUserName()+"'s turn", 1000);
-				c.enable();
-				while((time = c.getTimeLeft()) > 0){
-					// System.out.println(time+" left");
-					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
-				}c.endTurn();
+				if(c.isAlive()){
+					alive += 1;
+					new Prompt(c.getUserName()+"'s turn", 1000);
+					c.enable();
+					while((time = c.getTimeLeft()) > 0){
+						// System.out.println(time+" left");
+						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
+					}c.endTurn();
+				}
 			}
+			if(alive == 1)isFinished = true;
+		}
+		for(Character c : this.chars){
+			if(c.isAlive())System.out.println(c.getObjName()+" won.");
 		}
 	}
 

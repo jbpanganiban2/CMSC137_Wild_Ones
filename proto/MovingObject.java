@@ -38,6 +38,7 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
           this.setPreferredSize(this.size); 
           this.alive = true;
           this.collided = false;
+
           
           this.setOpaque(true);
           this.g = g;
@@ -69,34 +70,62 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
      }
 
      public synchronized GameObject hasCollision(ArrayList<GameObject> m){     // returns the GameObject collided with, else returns null
-          for(GameObject o : m){
-               if(o instanceof MovingObject){
-                    MovingObject mo = (MovingObject)o;
-                    if(this.intersects(mo)){
-                         /*
-                              invoke some things
-                          */
-                         return mo;
+          try{
+               for(GameObject o : m){
+                    if(o instanceof MovingObject){
+                         MovingObject mo = (MovingObject)o;
+                         if(this.intersects(mo) && !mo.equals(this)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }else if(o instanceof Obstacles){
+                         Obstacles mo = (Obstacles)o;
+                         if(this.intersects(mo)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
                     }
-               }else if(o instanceof Obstacles){
-                    Obstacles mo = (Obstacles)o;
-                    if(this.intersects(mo)){
-                         /*
-                              invoke some things
-                          */
-                         System.out.println("intersects with obs");
-                         return mo;
+               }return null;
+          }catch(Exception e){}
+          return null;
+     }
+     
+     public synchronized GameObject hasCollision(Rectangle test, ArrayList<GameObject> m){     // returns the GameObject collided with, else returns null
+          try{
+               for(GameObject o : m){
+                    if(o instanceof MovingObject){
+                         MovingObject mo = (MovingObject)o;
+                         if(test.intersects(mo.getRectangle()) && !mo.equals(this)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }else if(o instanceof Obstacles){
+                         Obstacles mo = (Obstacles)o;
+                         if(test.intersects(mo.getRectangle())){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
                     }
-               }
-          }return null;
+               }return null;
+          }catch(Exception e){}
+          return null;
      }
 
+
      public void hasCollided(MovingObject m){                  // main method that will do something with both the collided objects
-          System.out.println(this.name+" kaboomed with "+m.getObjName());
+          // System.out.println(this.name+" kaboomed with "+m.getObjName());
      }
 
      public void hasCollided(Obstacles m){                  // main method that will do something with both the collided objects
-          System.out.println(this.name+" hit an obstacle");
+          // System.out.println(this.name+" hit an obstacle");
           this.collided = true;
      }
 
@@ -117,7 +146,6 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
                     }
                }
           }).start();
-
      }
 
      public synchronized boolean isAlive(){

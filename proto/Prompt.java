@@ -10,6 +10,7 @@ public class Prompt extends JFrame{
           this.setFocusable(false);
           this.setLayout(new FlowLayout());
           this.add(new JLabel(s));
+          System.out.println(s);
           this.setDefaultCloseOperation(0);
           this.setSize(new Dimension(s.length()*10,25));
           (new Thread(){

@@ -61,8 +61,13 @@ public class Rocket extends MovingObject{
                return;
           }
 
+          Point y = null;
+          int yVal;
           for(int i = start; i != end; i+=increment ){
-               this.trajectory.add(getPositionAtX(i));
+               y = getPositionAtX(i);                                 // sets rocket bounds
+               yVal = (int)y.getY();
+               if(yVal > 550 || yVal < 10)break;
+               this.trajectory.add(y);
           }
      }
 
@@ -115,7 +120,8 @@ public class Rocket extends MovingObject{
           // explosion animation
           this.alive = false;
           this.collided = true;
-          ((Character)m).damaged();
+          if(m instanceof Character)
+               ((Character)m).damaged();
      }
 
      @Override
@@ -134,6 +140,7 @@ public class Rocket extends MovingObject{
                }
                
           }
+          this.g.getGameObjects().remove(this);
           this.c.setTimeZero();
           setVisible(false);
      }
