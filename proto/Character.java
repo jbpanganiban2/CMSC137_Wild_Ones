@@ -27,7 +27,6 @@ public class Character extends MovingObject{
 	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 
-	private JLabel charr;
 	static final int JUMP0 = 01;
 	static final int JUMP1 = 02;
 	static final int LEFT0 = 30;	// pressed

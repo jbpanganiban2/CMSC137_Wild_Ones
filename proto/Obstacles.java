@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Obstacles extends JPanel{
+public class Obstacles extends JPanel implements GameObject{
 	int block;
 	int xPos;
 	int yPos;

@@ -1,13 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 //
 //   MovingObject
 //        a general class that is extended by all components to be rendered in-game
 //
 
-public class MovingObject extends JPanel implements Runnable{
+public class MovingObject extends JPanel implements Runnable, GameObject{
 
      //
      //   Attributes
@@ -16,8 +17,10 @@ public class MovingObject extends JPanel implements Runnable{
      protected JPanel gamePanel;
      protected Point position;
      protected Dimension size;
-     protected Rectangle rect;
+
      protected String name;
+     protected boolean alive;
+     protected boolean collided;
 
      //
      //   Constructors
