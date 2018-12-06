@@ -9,7 +9,11 @@ public class Character extends MovingObject{
 	//
 	//	Attributes
 	//
-
+	private final static Icon ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+	private final static Icon STANDBY = new ImageIcon("src/pig/pigStandby.gif");
+	private final static Icon WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
+	private final static Icon WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
+	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 	static final int JUMP = 0;
 	static final int UP = 1;
@@ -40,6 +44,7 @@ public class Character extends MovingObject{
 		this.alive = true;
 		this.jumping = false;
 		this.disable();
+
 	}
 
 	//
@@ -139,6 +144,8 @@ public class Character extends MovingObject{
 	//
 	//	Internal Classes
 	//
+
+
 
 	class RocketListener extends MouseAdapter{                  // listens to Rockets
 

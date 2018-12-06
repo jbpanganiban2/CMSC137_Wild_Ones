@@ -82,6 +82,19 @@ public class MainGUI{
           }
      }
 
+     static class hostCharMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon hostIcon = new ImageIcon("./src/HOSTHOVER.png");
+               host.setIcon(hostIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon hostIcon = new ImageIcon("./src/HOST.png");
+               host.setIcon(hostIcon);
+          }
+     }
+
      static class hostChar implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
@@ -90,6 +103,20 @@ public class MainGUI{
 
                ChatGameWindow window = new ChatGameWindow(mainFrame, name.getText());
                mainFrame.setVisible(false);
+          }
+
+     }
+
+     static class clientCharMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon clientIcon = new ImageIcon("./src/CLIENTHOVER.png");
+               client.setIcon(clientIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon clientIcon = new ImageIcon("./src/CLIENT.png");
+               client.setIcon(clientIcon);
           }
      }
 
@@ -140,6 +167,7 @@ public class MainGUI{
           host.setContentAreaFilled(false);
           host.setBorderPainted(false);
           host.setIcon(hostIcon);
+          host.addMouseListener(new hostCharMouse());
           host.addActionListener(new hostChar());
           return host;
      }
@@ -153,6 +181,7 @@ public class MainGUI{
           client.setBorderPainted(false);
           client.setIcon(clientIcon);
           client.addActionListener(new clientChar());
+          client.addMouseListener(new clientCharMouse());
           return client;
      }
 
