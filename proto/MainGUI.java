@@ -8,14 +8,8 @@ import javax.swing.*;
 //
 
 //   List of things to do
-//        finish collision with obstacles
-//             character collision with each other
-//                  with obstacles
-//             rocket collision with obstacles
+//        fix turn based game
 //        merge Character to Player Class
-//             get player list and successfully import it in Game
-//             merge login player to one player in game player list
-//             merge l
 //        create udp server
 //        
 //        
@@ -27,7 +21,6 @@ public class MainGUI{
      private static JButton host;
      private static JButton client;
      private static JPanel container;
-
 
      MainGUI(){
           mainFrame = new JFrame("Wild Ones");
@@ -219,6 +212,7 @@ public class MainGUI{
           lobby_id_area.requestFocus();
           return lobby_id_area;
      }
+
 
      //
      //   Main Method
