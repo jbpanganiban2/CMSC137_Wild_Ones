@@ -1,11 +1,7 @@
 /**
 Author: Aaron Magnaye,  Antonette Porca, Joshua Panganiban
-Subject: CMSC 137 Protobuf Milestone
-Description: Main Class that runs the whole chatting system
-  -- this will most probably moved to a class that would work like this
-    ChatSystem c = new ChatSystem();
-    c.start();
-    ^-- still unsure about this
+Subject: CMSC 137
+Description: Class that runs the whole chatting system
 **/
 
 import proto.*;
@@ -19,6 +15,7 @@ public class ChatUtils{
      public static CLPacket createLobbyPacketReceived = null;
      public static ConnectPacket connectPacketReceived = null;
      public static boolean lobbyfull = false;
+     public static boolean ldne = false;
      public static boolean chatting = false;
      public static Player[] online = null;
      public static int oldPlayerCount = 0;
@@ -176,6 +173,7 @@ public class ChatUtils{
                                    break;
                                    case ERR_LDNE:                                              // if packetType is ERR_LDNE                                        
                                         System.out.println("\nERROR: LOBBY DOES NOT EXIST");
+                                        ldne = true;
                                    break;
                                    case ERR_LFULL:                                             // if packetType is ERR_LFULL
                                         System.out.println("\nERROR: LOBBY FULL");
@@ -198,7 +196,7 @@ public class ChatUtils{
           thread.start();       
      }
 
-     public static void chatNow(Socket server, Player user, String lobby_id){
+     public static void chatNow(Socket server, Player user, String lobby_id){               
 
           ConnectPacket c = new ConnectPacket(user,lobby_id);                                  // packet to be sent to the server
           ConnectToLobby(server,c);
@@ -227,7 +225,8 @@ public class ChatUtils{
           // clear();
      }
 
-     public static void chatNowGUI(Socket server, Player user, String lobby_id){               // function that ensures the user is connected to the chat server
+     public static boolean chatNowGUI(Socket server, Player user, String lobby_id){               // function that ensures the user is connected to the chat server
+          // returns false if not connected
 
           ConnectPacket c = new ConnectPacket(user,lobby_id);                                  // packet to be sent to the server
           ConnectToLobby(server,c);
@@ -235,17 +234,38 @@ public class ChatUtils{
           
           while(connectPacketReceived == null){                                                // waits for a connectpacket from the server, that confirms that the user is already connected
                System.out.print("\0");
-               if(lobbyfull)return;
+               if(lobbyfull){
+                    lobbyfull = false;
+                    return false;
+               }if(ldne){     // lobby does not exist
+                    ldne = false;
+                    return false;
+               }
           }
           chatting = true;
 
           System.out.println("Success! Connected to lobby "+lobby_id);
           System.out.println("You may now chat.");
+
+          return true;
      }
 
      public static void invokeDisconnect(Socket server, Player user){                          // function that disconnects the user from the chat server
           System.out.println("Disconnecting to lobby...");
+          
           chatting = false;
+          resetPackets();
           disconnect(server, new DCPacket(user));
+
+     }
+
+     private static void resetPackets(){
+          createLobbyPacketReceived = null;
+          connectPacketReceived = null;
+          lobbyfull = false;
+          ldne = false;
+          chatting = false;
+          online = null;
+          oldPlayerCount = 0;
      }
 }

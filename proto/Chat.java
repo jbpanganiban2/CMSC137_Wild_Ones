@@ -27,7 +27,7 @@ public class Chat extends JPanel{
     //  CONSTRUCTORS
     //
 
-    Chat(Socket s,String pu){
+    Chat(Socket s, String pu){
         
         createChat(s, pu);
     }
@@ -90,7 +90,7 @@ public class Chat extends JPanel{
         JTextArea chatBox = new JTextArea();
         chatBox.setEditable(false);
         chatBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
-        chatBox.setOpaque(true);
+        chatBox.setOpaque(false);
         chatBox.setLineWrap(true);
         chatBox.setFont(new Font("Serif", Font.PLAIN, 15));
         return chatBox;

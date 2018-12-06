@@ -8,109 +8,139 @@ import java.io.*;
 import java.util.Scanner;
 
 
-public class Lobby{
+public class Lobby extends JPanel{
 
      //
      // ATTRIBUTES
      //
 
      // gui components
+     Image newimg;
      ImageIcon startIcon;
+     ImageIcon exitIcon;
      ImageIcon icon;
      ImageIcon newIcon;
-     Image newimg;
-     JFrame lobbyFrame;
-     JButton start;
-     JPanel top;
-     GridBagConstraints right;
      ImagePanel bg;
 
+     ChatGameWindow cgw;
+     JPanel top;
+     JPanel mainPanel;
+     static JButton start;
+     static JButton exit;
+     CardLayout cardLayout;
+
+     GridBagConstraints left;
+     GridBagConstraints right;
+
+     // chat needed Components
      Chat chat;
+     Socket server;
+     Player user;
+     boolean connected = false;
+
+
 
      //
      //  CONSTRUCTORS
      //
 
-     Lobby(String username){
-          createLobby(username);
+     Lobby(ChatGameWindow cgw){                                                              //   host constructor
+          
+          this.cgw = cgw;
+
+          this.mainPanel = cgw.getCardPanel();
+          this.cardLayout = (CardLayout)this.mainPanel.getLayout();
+
+          this.server = cgw.getServer();
+          this.user = cgw.getUser();
+          
+          createLobby();
      }
 
-     Lobby(String username, String lobby_Id){
-          connectToLobby(username, lobby_Id);
+     Lobby(ChatGameWindow cgw, String lobby_Id){                                             //   client constructor
+
+          this.cgw = cgw;
+          
+          this.mainPanel = cgw.getCardPanel();
+          this.cardLayout = (CardLayout)this.mainPanel.getLayout();
+
+          this.server = cgw.getServer();
+          this.user = cgw.getUser();
+
+          connectToLobby(lobby_Id);
      }
 
-     public void createLobby(String username) {
-
-          try{                                                                            // initializes the ChatLobby
-               String serverName = "202.92.144.45";
-               int port = 80;
-               Socket server = new Socket(serverName, port);
-
-               this.initUIComponents(server, username);                                   // initializes all ui components
+     public void createLobby() {
                                                    
-               String lobby_id = null;
-               Player user = new Player(username);
-               ChatUtils.listenToServer(server, user);
+          String lobby_id = null;
+          ChatUtils.listenToServer(server, user);
 
-               CLPacket clpacket = new CLPacket(4);
-               System.out.println("Waiting for server response(clpacket)");
-               ChatUtils.CreateNewLobby(server,clpacket);
-               while(ChatUtils.createLobbyPacketReceived == null)                         // waiting to receive createlobbypacket
-               System.out.print("\0");  
-               clpacket = ChatUtils.createLobbyPacketReceived;
-               ChatUtils.createLobbyPacketReceived = null;
+          CLPacket clpacket = new CLPacket(4);
+          System.out.println("Waiting for server response(clpacket)");
+          ChatUtils.CreateNewLobby(server,clpacket);
+          while(ChatUtils.createLobbyPacketReceived == null)System.out.print("\0");                      // waiting to receive packet  
+          clpacket = ChatUtils.createLobbyPacketReceived;
+          ChatUtils.createLobbyPacketReceived = null;
 
-               if(clpacket != null){
-                    lobby_id = clpacket.getLobbyId();
+          
+          if(clpacket != null){    // if there is no clpacket received
+               lobby_id = clpacket.getLobbyId();
 
-                    if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
-                         ChatUtils.setChat(this.chat);
-                         ChatUtils.chatNowGUI(server,user,lobby_id);
+               if(!lobby_id.equals("You are not part of any lobby.")){     
 
-                         // while(ChatUtils.chatting == true){System.out.print("\0");}
-
-                         // invokeDisconnect(server, user);
-
-                         }else System.out.println("Error: "+lobby_id);
-
-               }else System.out.println("LobbyId not received properly.");
-
-
-          }catch(Exception e){
-               e.printStackTrace();
-          }
-
-     }
-
-     public void connectToLobby(String username, String lobby_id){
-          try{
-               String serverName = "202.92.144.45";
-               int port = 80;
-               Socket server = new Socket(serverName, port); 
-                                                                                          // initializes the ChatLobby
-               this.initUIComponents(server, username);
-               Player user = new Player(username);
-               ChatUtils.listenToServer(server, user);                                   // initializes all ui components
-
-               if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
                     ChatUtils.setChat(this.chat);
-                    ChatUtils.chatNowGUI(server,user,lobby_id);
 
-                    // while(ChatUtils.chatting == true){System.out.print("\0");}
+                    boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
+                    if(!connected){
+                         // create prompt that shows error
+                         return;
+                    }this.connected = true;
 
-                    // invokeDisconnect(server, user);
+               }else{
+                    System.out.println("Error: "+lobby_id);
+               }
 
-               }else System.out.println("Error: "+lobby_id);
+          }else System.out.println("LobbyId not received properly.");
 
-          }catch(Exception e){
-               e.printStackTrace();
-          }
+          this.initUIComponents();                                                       //   initializes all ui components
+
+
      }
+
+     public void connectToLobby(String lobby_id){
+
+          ChatUtils.listenToServer(server, user);                               // initializes all ui components
+
+          if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
+               
+               ChatUtils.setChat(this.chat);
+               
+               boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
+               
+               System.out.println(connected);
+               if(!connected){
+                         // create prompt that shows error
+                         return;
+               }this.connected = true;
+
+          }else System.out.println("Error: "+lobby_id);
+
+          this.initUIComponents();
+     }
+
+     //
+     //   Methods
+     //
+
+     public boolean connected(){
+          return this.connected;
+     }
+
 
      //
      //  INTERNAL CLASSES
      //
-
+     
      class ImagePanel extends JPanel {
 
           private Image img;
@@ -129,40 +159,104 @@ public class Lobby{
           }
      }
 
+     class startGame implements ActionListener {
+          @Override
+          public void actionPerformed(ActionEvent event) {
+               cardLayout.next(mainPanel);
+               cgw.getGame().deploy();
+          }
+     }
+
+     static class startMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon startIcon = new ImageIcon("./src/STARTHOVER.png");
+               start.setIcon(startIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon startIcon = new ImageIcon("./src/START.png");
+               start.setIcon(startIcon);
+          }
+     }
+
+     class backToMainGUI implements ActionListener{
+          @Override
+          public void actionPerformed(ActionEvent e){
+
+               ChatUtils.invokeDisconnect(server, user);
+               cgw.setVisible(false);
+               cgw.getMainGUI().setVisible(true);
+          }
+     }
+
+     static class exitMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon exitIcon = new ImageIcon("./src/EXITHOVER.png");
+               exit.setIcon(exitIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon exitIcon = new ImageIcon("./src/EXIT.png");
+               exit.setIcon(exitIcon);
+          }
+     }
+
      //
      //  METHODS FOR GUI COMPONENTS INITIALIZATION
      //
      
-     private void initUIComponents(Socket server, String username){        // Inintializes all UI components
-          this.chat = new Chat(server, username);
+     private void initUIComponents(){        // Inintializes all UI components
+          this.chat = new Chat(server, user.getName());
           this.chat.setOpaque(false);
-          this.startIcon = new ImageIcon("./src/START.png");                    
+
+          this.startIcon = new ImageIcon("./src/START.png");  
+          this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
           this.icon = new ImageIcon("./src/LobbyBG.png"); 
           this.newimg = this.icon.getImage().getScaledInstance(730, 700,  java.awt.Image.SCALE_SMOOTH);
           this.newIcon = new ImageIcon(this.newimg);
-          this.start = createNewStart(this.startIcon); 
+
+          this.start = createNewButton(this.startIcon);
+          this.start.addActionListener(new startGame()); 
+          this.start.addMouseListener(new startMouse());
+
+          this.exit = createNewButton(this.exitIcon);
+          this.exit.addActionListener(new backToMainGUI());
+          this.exit.addMouseListener(new exitMouse());
+          
+          this.left = new GridBagConstraints(); 
+          this.left.insets = new Insets(0,0,0,370);
+          this.left.anchor = GridBagConstraints.LINE_START;
+          
           this.right = new GridBagConstraints();
-          this.right.insets = new Insets(30,520,0,0);
-          this.top = newTop(this.start, this.right);
+          this.right.anchor = GridBagConstraints.LINE_END;
+          
+          this.top = newTop(this.start, this.exit, this.right, this.left);
           this.bg = newBG(this.newIcon, this.top, this.chat);
-          this.lobbyFrame = newLobbyFrame(this.bg);
+
+          this.setPreferredSize(new Dimension(730,550));
+          this.setOpaque(false);
+          this.add(bg);
      }
      
 
 
-     private JButton createNewStart(ImageIcon startIcon){                  // creates a new Start button
+     private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
           JButton toReturn = new JButton();
           toReturn.setOpaque(false);
           toReturn.setContentAreaFilled(false);
-          toReturn.setPreferredSize(new Dimension(160,70));
+          toReturn.setPreferredSize(new Dimension(160,50));
           toReturn.setBorderPainted(false);
-          toReturn.setIcon(startIcon);
+          toReturn.setIcon(icn);
           return toReturn;
      }
 
-     private JPanel newTop(JButton start, GridBagConstraints right){       // creates a new Top
+     private JPanel newTop(JButton start, JButton exit, GridBagConstraints right, GridBagConstraints left){       // creates a new Top
           JPanel top = new JPanel();
           top.setLayout(new GridBagLayout());
+          top.setPreferredSize(new Dimension(730,70));
+          top.add(exit,left);
           top.add(start,right);
           top.setOpaque(false);
           return top;
