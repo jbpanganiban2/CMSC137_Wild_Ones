@@ -46,11 +46,9 @@ public class Rocket extends MovingObject{
           int end = 720;
 
           if(start < cX){
-               System.out.println("going right");
                end = 720;
                increment = 1;
           }else if(start > cX){
-               System.out.println("going left");
                end = 10;
                increment = -1;
           }else{

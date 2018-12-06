@@ -3,18 +3,26 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 
-public class Game extends JPanel{
+public class Game extends JPanel implements Runnable{
+
+	//
+	//	Possible starting points
+	//		p1 = 155, 170
+	//		p2 = 345, 120
+	//		p3 = 540, 170
+	//		p4 = 45, 450
+	//		p5 = 645, 450
+	//
 	
 	//
 	//	Attributes
 	//
 
-	JPanel mainPanel;
 	JPanel gamePanel;
 	JPanel chatPanel;
 
-	Character ch;
 	ArrayList<Character> chars;
+	ArrayList<Point> respawns;
 	boolean isFinished;
 
 	//
@@ -23,11 +31,15 @@ public class Game extends JPanel{
 
 	Game(ChatGameWindow cgw){
 
-		this.mainPanel = new JPanel();
 		this.gamePanel = new JPanel();
-		this.ch = new Character("Player", new Point(50,50), this.mainPanel);
+		this.respawns = respawnZoneGenerate();
+		this.chars = new ArrayList<Character>();
 
-		this.isFinished = true;
+		for(Point p : this.respawns){
+			this.chars.add(new Character("nameu", p, gamePanel));
+		}
+
+		this.isFinished = false;
 		createGame();
 
 	}
@@ -38,22 +50,57 @@ public class Game extends JPanel{
 		Image newimg = icon.getImage().getScaledInstance(730, 550,  java.awt.Image.SCALE_SMOOTH);
 		ImageIcon newIcon = new ImageIcon(newimg);
 
-		mainPanel.setLayout(null); 								//set layout to null so character can be anywhere
-		mainPanel.setOpaque(false); 
-		mainPanel.setPreferredSize(new Dimension(730,550));
+		gamePanel.setLayout(null); 								//set layout to null so character can be anywhere
+		gamePanel.setOpaque(false); 
+		gamePanel.setPreferredSize(new Dimension(730,550));
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
 		bg.setPreferredSize(new Dimension(730,550));
 		bg.setLayout(new BorderLayout());
-		bg.add(mainPanel); 										//add mainpanel to panel with bg
+		bg.add(gamePanel); 										//add gamePanel to panel with bg
 
 		this.setSize(730,700);
 		this.add(bg);
+
+		// this.deploy();
 	}
 
 	//
 	//	Methods
 	//
+
+	private ArrayList<Point> respawnZoneGenerate(){					//	returns an arraylist containing all possibleSpawnZones
+		return (new ArrayList<Point>(){
+					ArrayList<Point> addAll(){
+						this.add(new Point(155, 170));
+						this.add(new Point(345, 120));
+						this.add(new Point(540, 170));
+						this.add(new Point(45, 450));
+						this.add(new Point(645, 450));
+						return this;
+					}
+				}).addAll();
+	}
+
+	public void run(){
+		int time;
+		while(!isFinished){
+			for(Character c : this.chars){
+				// play a turn
+				time = 50;
+				while(time-- > 0){
+					System.out.println(time+" left.");
+					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
+					c.enable();
+				}c.disable();
+			}
+		}
+	}
+
+	public void deploy(){
+		Thread t = new Thread(this);
+		t.start();
+	}
 
 	//
 	//	Internal Classes

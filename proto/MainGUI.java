@@ -8,8 +8,6 @@ import javax.swing.*;
 //
 
 //   List of things to do
-//        connect game to MainLogin
-//        add logout feature
 //        fix turn based game
 //        merge Character to Player Class
 //        create udp server

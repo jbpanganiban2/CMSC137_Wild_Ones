@@ -40,9 +40,8 @@ public class MovingObject extends JPanel implements Runnable{
      //   Methods
      //
      
-     private void refresh(){                      // positions the panel in the mainpanel, called every after setLocation
+     private void refresh(){                           // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
-          // this.gamePanel.add(this);
      }
 
      //   methods used locally
@@ -55,13 +54,11 @@ public class MovingObject extends JPanel implements Runnable{
      //   methods used by other players
 
      public void setLoc(Point p){
-          // System.out.println(p);
           this.position.setLocation(p);
-          // System.out.println(this.position);
           this.refresh();
      }
 
-     public void setLoc(){ // sets location of object in its init point
+     public void setLoc(){                             // sets location of object in its init point
           this.refresh();
      }
 
