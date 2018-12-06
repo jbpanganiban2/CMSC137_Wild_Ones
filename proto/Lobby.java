@@ -75,7 +75,7 @@ public class Lobby extends JPanel{
           String lobby_id = null;
           ChatUtils.listenToServer(server, user);
 
-          CLPacket clpacket = new CLPacket(5);
+          CLPacket clpacket = new CLPacket(4);
           System.out.println("Waiting for server response(clpacket)");
           ChatUtils.CreateNewLobby(server,clpacket);
           while(ChatUtils.createLobbyPacketReceived == null)System.out.print("\0");                      // waiting to receive packet  
