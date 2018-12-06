@@ -13,17 +13,21 @@ public class Rocket extends MovingObject{
      private Point cursorPosition;
      private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
+     private Character c;
 
      //
      //  Constructors
      //
 
-     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
+     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
           super(name, charPosition, new Dimension(10, 10), gamePanel);
           this.charPosition = charPosition;
           this.type = type;
           this.trajectory = new ArrayList<Point>();
+          this.c = c;
           this.cursorPosition = cursorPosition;
+
+          this.setBackground(Color.BLACK);
 
           this.setLoc(charPosition);
           this.gamePanel.add(this);
@@ -80,11 +84,27 @@ public class Rocket extends MovingObject{
           }
      }
 
+     public synchronized MovingObject hasCollision(ArrayList<MovingObject> m){     // returns the object collided with, else returns null
+          for(MovingObject o : m){
+               if(this.intersects(o) && !o.equals(this) && !o.equals(this.c)){
+                    return o;
+               }
+          }return null;
+     }
+
+     public void hasCollided(MovingObject m){                  // main method that will do something with both the collided objects
+          // System.out.println(this.name+" kaboomed with "+m.getObjName());
+          // explosion animation
+          this.alive = false;
+     }
+
      public void run(){
           for(Point p : trajectory){
 
-               try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
-               this.setLoc(p);
+               if(this.alive){
+                    try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
+                    this.setLoc(p);
+               }
                
           }
           setVisible(false);

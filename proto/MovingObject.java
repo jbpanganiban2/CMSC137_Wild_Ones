@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 //
 //   MovingObject
@@ -16,8 +17,11 @@ public class MovingObject extends JPanel implements Runnable{
      protected JPanel gamePanel;
      protected Point position;
      protected Dimension size;
-     protected Rectangle rect;
      protected String name;
+
+     protected boolean alive;
+
+     protected static ArrayList<MovingObject> rnc = new ArrayList<MovingObject>();            // rockets 'n characters
 
      //
      //   Constructors
@@ -30,18 +34,71 @@ public class MovingObject extends JPanel implements Runnable{
 
           // this.setBackground(Color.BLACK);
           this.setPreferredSize(this.size); 
-          this.rect = new Rectangle(this.position, this.size);
+          this.alive = true;
           
           this.setOpaque(true);
           this.gamePanel = gamePanel;
+
+          MovingObject.rnc.add(this);
      }
 
      //
      //   Methods
      //
      
-     private void refresh(){                           // positions the panel in the mainpanel, called every after setLocation
+     private void refresh(){                                          // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
+     }
+
+     public String getUserName(){
+          return this.name;
+     }
+
+     public Rectangle getRectangle(){
+          return new Rectangle(this.position, this.size);
+     }
+
+     public synchronized boolean intersects(MovingObject m){                       // checks rectangles of objects if the intersect
+          return this.getRectangle().intersects(m.getRectangle());
+     }
+
+     public synchronized MovingObject hasCollision(ArrayList<MovingObject> m){     // returns the object collided with, else returns null
+          for(MovingObject o : m){
+               if(this.intersects(o)){
+                    /*
+                         invoke some things
+                     */
+                    return o;
+               }
+          }return null;
+     }
+
+     public void hasCollided(MovingObject m){                  // main method that will do something with both the collided objects
+          System.out.println(this.name+" kaboomed with "+m.getObjName());
+     }
+
+     protected synchronized void alwaysOnCollisionChecker(ArrayList<MovingObject> m){     //   Checks which objects from the list this moving object has collided with;
+
+          (new Thread(){
+               @Override
+               public synchronized void run(){
+                    MovingObject test;
+                    while(alive){
+                         if((test = hasCollision(m)) != null){
+                              hasCollided(test);
+                         }
+                    }
+               }
+          }).start();
+
+     }
+
+     public synchronized boolean isAlive(){
+          return this.alive;
+     }
+
+     public String getObjName(){
+          return this.name;
      }
 
      //   methods used locally

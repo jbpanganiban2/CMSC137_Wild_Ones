@@ -13,6 +13,14 @@ public class Chat extends JPanel{
     //  ATTRIBUTES
     //
     
+    //
+    //
+    //  FIX CHAT ENABLING PROBLEM
+    //
+    //
+
+    public static final int ENTER = 0;
+
     static JButton sendMessage;
     static JScrollPane jpane;
     static JTextArea chatBox;
@@ -22,7 +30,8 @@ public class Chat extends JPanel{
     static Socket server;
     static String pusername;                            // the "player" username
     static String rusername;                            // the username of other players that will invoke addMessageToBox function
-
+    static boolean chatting;
+    static Character c;
     //
     //  CONSTRUCTORS
     //
@@ -30,6 +39,7 @@ public class Chat extends JPanel{
     Chat(Socket s, String pu){
         
         createChat(s, pu);
+
     }
 
     public void createChat(Socket s, String pu) {
@@ -38,6 +48,7 @@ public class Chat extends JPanel{
 
         messageBox = new JTextField(50);
         messageBox.setOpaque(false);
+        this.chatting = true;
         // messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
         this.sendMessage = new JButton("send");
         this.sendMessage.setOpaque(false);
@@ -48,7 +59,28 @@ public class Chat extends JPanel{
         this.setLayout(new BorderLayout());    
         this.add(BorderLayout.SOUTH, southPanel);
         this.add(jpane, BorderLayout.CENTER);
-        this.setPreferredSize(new Dimension(250, 270));
+        // this.setPreferredSize(new Dimension(250, 270));
+
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ENTER"), ENTER);
+        this.getActionMap().put(ENTER, new Move());
+
+    }
+
+    public synchronized void setCharacter(Character charac){
+        this.c = charac;
+        (new Thread(){                      // thread that allows the messagebox to be used ONLY when player is not playing
+            @Override
+            public void run(){
+                int i = 0;
+                while(true){
+                    if(charac.isEnable()){
+                        messageBox.setFocusable(false);
+                    }else{
+                        messageBox.setFocusable(true);
+                    }
+                }
+            } 
+        }).start();
     }
 
     //
@@ -58,10 +90,25 @@ public class Chat extends JPanel{
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             ChatUtils.sendMessage(server, messageBox.getText());
-            // addMessageToBox("test", messageBox.getText());
             messageBox.setText("");
         }
     }
+
+    class Move extends AbstractAction {             //  sets the chatbox focus
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(c.isEnable())return;
+            if(messageBox.hasFocus()){
+                if(messageBox.getText().equals(""))return;
+                ChatUtils.sendMessage(server, messageBox.getText());
+                messageBox.setText("");
+                chatting = true;
+            }else{
+                messageBox.requestFocus();
+                chatting = false;
+            }
+        }
+     }
 
     //
     // METHODS
@@ -80,6 +127,10 @@ public class Chat extends JPanel{
                 System.out.println(username + ":  " + message);
             }
         }
+    }
+
+    public boolean isChatting(){
+        return this.chatting;
     }
 
     //
