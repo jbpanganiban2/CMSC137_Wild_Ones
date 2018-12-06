@@ -81,21 +81,11 @@ public class Game extends JPanel implements Runnable{
 	private ArrayList<Point> respawnZoneGenerate(){					//	returns an arraylist containing all possibleSpawnZones
 		return (new ArrayList<Point>(){
 					ArrayList<Point> addAll(){
-<<<<<<< HEAD
-
-						this.add(new Point(160, 10));
-						this.add(new Point(626, 104));
-						this.add(new Point(97, 166));
-
+						this.add(new Point(160, 25));
+						this.add(new Point(626, 124));
+						this.add(new Point(97, 161));
 						this.add(new Point(549, 361));
 						this.add(new Point(33, 416));
-=======
-						this.add(new Point(155, 170));
-						this.add(new Point(345, 120));
-						this.add(new Point(540, 170));
-						this.add(new Point(45, 450));
-						this.add(new Point(645, 450));
->>>>>>> 31fb5f9b61e8a05623f54b4ccefe065d52878a08
 						return this;
 					}
 				}).addAll();

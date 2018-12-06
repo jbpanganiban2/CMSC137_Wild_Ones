@@ -46,27 +46,8 @@ public class Character extends MovingObject{
 		this.gamePanel.addMouseListener(new RocketListener());
 
 
-<<<<<<< HEAD
 
-	public Character(Player p, Point init, Game g){
-		super(p.getName(), init, new Dimension(30, 50), g);
-
-		this.moves = new HashSet<Integer>();
-		this.addKeyBindings();
-
-		this.setLoc();
-		this.gamePanel.add(this);
-		this.gamePanel.addMouseListener(new RocketListener());
-
-		this.charr = new JLabel();
-		this.charr.setOpaque(false);
-		this.charr.setIcon(STANDBY);
-		this.add(charr);
-		
-
-=======
 		this.alive = true;
->>>>>>> 31fb5f9b61e8a05623f54b4ccefe065d52878a08
 		this.jumping = false;
 		this.disable();
 
@@ -79,17 +60,8 @@ public class Character extends MovingObject{
 	public synchronized void moveRight(){
 		this.movePosition(MOVEMENT, 0);
 	}
-<<<<<<< HEAD
-
-		this.movePosition(-movement, 0);
-	}
-	public synchronized void moveLeft(int i){
-		this.movePosition(-i, 0);
-
-=======
 	public synchronized void moveLeft(){
 		this.movePosition(-MOVEMENT, 0);
->>>>>>> 31fb5f9b61e8a05623f54b4ccefe065d52878a08
 	}
 	public synchronized void moveUp(){
 		if(jumping)return;
@@ -218,26 +190,14 @@ public class Character extends MovingObject{
 				case DOWN:
 					this.ch.moveDown();
 				break;
-<<<<<<< HEAD
-
-				case RIGHT0:
-					if(this.ch.isMovingRight())return;
-					this.ch.setUI(WALKRIGHT);
-					this.ch.toggleMovingRight();	// encounters a false, then
-					(new Thread(){
-						@Override
-						public void run(){
-							while(ch.isMovingRight()){
-								try{Thread.sleep(25);}catch(Exception exc){exc.printStackTrace();};
-								ch.moveRight(5);
-							}
-						}
-					}).start();
-
-=======
 				case LEFT:
+					JLabel nIcon = new JLabel();
+					nIcon.setIcon(WALKLEFT);
+					this.ch.removeAll();
+					this.ch.add(nIcon);
+					this.ch.revalidate();
 					this.ch.moveLeft();
->>>>>>> 31fb5f9b61e8a05623f54b4ccefe065d52878a08
+
 				break;
 				case RIGHT:
 					this.ch.moveRight();
