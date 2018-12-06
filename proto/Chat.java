@@ -12,12 +12,6 @@ public class Chat extends JPanel{
     //
     //  ATTRIBUTES
     //
-    
-    //
-    //
-    //  FIX CHAT ENABLING PROBLEM
-    //
-    //
 
     public static final int ENTER = 0;
 

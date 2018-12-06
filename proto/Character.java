@@ -15,7 +15,7 @@ public class Character extends MovingObject{
 	private final static Icon WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
-	private static JLabel charr;
+	private JLabel charr;
 	static final int JUMP = 0;
 	static final int UP = 1;
 	static final int DOWN = 2;
@@ -26,18 +26,20 @@ public class Character extends MovingObject{
 	private static int movement = 5;
 	private final HashSet<Integer> moves;
 
+	private int health;
 	private boolean jumping;
 	private boolean movingRight;
 	private boolean movingLeft;
 	private boolean enabled;
+	private boolean deployedRocket;
 	private int time;
 	
 	//
 	//	Constructors
 	//
 
-	public Character(String name, Point init, JPanel gamePanel){
-		super(name, init, new Dimension(30, 50), gamePanel);
+	public Character(String name, Point init, Game g){
+		super(name, init, new Dimension(30, 50), g);
 
 		this.moves = new HashSet<Integer>();
 		this.addKeyBindings();
@@ -47,19 +49,22 @@ public class Character extends MovingObject{
 		this.gamePanel.addMouseListener(new RocketListener());
 
 		this.charr = new JLabel();
-		this.charr.setOpaque(true);
+		this.charr.setOpaque(false);
 		this.charr.setIcon(STANDBY);
 		this.add(charr);
 		
 		this.jumping = false;
 		this.movingLeft = false;
 		this.movingRight = false;
+		this.deployedRocket = false;
+		this.health = 50;
 		
+		this.setOpaque(false);
 		this.disable();
 	}
 
-	public Character(Player p, Point init, JPanel gamePanel){
-		super(p.getName(), init, new Dimension(30, 50), gamePanel);
+	public Character(Player p, Point init, Game g){
+		super(p.getName(), init, new Dimension(30, 50), g);
 
 		this.moves = new HashSet<Integer>();
 		this.addKeyBindings();
@@ -69,7 +74,7 @@ public class Character extends MovingObject{
 		this.gamePanel.addMouseListener(new RocketListener());
 
 		this.charr = new JLabel();
-		this.charr.setOpaque(true);
+		this.charr.setOpaque(false);
 		this.charr.setIcon(STANDBY);
 		this.add(charr);
 		
@@ -90,6 +95,10 @@ public class Character extends MovingObject{
 		this.movingLeft = false;
 		this.movingRight = false;
 		this.disable();
+	}
+
+	public void setUI(Icon i){
+		this.charr.setIcon(i);
 	}
 
 	public synchronized void moveRight(){
@@ -131,8 +140,9 @@ public class Character extends MovingObject{
 					moveUp(6);
 					try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
 				}
-				while(position.getY() != originalY){		// moves downwards
+				while(position.getY() < 550-((int)size.getHeight())){				// moves downwards
 					moveDown(6);
+					// System.out.println(position.getY());
 					try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
 				}
 				jumping = false;
@@ -140,28 +150,6 @@ public class Character extends MovingObject{
 			}	
 		}).start();
 	}
-
-	// 	rise(position, originalY-200);
-	// 			fall(position, originalY);
-	// 			jumping = false;
-	// 			movement = 12;
-	// 		}	
-	// 	}).start();
-	// }
-
-	// public synchronized rise(Point charPosition, int target){
-	// 	while(charPosition.getY() > target){		// moves upward
-	// 		moveUp(6);
-	// 		try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
-	// 	}
-	// }
-
-	// public synchronized fall(Point charPosition, int target){
-	// 	while(charPosition.getY() < target){		// moves downward
-	// 		moveDown(6);
-	// 		try{Thread.sleep(12);}catch(Exception e){e.printStackTrace();};
-	// 	}
-	// }
 
 
 	public HashSet<Integer> getMoves(){
@@ -203,6 +191,7 @@ public class Character extends MovingObject{
 
 		this.time = 25;
 		this.enabled = true;
+		this.deployedRocket = false;
 		this.getActionMap().get(JUMP).setEnabled(true);
 	  	this.getActionMap().get(LEFT0).setEnabled(true);
 	  	this.getActionMap().get(LEFT1).setEnabled(true);
@@ -237,10 +226,26 @@ public class Character extends MovingObject{
 	}
 
 	private void deployRocket(MouseEvent e){
-		if(this.enabled && this.time != 0){
-          	new Rocket("rocket", this, new Point(this.position), e.getPoint(), this.gamePanel, 0).alwaysOnCollisionChecker(MovingObject.rnc);
-          	this.time = 0;
+
+		if(this.enabled && this.time != 0 && !this.deployedRocket){
+          	new Rocket("rocket", this, new Point(this.position), e.getPoint(), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+          	// this.time = 0;
+     		this.deployedRocket = true;
      	}
+	}
+
+	public void setTimeZero(){
+		this.time = 0;
+	}
+
+	private static int rng(int max, int min){	// produces a random number between [max, min]
+		return (new Random()).nextInt((max - min) + 1) + min;
+	}
+
+	public void damaged(){
+		int dmg = rng(10,1);
+		System.out.println(this.name+" damaged by "+Integer.toString(dmg));
+		this.health -= dmg;
 	}
 
 	//
@@ -279,6 +284,7 @@ public class Character extends MovingObject{
 				break;
 				case LEFT0:						// when key is pressed, enables the character to move 
 					if(this.ch.isMovingLeft())return;	// when key is ALREADY PRESSED, returns
+					this.ch.setUI(WALKLEFT);
 					this.ch.toggleMovingLeft();	
 					(new Thread(){
 
@@ -292,10 +298,12 @@ public class Character extends MovingObject{
 					}).start();
 				break;
 				case LEFT1:						// removes key's ALREADY PRESSED state
+					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingLeft();
 				break;
 				case RIGHT0:
 					if(this.ch.isMovingRight())return;
+					this.ch.setUI(WALKRIGHT);
 					this.ch.toggleMovingRight();	// encounters a false, then
 					(new Thread(){
 						@Override
@@ -308,6 +316,7 @@ public class Character extends MovingObject{
 					}).start();
 				break;
 				case RIGHT1:
+					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingRight();
 				break;
 				default:
