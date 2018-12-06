@@ -87,12 +87,12 @@ public class Game extends JPanel implements Runnable{
 		while(!isFinished){
 			for(Character c : this.chars){
 				// play a turn
-				time = 50;
+				c.enable();
+				time = 5;
 				while(time-- > 0){
-					System.out.println(time+" left.");
+					// System.out.println(time+" left.");
 					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
-					c.enable();
-				}c.disable();
+				}c.endTurn();
 			}
 		}
 	}

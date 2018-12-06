@@ -111,7 +111,8 @@ public class ChatGameWindow extends JFrame{
           this.setSize(730,700);
           this.setResizable(false);
           this.setVisible(true);
-          this.add(mainPanel);                  //add to frame
+          this.add(mainPanel);   
+          this.pack();               //add to frame
           this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      }
 
