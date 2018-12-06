@@ -162,9 +162,8 @@ public class Lobby extends JPanel{
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
-
                cardLayout.next(mainPanel);
-
+               cgw.getGame().deploy();
           }
      }
 
