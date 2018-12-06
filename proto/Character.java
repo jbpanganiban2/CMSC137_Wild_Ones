@@ -36,9 +36,15 @@ public class Character extends MovingObject{
 		this.moves = new HashSet<Integer>();
 		this.addKeyBindings();
 
+		this.charr= new JLabel();
+		this.charr.setIcon(STANDBY);
+		this.add(this.charr);
+
+		this.setOpaque(true);
 		this.setLoc();
 		this.gamePanel.add(this);
 		this.gamePanel.addMouseListener(new RocketListener());
+
 
 
 		this.alive = true;
@@ -56,6 +62,12 @@ public class Character extends MovingObject{
 	}
 	public synchronized void moveLeft(){
 		this.movePosition(-MOVEMENT, 0);
+		// JLabel stand = new JLabel();
+		// stand.setIcon(STANDBY);
+		// this.removeAll();
+		// this.add(stand);
+		// this.revalidate();
+
 	}
 	public synchronized void moveUp(){
 		if(jumping)return;
@@ -185,7 +197,13 @@ public class Character extends MovingObject{
 					this.ch.moveDown();
 				break;
 				case LEFT:
+					JLabel nIcon = new JLabel();
+					nIcon.setIcon(WALKLEFT);
+					this.ch.removeAll();
+					this.ch.add(nIcon);
+					this.ch.revalidate();
 					this.ch.moveLeft();
+
 				break;
 				case RIGHT:
 					this.ch.moveRight();
@@ -194,6 +212,8 @@ public class Character extends MovingObject{
 
 				break;
 			}
+
+			
 		}
 
 

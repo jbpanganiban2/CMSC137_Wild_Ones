@@ -42,6 +42,7 @@ public class MovingObject extends JPanel implements Runnable{
      
      private void refresh(){                           // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
+          this.gamePanel.repaint();
      }
 
      //   methods used locally
