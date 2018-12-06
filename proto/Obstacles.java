@@ -2,12 +2,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Obstacles extends JPanel{
+public class Obstacles extends JPanel implements GameObject{
 	int block;
 	int xPos;
 	int yPos;
 	int width;
 	int height;
+
 	Obstacles(int num){
 		this.block=num;
 		createObstacle(this.block);
@@ -26,6 +27,13 @@ public class Obstacles extends JPanel{
 	}
 	public int getHeight(){
 		return this.height;
+	}
+	public Rectangle getRectangle(){
+		return new Rectangle(new Point(this.xPos, this.yPos), new Dimension(this.width,this.height));
+	}
+
+	public boolean intersects(GameObject o){
+		return this.getRectangle().intersects(o.getRectangle());
 	}
 
 	public void render(int a, int b, int c, int d){
@@ -59,9 +67,9 @@ public class Obstacles extends JPanel{
 			case 7:
 				render(426,158,64,64);
 				break;
-			case 8:
-				render(193,269,78,78);
-				break;
+			// case 8:
+			// 	render(193,269,78,78);
+			// 	break;
 			case 9:
 				render(482,248,140,50);
 				break;
@@ -70,10 +78,10 @@ public class Obstacles extends JPanel{
 				break;
 			case 11:
 				render(644,294,27,27);
-			case 12:
-				render(300,118,127,19);
-				break;
-			case 13:
+			// case 12:
+			// 	render(300,118,127,19);
+			// 	break;
+			// case 13:
 				render(584,156,127,19);
 				break;
 			case 14:

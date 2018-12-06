@@ -13,17 +13,21 @@ public class Rocket extends MovingObject{
      private Point cursorPosition;
      private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
+     private Character c;
 
      //
      //  Constructors
      //
 
-     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
-          super(name, charPosition, new Dimension(10, 10), gamePanel);
+     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
+          super(name, charPosition, new Dimension(10, 10), g);
           this.charPosition = charPosition;
           this.type = type;
           this.trajectory = new ArrayList<Point>();
+          this.c = c;
           this.cursorPosition = cursorPosition;
+
+          this.setBackground(Color.BLACK);
 
           this.setLoc(charPosition);
           this.gamePanel.add(this);
@@ -80,13 +84,57 @@ public class Rocket extends MovingObject{
           }
      }
 
+     public synchronized GameObject hasCollision(ArrayList<GameObject> m){     // returns the GameObject collided with, else returns null
+          try{
+               for(GameObject o : m){
+                    if(o instanceof MovingObject){
+                         MovingObject mo = (MovingObject)o;
+                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }
+                    else if(o instanceof Obstacles){
+                         Obstacles mo = (Obstacles)o;
+                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }
+               }return null;
+          }catch(Exception e){}
+          return null;
+     }
+
+     @Override
+     public void hasCollided(MovingObject m){                    // what will happen after this hasCollided with a MovingObject m
+          // explosion animation
+          this.alive = false;
+          this.collided = true;
+          ((Character)m).damaged();
+     }
+
+     @Override
+     public void hasCollided(Obstacles m){                       // what will happen after this hasCollided with Obstacle
+          System.out.println(this.name+" hit an obstacle");
+          this.alive = false;
+          this.collided = true;
+     }
+
      public void run(){
           for(Point p : trajectory){
 
-               try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
-               this.setLoc(p);
+               if(this.alive){
+                    try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
+                    this.setLoc(p);
+               }
                
           }
+          this.c.setTimeZero();
           setVisible(false);
      }
 

@@ -18,13 +18,16 @@ public class Game extends JPanel implements Runnable{
 	//	Attributes
 	//
 
-	JPanel gamePanel;
-	JPanel chatPanel;
+	private JPanel gamePanel;
+	private JPanel chatPanel;
 
-	ArrayList<Character> chars;
-	ArrayList<Obstacles> obstacles;
-	ArrayList<Point> respawns;
-	boolean isFinished;
+	private ArrayList<Player> players;
+	private ArrayList<Character> chars;
+	private ArrayList<Point> respawns;
+	private ArrayList<GameObject> gameObjects;
+	private boolean isFinished;
+
+	private ChatGameWindow cgw;
 
 	//
 	//	Constructors
@@ -35,10 +38,12 @@ public class Game extends JPanel implements Runnable{
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
-		this.obstacles = new ArrayList<Obstacles>();
+		this.gameObjects = new ArrayList<GameObject>();
+		this.cgw = cgw;
 
+		int i = 0;
 		for(Point p : this.respawns){
-			this.chars.add(new Character("nameu", p, gamePanel));
+			this.chars.add(new Character("nameu"+Integer.toString(i), p, this));
 		}
 
 		this.isFinished = false;
@@ -57,10 +62,11 @@ public class Game extends JPanel implements Runnable{
 		gamePanel.setPreferredSize(new Dimension(730,550));
 
 		for (int i=1;i<22 ;i++ ) {
+			if(i == 8 || i == 12)continue;
 			Obstacles obs = new Obstacles(i);
 			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 			gamePanel.add(obs);
-			obstacles.add(obs);
+			gameObjects.add(obs);
 		}
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
@@ -81,27 +87,29 @@ public class Game extends JPanel implements Runnable{
 	private ArrayList<Point> respawnZoneGenerate(){					//	returns an arraylist containing all possibleSpawnZones
 		return (new ArrayList<Point>(){
 					ArrayList<Point> addAll(){
-						this.add(new Point(155, 170));
-						this.add(new Point(345, 120));
-						this.add(new Point(540, 170));
-						this.add(new Point(45, 450));
-						this.add(new Point(645, 450));
+						this.add(new Point(160, 10));
+						this.add(new Point(626, 104));
+						this.add(new Point(97, 166));
+						this.add(new Point(549, 361));
+						this.add(new Point(33, 416));
 						return this;
+
 					}
 				}).addAll();
 	}
 
-	public void run(){
-		int time;
+	public synchronized void run(){
+		this.cgw.getChat().setCharacter(this.chars.get(0));
 		while(!isFinished){
+			int time;
 			for(Character c : this.chars){
-				// play a turn
-				time = 50;
-				while(time-- > 0){
-					System.out.println(time+" left.");
+				// play a turn -- this will only activate for player
+				new Prompt(c.getUserName()+"'s turn", 1000);
+				c.enable();
+				while((time = c.getTimeLeft()) > 0){
+					// System.out.println(time+" left");
 					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
-					c.enable();
-				}c.disable();
+				}c.endTurn();
 			}
 		}
 	}
@@ -109,6 +117,14 @@ public class Game extends JPanel implements Runnable{
 	public void deploy(){
 		Thread t = new Thread(this);
 		t.start();
+	}
+
+	public ArrayList<GameObject> getGameObjects(){
+		return this.gameObjects;
+	}
+
+	public JPanel getGamePanel(){
+		return this.gamePanel;
 	}
 
 	//
