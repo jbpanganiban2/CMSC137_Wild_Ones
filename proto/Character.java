@@ -9,12 +9,24 @@ public class Character extends MovingObject{
 	//
 	//	Attributes
 	//
-	private final static Icon ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
-	private final static Icon STANDBY = new ImageIcon("src/pig/pigStandby.gif");
-	private final static Icon WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
-	private final static Icon WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
+	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+	private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
+	private final static Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
+	private final static Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
+	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
+	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+	private final static Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
+	private final static Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
+
+	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+	private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
+	private final static Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
+	private final static Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
+
+	private static JLabel charr;
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
+
 	private JLabel charr;
 	static final int JUMP0 = 01;
 	static final int JUMP1 = 02;
@@ -34,10 +46,12 @@ public class Character extends MovingObject{
 	private int time;
 	private boolean xCollide;
 	private boolean yCollide;
+
 	
 	//
 	//	Constructors
 	//
+
 
 	public Character(String name, Point init, Game g){
 		super(name, init, new Dimension(30, 50), g);
@@ -53,40 +67,45 @@ public class Character extends MovingObject{
 	private void initchar(){
 		this.addKeyBindings();
 
+
 		this.setLoc();
 		this.gamePanel.add(this);
 		this.gamePanel.addMouseListener(new RocketListener());
 
-		this.charr = new JLabel();
-		this.charr.setOpaque(false);
-		this.charr.setIcon(STANDBY);
-		this.add(charr);
-		
+
+		this.setOpaque(false);
+		this.alive = true;
 		this.jumping = false;
+
 		this.movingLeft = false;
 		this.movingRight = false;
 		this.health = 10;
 		
 		this.setOpaque(false);
+
 		this.disable();
 	}
-
 
 	//
 	//	Methods
 	//
-	
-	public synchronized void endTurn(){
-		this.movingLeft = false;
-		this.movingRight = false;
-		this.disable();
+	public int getType(){
+		return this.type;
 	}
 
-	public void setUI(Icon i){
-		this.charr.setIcon(i);
+	public void setCharacter(){
+		if(this.type==1){
+			this.charr.setIcon(PIG_STANDBY);
+		}else if(this.type==2){
+			this.charr.setIcon(DYNA_STANDBY);
+		}else{
+			this.charr.setIcon(LUB_STANDBY);
+		}
+
 	}
 
 	public synchronized void moveRight(){
+
 		Point test = new Point((int)this.position.getX()+movement, ((int)this.position.getY()));
 		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
 			this.xCollide = true;
@@ -116,8 +135,10 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(0, -movement);
+
 	}
 	public synchronized void moveDown(){
+
 
 		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+movement);
 		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
@@ -126,14 +147,15 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(0, movement);
+
 	}
 	public synchronized void jump(){
 		// thread that continuosly adds then subtracts y values at this position
-		// fix bounds arguments
 		(new Thread(){
 			@Override
 			public void run(){
 				jumping = true;
+
 				int originalY = (int)position.getY();
 				int target = originalY-100; 
 
@@ -142,12 +164,14 @@ public class Character extends MovingObject{
 					
 					try{Thread.sleep(15);}catch(Exception e){e.printStackTrace();};
 					moveUp();
+
 				}
 				yCollide = false;					// resets whatever made the jump stop going up
 				jumping = false;
 			}	
 		}).start();
 	}
+
 
 	public void gravity(){
 		(new Thread(){
@@ -196,13 +220,11 @@ public class Character extends MovingObject{
 				xCollide = false;
 			}
 		}).start();
-	}
 
-	public synchronized int getTimeLeft(){
-		return this.time--;
 	}
 
 	public void addKeyBindings(){
+
 
 		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), JUMP0);
 		this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true), JUMP1);
@@ -218,9 +240,10 @@ public class Character extends MovingObject{
         	this.getActionMap().put(RIGHT0, new Move(this, RIGHT0));
         	this.getActionMap().put(RIGHT1, new Move(this, RIGHT1));
 
+
 	}
 
-	public synchronized void disable(){	// disables keybindings for Character
+	public void disable(){	// disables keybindings for Character
 
 		this.enabled = false;
 	  	this.getActionMap().get(JUMP0).setEnabled(false);
@@ -230,11 +253,11 @@ public class Character extends MovingObject{
 	  	this.getActionMap().get(RIGHT0).setEnabled(false);
 	  	this.getActionMap().get(RIGHT1).setEnabled(false);
 
+
 	}
 
-	public synchronized void enable(){	// enables keyBindings for Character
+	public void enable(){	// enables keyBindings for Character
 
-		this.time = 25;
 		this.enabled = true;
 		this.deployedRocket = false;
 	  	this.getActionMap().get(JUMP0).setEnabled(true);
@@ -246,14 +269,12 @@ public class Character extends MovingObject{
 
 	}
 
-	public synchronized boolean isEnable(){
-		return this.enabled;
-	}
-
+	
 
 	public synchronized void run(){
 		
 	}
+
 
 	private synchronized void toggleMovingLeft(){
 		this.movingLeft = !this.movingLeft;
@@ -303,9 +324,11 @@ public class Character extends MovingObject{
 		}
 	}
 
+
 	//
 	//	Internal Classes
 	//
+
 
 
 	class RocketListener extends MouseAdapter{                  // listens to Rockets
@@ -315,12 +338,20 @@ public class Character extends MovingObject{
           }
 
           @Override
-          public synchronized void mouseReleased(MouseEvent e) {
-          	deployRocket(e);
+          public void mouseReleased(MouseEvent e) {
+          	if(enabled){
+               	Rocket r = new Rocket("rocket", new Point(position), e.getPoint(), gamePanel);
+          	}
           }
      }
 
-     class Move extends AbstractAction {				//	how the character will move
+     public void changeIcon(Character ch, JLabel icn){
+     	ch.removeAll();
+		ch.add(icn);
+		ch.revalidate();
+     }
+
+     class Move extends AbstractAction {
 
      	Character ch;
      	int moveType;
@@ -330,9 +361,11 @@ public class Character extends MovingObject{
      		this.moveType = moveType;
      	}
 
+
      	@Override
 		public void actionPerformed(ActionEvent e) {
 			gravity();
+			JLabel nIcon = new JLabel();
 			switch(this.moveType){
 				case JUMP0:						// space pressed
 					if(jumping || this.ch.isMovingLeft() || this.ch.isMovingRight())return;
@@ -346,13 +379,19 @@ public class Character extends MovingObject{
 				case LEFT0:						// when key is pressed, enables the character to move 
 
 					if(this.ch.isMovingLeft())return;	// when key is ALREADY PRESSED, returns
-					this.ch.setUI(WALKLEFT);
+					if(this.ch.getType()==1){
+						nIcon.setIcon(PIG_WALKLEFT);
+					}else if(this.ch.getType()==2){
+						nIcon.setIcon(DYNA_WALKLEFT);
+					}else{
+						nIcon.setIcon(LUB_WALKLEFT);
+					}
+					this.ch.changeIcon(this.ch,nIcon);
 					this.ch.toggleMovingLeft();	
 					this.ch.contMoveLeft();
 				break;
 
 				case LEFT1:						// removes key's ALREADY PRESSED state
-					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingLeft();
 					this.ch.gravity();
 				break;
@@ -360,21 +399,30 @@ public class Character extends MovingObject{
 				case RIGHT0:
 
 					if(this.ch.isMovingRight())return;
-					this.ch.setUI(WALKRIGHT);
+					if(this.ch.getType()==1){
+						nIcon.setIcon(PIG_WALKRIGHT);
+					}else if(this.ch.getType()==2){
+						nIcon.setIcon(DYNA_WALKRIGHT);
+					}else{
+						nIcon.setIcon(LUB_WALKRIGHT);
+					}
+					this.ch.changeIcon(this.ch,nIcon);
 					this.ch.toggleMovingRight();	
 					this.ch.contMoveRight();
 				break;
 
 				case RIGHT1:
-					this.ch.setUI(STANDBY);
 					this.ch.toggleMovingRight();
 					this.ch.gravity();
+
 				break;
 
 				default:
 
 				break;
 			}
+
+
 		}
 
 

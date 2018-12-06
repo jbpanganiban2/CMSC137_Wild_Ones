@@ -98,7 +98,6 @@ public class ChatGameWindow extends JFrame{
           this.chatPanel.setPreferredSize(new Dimension(730,150));
           this.chatPanel.setOpaque(false);
           this.chatPanel.add(this.chat);
-          this.chat.requestFocus();
           this.chatPanel.setBounds(0,540,730,150);
 
           this.mainPanel = new JPanel();
@@ -127,10 +126,6 @@ public class ChatGameWindow extends JFrame{
 
      public Player getUser(){
           return this.user;
-     }
-
-     public Chat getChat(){
-          return this.chat;
      }
 
      public Socket getServer(){

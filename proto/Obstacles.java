@@ -2,13 +2,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Obstacles extends JPanel implements GameObject{
+public class Obstacles extends JPanel{
 	int block;
 	int xPos;
 	int yPos;
 	int width;
 	int height;
-
 	Obstacles(int num){
 		this.block=num;
 		createObstacle(this.block);
@@ -27,13 +26,6 @@ public class Obstacles extends JPanel implements GameObject{
 	}
 	public int getHeight(){
 		return this.height;
-	}
-	public Rectangle getRectangle(){
-		return new Rectangle(new Point(this.xPos, this.yPos), new Dimension(this.width,this.height));
-	}
-
-	public boolean intersects(GameObject o){
-		return this.getRectangle().intersects(o.getRectangle());
 	}
 
 	public void render(int a, int b, int c, int d){
@@ -65,47 +57,44 @@ public class Obstacles extends JPanel implements GameObject{
 				render(78,60,250,45);
 				break;
 			case 7:
-				render(426,158,64,64);
+				render(396,122,64,64);
 				break;
-			// case 8:
-			// 	render(193,269,78,78);
-			// 	break;
-			case 9:
+			case 8:
 				render(482,248,140,50);
 				break;
-			case 10:
+			case 9:
 				render(630,320,82,28);
 				break;
-			case 11:
+			case 10:
 				render(644,294,27,27);
-			// case 12:
-			// 	render(300,118,127,19);
-			// 	break;
-			// case 13:
+			case 11:
+				render(253,253,127,19);
+				break;
+			case 12:
 				render(584,156,127,19);
 				break;
-			case 14:
+			case 13:
 				render(500,220,60,30);
 				break;
-			case 15:
+			case 14:
 				render(500,190,30,30);
 				break;
-			case 16:
+			case 15:
 				render(88,436,90,30);
 				break;
-			case 17:
+			case 16:
 				render(40,180,30,30);
 				break;
-			case 18:
+			case 17:
 				render(644,292,27,27);
 				break;
-			case 19:
+			case 18:
 				render(216,438,90,30);
 				break;
-			case 20:
+			case 19:
 				render(246,406,60,30);
 				break;
-			case 21:
+			case 20:
 				render(276,376,30,30);
 				break;
 			default:

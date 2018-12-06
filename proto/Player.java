@@ -3,7 +3,6 @@ import proto.*;
 public class Player{
 	
 	private PlayerProtos.Player p;
-	private boolean mainPlayer = true;
 
 	public Player(String name){
 		this.p = PlayerProtos.Player.newBuilder()
@@ -11,17 +10,14 @@ public class Player{
 						.build();
 	}
 
-	public Player(String name, boolean mainPlayer){
-		this.p = PlayerProtos.Player.newBuilder()
-						.setName(name)
-						.build();
-		this.mainPlayer = mainPlayer;
-	}
-
 	public Player(){
 		this.p = PlayerProtos.Player.newBuilder()
 						.setName("host")
 						.build();
+	}
+
+	public Player(PlayerProtos.Player p){
+		this.p = p;
 	}
 
 	public Player(byte[] b){
@@ -35,10 +31,6 @@ public class Player{
 			System.out.println(e);
 		}
 		this.p = n;
-	}
-
-	public Player(PlayerProtos.Player p){
-		this.p = p;
 	}
 
 	public PlayerProtos.Player getPlayer(){

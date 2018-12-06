@@ -17,17 +17,19 @@ public class Game extends JPanel implements Runnable{
 	//
 	//	Attributes
 	//
+	private final static int FIRE = 0;
+	private final static int PIG = 1;
+	private final static int DYNAMIGHT = 2;
+	private final static int LUBGLUB = 3;
 
-	private JPanel gamePanel;
-	private JPanel chatPanel;
+	
+	JPanel gamePanel;
+	JPanel chatPanel;
 
-	private ArrayList<Player> players;
-	private ArrayList<Character> chars;
-	private ArrayList<Point> respawns;
-	private ArrayList<GameObject> gameObjects;
-	private boolean isFinished;
-
-	private ChatGameWindow cgw;
+	ArrayList<Character> chars;
+	ArrayList<Obstacles> obstacles;
+	ArrayList<Point> respawns;
+	boolean isFinished;
 
 	//
 	//	Constructors
@@ -38,13 +40,24 @@ public class Game extends JPanel implements Runnable{
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
-		this.gameObjects = new ArrayList<GameObject>();
-		this.cgw = cgw;
+		this.obstacles = new ArrayList<Obstacles>();
+
+		// for(Point p : this.respawns){
+		// 	this.chars.add(new Character("nameu", p, gamePanel,1));
+		// }
+
+		this.chars.add(new Character("nameu",new Point(160,25), gamePanel,PIG));
+		this.chars.add(new Character("nameu",new Point(33,416), gamePanel,DYNAMIGHT));
+		this.chars.add(new Character("nameu",new Point(97,159), gamePanel,LUBGLUB));
+
+
+
 
 		int i = 0;
 		for(Point p : this.respawns){
 			this.chars.add(new Character("nameu"+Integer.toString(i++), p, this));
 		}
+
 
 		this.isFinished = false;
 		createGame();
@@ -61,12 +74,11 @@ public class Game extends JPanel implements Runnable{
 		gamePanel.setOpaque(false); 
 		gamePanel.setPreferredSize(new Dimension(730,550));
 
-		for (int i=1;i<22 ;i++ ) {
-			if(i == 8 || i == 12)continue;
+		for (int i=1;i<21 ;i++ ) {
 			Obstacles obs = new Obstacles(i);
 			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 			gamePanel.add(obs);
-			gameObjects.add(obs);
+			obstacles.add(obs);
 		}
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
@@ -77,7 +89,7 @@ public class Game extends JPanel implements Runnable{
 		this.setSize(730,700);
 		this.add(bg);
 
-		// this.deploy();
+		this.deploy();
 	}
 
 	//
@@ -87,19 +99,20 @@ public class Game extends JPanel implements Runnable{
 	private ArrayList<Point> respawnZoneGenerate(){					//	returns an arraylist containing all possibleSpawnZones
 		return (new ArrayList<Point>(){
 					ArrayList<Point> addAll(){
+
 						this.add(new Point(160, 10));
 						this.add(new Point(626, 104));
 						this.add(new Point(97, 146));
+
 						this.add(new Point(549, 361));
 						this.add(new Point(33, 416));
 						return this;
-
 					}
 				}).addAll();
 	}
 
-	public synchronized void run(){
-		this.cgw.getChat().setCharacter(this.chars.get(0));
+	public void run(){
+		int time;
 		while(!isFinished){
 			int time;
 			int alive = 0;
@@ -123,14 +136,6 @@ public class Game extends JPanel implements Runnable{
 	public void deploy(){
 		Thread t = new Thread(this);
 		t.start();
-	}
-
-	public ArrayList<GameObject> getGameObjects(){
-		return this.gameObjects;
-	}
-
-	public JPanel getGamePanel(){
-		return this.gamePanel;
 	}
 
 	//

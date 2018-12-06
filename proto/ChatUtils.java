@@ -148,8 +148,8 @@ public class ChatUtils{
                                    break;
                                    case CONNECT:                                               // if packetType is CONNECT
                                         connectPacketReceived = new ConnectPacket(received);
-                                        String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" connected";     
-                                        sendMessage(server,temp);                              // sends a message to everyone that someone has connected
+                                        // String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" connected";     
+                                        // sendMessage(server,temp);                              // sends a message to everyone that someone has connected
                                         // System.out.println(temp);                              // prints a message that someone has connected
                                    break;
                                    case CREATE_LOBBY:                                          // if packetType is CREATE_LOBBY
