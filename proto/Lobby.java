@@ -25,8 +25,8 @@ public class Lobby extends JPanel{
      ChatGameWindow cgw;
      JPanel top;
      JPanel mainPanel;
-     JButton start;
-     JButton exit;
+     static JButton start;
+     static JButton exit;
      CardLayout cardLayout;
 
      GridBagConstraints left;
@@ -167,6 +167,19 @@ public class Lobby extends JPanel{
           }
      }
 
+     static class startMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon startIcon = new ImageIcon("./src/STARTHOVER.png");
+               start.setIcon(startIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon startIcon = new ImageIcon("./src/START.png");
+               start.setIcon(startIcon);
+          }
+     }
+
      class backToMainGUI implements ActionListener{
           @Override
           public void actionPerformed(ActionEvent e){
@@ -174,6 +187,19 @@ public class Lobby extends JPanel{
                ChatUtils.invokeDisconnect(server, user);
                cgw.setVisible(false);
                cgw.getMainGUI().setVisible(true);
+          }
+     }
+
+     static class exitMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon exitIcon = new ImageIcon("./src/EXITHOVER.png");
+               exit.setIcon(exitIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon exitIcon = new ImageIcon("./src/EXIT.png");
+               exit.setIcon(exitIcon);
           }
      }
 
@@ -193,9 +219,11 @@ public class Lobby extends JPanel{
 
           this.start = createNewButton(this.startIcon);
           this.start.addActionListener(new startGame()); 
+          this.start.addMouseListener(new startMouse());
 
           this.exit = createNewButton(this.exitIcon);
           this.exit.addActionListener(new backToMainGUI());
+          this.exit.addMouseListener(new exitMouse());
           
           this.left = new GridBagConstraints(); 
           this.left.insets = new Insets(0,0,0,370);
