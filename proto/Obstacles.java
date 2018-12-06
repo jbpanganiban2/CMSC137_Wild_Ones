@@ -11,7 +11,8 @@ public class Obstacles extends JPanel{
 	Obstacles(int num){
 		this.block=num;
 		createObstacle(this.block);
-		this.setBackground(Color.BLACK);
+		// this.setBackground(Color.BLACK);
+		this.setOpaque(false);
 	}
 
 	public int getX(){
@@ -44,31 +45,60 @@ public class Obstacles extends JPanel{
 				render(351,373,119,190);
 				break;
 			case 3:
-				render(600,353,134,194);
+				render(597,347,134,194);
 				break;
 			case 4:
-				render(518,418,84,131);
+				render(514,411,84,131);
 				break;
 			case 5:
 				render(0,208,200,57);
 				break;
 			case 6:
-				render(480,96,250,45);
+				render(78,60,250,45);
 				break;
 			case 7:
-				render(400,155,64,64);
+				render(426,158,64,64);
 				break;
 			case 8:
-				render(193,298,78,78);
+				render(193,269,78,78);
 				break;
 			case 9:
-				render(480,266,140,50);
+				render(482,248,140,50);
 				break;
 			case 10:
 				render(630,320,82,28);
 				break;
 			case 11:
 				render(644,294,27,27);
+			case 12:
+				render(300,118,127,19);
+				break;
+			case 13:
+				render(584,156,127,19);
+				break;
+			case 14:
+				render(500,220,60,30);
+				break;
+			case 15:
+				render(500,190,30,30);
+				break;
+			case 16:
+				render(88,436,90,30);
+				break;
+			case 17:
+				render(40,180,30,30);
+				break;
+			case 18:
+				render(644,292,27,27);
+				break;
+			case 19:
+				render(216,438,90,30);
+				break;
+			case 20:
+				render(246,406,60,30);
+				break;
+			case 21:
+				render(276,376,30,30);
 				break;
 			default:
 				break;
