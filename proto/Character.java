@@ -78,6 +78,7 @@ public class Character extends MovingObject{
 		this.movingRight = false;
 		
 		this.disable();
+
 	}
 
 
