@@ -113,13 +113,17 @@ public class Game extends JPanel implements Runnable{
 		this.chars.remove(c);
 	}
 
+	public boolean rectContains(Rectangle o){
+		return (new Rectangle(new Point(0,0), new Dimension(730, 550))).contains(o);
+	}
+
 	public synchronized void run(){
 		int time;
 		while(!isFinished){
 			int alive = 0;
 			for(Character c : this.chars){
 				// play a turn -- this will only activate for player
-				// if(c.isAlive()){
+				if(c.isAlive()){
 					alive += 1;
 					new Prompt(c.getUserName()+"'s turn", 750);
 					c.enable();
@@ -127,7 +131,7 @@ public class Game extends JPanel implements Runnable{
 						// System.out.println(time+" left");
 						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
 					}c.endTurn();
-				// }
+				}
 			}
 			if(alive == 1)isFinished = true;
 		}
