@@ -27,8 +27,8 @@ public class Game extends JPanel implements Runnable{
 	JPanel chatPanel;
 
 	ArrayList<Character> chars;
-	ArrayList<Obstacles> obstacles;
 	ArrayList<Point> respawns;
+	ArrayList<GameObject> gameObjects;
 	boolean isFinished;
 
 	//
@@ -40,16 +40,18 @@ public class Game extends JPanel implements Runnable{
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
-		this.obstacles = new ArrayList<Obstacles>();
+		this.gameObjects = new ArrayList<GameObject>();
 
-		// for(Point p : this.respawns){
-		// 	this.chars.add(new Character("nameu", p, gamePanel,1));
-		// }
+		// this.chars.add(new Character("nameu",new Point(160,25), gamePanel,PIG));
+		// this.chars.add(new Character("nameu",new Point(33,416), gamePanel,DYNAMIGHT));
+		// this.chars.add(new Character("nameu",new Point(97,159), gamePanel,LUBGLUB));
 
-		this.chars.add(new Character("nameu",new Point(160,25), gamePanel,PIG));
-		this.chars.add(new Character("nameu",new Point(33,416), gamePanel,DYNAMIGHT));
-		this.chars.add(new Character("nameu",new Point(97,159), gamePanel,LUBGLUB));
 
+		int i = 0;
+		for(Point p : this.respawns){
+			this.chars.add(new Character("nameu"+Integer.toString(i), p, this, i++));
+			if(i > 3)i = 1;
+		}
 
 
 
@@ -72,7 +74,7 @@ public class Game extends JPanel implements Runnable{
 			Obstacles obs = new Obstacles(i);
 			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 			gamePanel.add(obs);
-			obstacles.add(obs);
+			gameObjects.add(obs);
 		}
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
@@ -83,7 +85,6 @@ public class Game extends JPanel implements Runnable{
 		this.setSize(730,700);
 		this.add(bg);
 
-		this.deploy();
 	}
 
 	//
@@ -103,9 +104,20 @@ public class Game extends JPanel implements Runnable{
 				}).addAll();
 	}
 
+	public ArrayList<GameObject> getGameObjects(){
+		return this.gameObjects;
+	}
+
+	public JPanel getGamePanel(){
+		return this.gamePanel;
+	}
+
 	public void run(){
 		int time;
 		while(!isFinished){
+
+			int alive = 0;
+
 			for(Character c : this.chars){
 				// play a turn
 				time = 50;

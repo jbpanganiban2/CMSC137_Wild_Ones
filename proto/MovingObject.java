@@ -1,13 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 //
 //   MovingObject
 //        a general class that is extended by all components to be rendered in-game
 //
 
-public class MovingObject extends JPanel implements Runnable{
+public class MovingObject extends JPanel implements Runnable, GameObject{
 
      //
      //   Attributes
@@ -16,14 +17,19 @@ public class MovingObject extends JPanel implements Runnable{
      protected JPanel gamePanel;
      protected Point position;
      protected Dimension size;
-     protected Rectangle rect;
      protected String name;
+
+     protected boolean alive;
+     protected boolean collided;
+
+     protected static ArrayList<GameObject> gameObjects;
+     protected Game g;
 
      //
      //   Constructors
      //
 
-     public MovingObject(String name, Point initial, Dimension init_size, JPanel gamePanel){
+     public MovingObject(String name, Point initial, Dimension init_size, Game g){
           this.position = initial;
           this.size = init_size;
           this.name = name;
@@ -32,17 +38,21 @@ public class MovingObject extends JPanel implements Runnable{
           this.setPreferredSize(this.size); 
           this.rect = new Rectangle(this.position, this.size);
           
-          // this.setOpaque(false);
-          this.gamePanel = gamePanel;
+          this.setOpaque(true);
+          this.g = g;
+
+          this.gamePanel = g.getGamePanel();
+
+          gameObjects = g.getGameObjects();
+          gameObjects.add(this);
      }
 
      //
      //   Methods
      //
      
-     private void refresh(){                           // positions the panel in the mainpanel, called every after setLocation
+     private void refresh(){                                          // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
-          this.gamePanel.repaint();
      }
 
      //   methods used locally
@@ -59,7 +69,7 @@ public class MovingObject extends JPanel implements Runnable{
           this.refresh();
      }
 
-     public void setLoc(){                             // sets location of object in its init point
+     public void setLoc(){                             // sets location of GameObject in its init point
           this.refresh();
      }
 
