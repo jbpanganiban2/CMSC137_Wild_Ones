@@ -100,19 +100,12 @@ public class ChatUtils{
           }
      }
 
-     synchronized public static void getOnlinePlayers(Socket server){
-          Thread thread = new Thread(){
-               public void run(){
-                    while(true){
-                         // try{Thread.sleep(2000);}catch(Exception e){};
-                         if(chatting == true){
-                              getPlayers(server);
-                         }
-                         else System.out.println("");
-                    }
-               }
-          };
-          thread.start();
+     public synchronized static Player[] getOnlinePlayers(Socket server){
+
+          getPlayers(server);
+          while(online == null){System.out.print("\0");}       // waits for a server response
+
+          return online;
      }
 
      public static TcpPacketProtos.TcpPacket.PacketType packetType(int i){
@@ -163,13 +156,9 @@ public class ChatUtils{
                                    break;
                                    case PLAYER_LIST:                                           // if packetType is PLAYER_LIST
                                         System.out.println("player list packet received");
-                                        // PLPacket r = new PLPacket(received);
-                                        // System.out.println();
-                                        // int newPcount = r.getPlayerCount();
-                                        // System.out.println(newPcount + " > " + oldPlayerCount);
-                                        // if(newPcount > oldPlayerCount)
-                                        //      System.out.println("player has joined boi");
-                                        //      oldPlayerCount = newPcount;
+                                        PLPacket r = new PLPacket(received);
+                                        online = r.getPlayerList();
+
                                    break;
                                    case ERR_LDNE:                                              // if packetType is ERR_LDNE                                        
                                         System.out.println("\nERROR: LOBBY DOES NOT EXIST");
