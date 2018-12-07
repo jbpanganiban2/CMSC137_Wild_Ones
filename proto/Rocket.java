@@ -61,8 +61,6 @@ public class Rocket extends MovingObject{
                return;
           }
 
-          Point y = null;
-          int yVal;
           for(int i = start; i != end; i+=increment ){
                this.trajectory.add(getPositionAtX(i));
           }
@@ -86,48 +84,6 @@ public class Rocket extends MovingObject{
           }
      }
 
-     public synchronized GameObject hasCollision(ArrayList<GameObject> m){     // returns the GameObject collided with, else returns null
-          try{
-               for(GameObject o : m){
-                    if(o instanceof MovingObject){
-                         MovingObject mo = (MovingObject)o;
-                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
-                              /*
-                                   invoke some things
-                               */
-                              return mo;
-                         }
-                    }
-                    else if(o instanceof Obstacles){
-                         Obstacles mo = (Obstacles)o;
-                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
-                              /*
-                                   invoke some things
-                               */
-                              return mo;
-                         }
-                    }
-               }return null;
-          }catch(Exception e){}
-          return null;
-     }
-
-     @Override
-     public void hasCollided(MovingObject m){                    // what will happen after this hasCollided with a MovingObject m
-          // explosion animation
-          this.alive = false;
-          this.collided = true;
-          if(m instanceof Character)
-               ((Character)m).damaged();
-     }
-
-     @Override
-     public void hasCollided(Obstacles m){                       // what will happen after this hasCollided with Obstacle
-          System.out.println(this.name+" hit an obstacle");
-          this.alive = false;
-          this.collided = true;
-     }
-
      public void run(){
           for(Point p : trajectory){
 
@@ -139,6 +95,7 @@ public class Rocket extends MovingObject{
           }
           this.g.getGameObjects().remove(this);
           this.c.setTimeZero();
+
           setVisible(false);
      }
 

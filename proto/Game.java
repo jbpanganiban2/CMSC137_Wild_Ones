@@ -25,6 +25,8 @@ public class Game extends JPanel implements Runnable{
 	
 	JPanel gamePanel;
 	JPanel chatPanel;
+    JPanel playerPanel;
+
 
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
@@ -41,6 +43,7 @@ public class Game extends JPanel implements Runnable{
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
 		this.gameObjects = new ArrayList<GameObject>();
+		this.playerPanel = new JPanel();
 
 		this.isFinished = false;
 		createGame();
@@ -63,6 +66,12 @@ public class Game extends JPanel implements Runnable{
 			gamePanel.add(obs);
 			gameObjects.add(obs);
 		}
+
+        // this.playerPanel.setPreferredSize(new Dimension(150,50));
+        // this.playerPanel.setBounds(0,480,210,65);
+        // this.playerPanel.setLayout(new GridBagLayout());
+        // JLabel
+        // gamePanel.add(playerPanel);
 
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
 		bg.setPreferredSize(new Dimension(730,550));
