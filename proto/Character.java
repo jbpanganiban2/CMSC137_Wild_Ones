@@ -6,6 +6,7 @@ import java.util.*;
 
 public class Character extends MovingObject{
 
+
   //
   //  Attributes
   //
@@ -402,6 +403,7 @@ public class Character extends MovingObject{
 
 
 
+
   class RocketListener extends MouseAdapter{                  // listens to Rockets
 
           @Override
@@ -417,6 +419,7 @@ public class Character extends MovingObject{
 
 
      class Move extends AbstractAction {
+
 
       Character ch;
       int moveType;
@@ -481,6 +484,7 @@ public class Character extends MovingObject{
 
 
     }
+
 
 
      }
