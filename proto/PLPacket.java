@@ -41,7 +41,7 @@ public class PLPacket{
 
 	public Player[] getPlayerList(){
 		int count = this.packet.getPlayerListCount();
-		System.out.println("countofplayers: "+count);
+		// System.out.println("countofplayers: "+count);
 		Player[] p = new Player[count];
 
 		for(int i = 0; i < count; i++){

@@ -4,6 +4,15 @@ import javax.swing.*;
 import java.util.*;
 
 public class Game extends JPanel implements Runnable{
+
+	//
+	//	Possible starting points
+	//		p1 = 155, 170
+	//		p2 = 345, 120
+	//		p3 = 540, 170
+	//		p4 = 45, 450
+	//		p5 = 645, 450
+	//
 	
 	//
 	//	Attributes
@@ -32,7 +41,6 @@ public class Game extends JPanel implements Runnable{
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
 		this.gameObjects = new ArrayList<GameObject>();
-
 
 		this.isFinished = false;
 		createGame();
@@ -81,9 +89,11 @@ public class Game extends JPanel implements Runnable{
 	private ArrayList<Point> respawnZoneGenerate(){					//	returns an arraylist containing all possibleSpawnZones
 		return (new ArrayList<Point>(){
 					ArrayList<Point> addAll(){
-						this.add(new Point(160, 25));
-						this.add(new Point(626, 124));
-						this.add(new Point(97, 161));
+
+						this.add(new Point(160, 10));
+						this.add(new Point(626, 104));
+						this.add(new Point(97, 146));
+
 						this.add(new Point(549, 361));
 						this.add(new Point(33, 416));
 						return this;
@@ -99,22 +109,29 @@ public class Game extends JPanel implements Runnable{
 		return this.gamePanel;
 	}
 
-	public void run(){
+	public synchronized void dead(Character c){
+		this.chars.remove(c);
+	}
+
+	public synchronized void run(){
 		int time;
 		while(!isFinished){
-
 			int alive = 0;
-
 			for(Character c : this.chars){
-				// play a turn
-				time = 50;
-				while(time-- > 0){
-					System.out.println(time+" left.");
-					try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
+				// play a turn -- this will only activate for player
+				// if(c.isAlive()){
+					alive += 1;
+					new Prompt(c.getUserName()+"'s turn", 750);
 					c.enable();
-				}c.disable();
+					while((time = c.getTimeLeft()) > 0){
+						// System.out.println(time+" left");
+						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
+					}c.endTurn();
+				// }
 			}
+			if(alive == 1)isFinished = true;
 		}
+		System.out.println(this.chars.get(0)+" won.");
 	}
 
 	public void deploy(){

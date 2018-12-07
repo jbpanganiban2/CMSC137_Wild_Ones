@@ -155,7 +155,7 @@ public class ChatUtils{
                                         // getPlayers(server);
                                    break;
                                    case PLAYER_LIST:                                           // if packetType is PLAYER_LIST
-                                        System.out.println("player list packet received");
+                                        // System.out.println("player list packet received");
                                         PLPacket r = new PLPacket(received);
                                         online = r.getPlayerList();
 
