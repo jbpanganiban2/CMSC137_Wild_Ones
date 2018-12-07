@@ -117,7 +117,7 @@ public class Lobby extends JPanel{
                
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                
-               System.out.println(connected);
+               // System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
                          return;
@@ -134,6 +134,10 @@ public class Lobby extends JPanel{
 
      public boolean connected(){
           return this.connected;
+     }
+
+     public Chat getChat(){
+          return this.chat;
      }
 
 
@@ -165,7 +169,7 @@ public class Lobby extends JPanel{
                Player[] online = ChatUtils.getOnlinePlayers(server);
                // System.out.println(online.length);
                if(online.length == 1){
-                    
+
                     new Prompt("Add more players", 1000);
                     return;
                }
@@ -248,7 +252,6 @@ public class Lobby extends JPanel{
           this.setOpaque(false);
           this.add(bg);
      }
-     
 
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button

@@ -74,8 +74,11 @@ public class ChatGameWindow extends JFrame{
           };
 
           this.lobby =  new Lobby(this, lID);
-          if(this.lobby.connected())
+          if(this.lobby.connected()){
                createWindow();
+               this.mainGUI.setVisible(false);
+          }
+
      }
 
      public void createWindow(){
@@ -84,7 +87,9 @@ public class ChatGameWindow extends JFrame{
 
           this.game = new Game(this);
 
-          this.chat = new Chat(this.server,  this.user.getName());
+          // this.chat = new Chat(this.server,  this.user.getName());
+
+          this.chat = this.lobby.getChat();
           this.chat.setPreferredSize(new Dimension(730,150));
 
           this.cardPanel.setOpaque(false); 
@@ -114,6 +119,8 @@ public class ChatGameWindow extends JFrame{
           this.add(mainPanel);   
           this.pack();               //add to frame
           this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+          this.chat.requestFocus();
      }
 
      //

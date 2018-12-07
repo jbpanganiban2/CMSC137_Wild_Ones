@@ -170,7 +170,8 @@ public class Character extends MovingObject{
 
 	public synchronized void moveRight(){
 		Point test = new Point((int)this.position.getX()+movement, ((int)this.position.getY()));
-		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+		Rectangle testRect = new Rectangle(test, this.size);
+		if((this.hasCollision(testRect,this.g.getGameObjects())) != null || !this.g.rectContains(testRect)){
 			this.xCollide = true;
 			return;
 		}
@@ -180,7 +181,8 @@ public class Character extends MovingObject{
 
 	public synchronized void moveLeft(){
 		Point test = new Point((int)this.position.getX()-movement, ((int)this.position.getY()));
-		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
+		Rectangle testRect = new Rectangle(test, this.size);
+		if((this.hasCollision(testRect,this.g.getGameObjects())) != null || !this.g.rectContains(testRect)){
 			this.xCollide = true;
 			return;
 		}
