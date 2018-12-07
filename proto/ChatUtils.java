@@ -158,12 +158,7 @@ public class ChatUtils{
                                         System.out.println("player list packet received");
                                         PLPacket r = new PLPacket(received);
                                         online = r.getPlayerList();
-                                        // System.out.println();
-                                        // int newPcount = r.getPlayerCount();
-                                        // System.out.println(newPcount + " > " + oldPlayerCount);
-                                        // if(newPcount > oldPlayerCount)
-                                        //      System.out.println("player has joined boi");
-                                        //      oldPlayerCount = newPcount;
+
                                    break;
                                    case ERR_LDNE:                                              // if packetType is ERR_LDNE                                        
                                         System.out.println("\nERROR: LOBBY DOES NOT EXIST");
