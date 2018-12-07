@@ -54,7 +54,7 @@ public class ChatGameWindow extends JFrame{
 
           this.lobby = new Lobby(this);
           if(this.lobby.connected())
-          createWindow();
+               createWindow();
 
      }
 

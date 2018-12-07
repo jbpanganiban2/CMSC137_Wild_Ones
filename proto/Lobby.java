@@ -162,7 +162,12 @@ public class Lobby extends JPanel{
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
+               Player[] online = ChatUtils.getOnlinePlayers(server);
+               System.out.println(online.length);
+               if(online.length == 1)return;
+
                cardLayout.next(mainPanel);
+               cgw.getGame().init_Players(online);
                cgw.getGame().deploy();
           }
      }

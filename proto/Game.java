@@ -42,17 +42,6 @@ public class Game extends JPanel implements Runnable{
 		this.chars = new ArrayList<Character>();
 		this.gameObjects = new ArrayList<GameObject>();
 
-		// this.chars.add(new Character("nameu",new Point(160,25), gamePanel,PIG));
-		// this.chars.add(new Character("nameu",new Point(33,416), gamePanel,DYNAMIGHT));
-		// this.chars.add(new Character("nameu",new Point(97,159), gamePanel,LUBGLUB));
-
-		int i = 0;
-		for(Point p : this.respawns){
-			this.chars.add(new Character("nameu"+Integer.toString(i), p, this, i++));
-			if(i > 3)i = 1;
-		}
-
-
 		this.isFinished = false;
 		createGame();
 
@@ -83,6 +72,14 @@ public class Game extends JPanel implements Runnable{
 		this.setSize(730,700);
 		this.add(bg);
 
+	}
+
+	public void init_Players(Player[] players){						// initializes players
+		int i = 0;
+		for(Player p : players){
+			this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
+			i+=1;
+		}
 	}
 
 	//
