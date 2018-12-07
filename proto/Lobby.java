@@ -163,8 +163,12 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent event) {
                Player[] online = ChatUtils.getOnlinePlayers(server);
-               System.out.println(online.length);
-               if(online.length == 1)return;
+               // System.out.println(online.length);
+               if(online.length == 1){
+                    
+                    new Prompt("Add more players", 1000);
+                    return;
+               }
 
                cardLayout.next(mainPanel);
                cgw.getGame().init_Players(online);

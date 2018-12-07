@@ -391,6 +391,7 @@ public class Character extends MovingObject{
 			System.out.println(this.name+" is now dead.");
 			this.alive = false;
 			this.g.getGameObjects().remove(this);
+			this.g.dead(this);
 			this.g.getGamePanel().remove(this);
 			this.setVisible(false);
 			this.g.getGamePanel().invalidate();
