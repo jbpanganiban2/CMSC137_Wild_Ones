@@ -17,16 +17,19 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
      protected JPanel gamePanel;
      protected Point position;
      protected Dimension size;
-
      protected String name;
+
      protected boolean alive;
      protected boolean collided;
+
+     protected static ArrayList<GameObject> gameObjects;
+     protected Game g;
 
      //
      //   Constructors
      //
 
-     public MovingObject(String name, Point initial, Dimension init_size, JPanel gamePanel){
+     public MovingObject(String name, Point initial, Dimension init_size, Game g){
           this.position = initial;
           this.size = init_size;
           this.name = name;
@@ -37,17 +40,21 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
           this.collided = false;
 
           
-          // this.setOpaque(false);
-          this.gamePanel = gamePanel;
+          this.setOpaque(true);
+          this.g = g;
+
+          this.gamePanel = g.getGamePanel();
+
+          gameObjects = g.getGameObjects();
+          gameObjects.add(this);
      }
 
      //
      //   Methods
      //
      
-     private void refresh(){                           // positions the panel in the mainpanel, called every after setLocation
+     private void refresh(){                                          // positions the panel in the mainpanel, called every after setLocation
           this.setBounds((int)this.position.getX(), (int)this.position.getY(), (int)this.size.getWidth(), (int)this.size.getHeight());
-          this.gamePanel.repaint();
      }
 
      public String getUserName(){
@@ -163,7 +170,7 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
           this.refresh();
      }
 
-     public void setLoc(){                             // sets location of object in its init point
+     public void setLoc(){                             // sets location of GameObject in its init point
           this.refresh();
      }
 

@@ -8,29 +8,28 @@ public class Rocket extends MovingObject{
      //
      //  Attributes
      //
-     private final  Icon ROCKET = new ImageIcon("src/fire/fire.gif");
 
      private Point charPosition;
      private Point cursorPosition;
+     private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
-     private JLabel rocket;
+     private Character c;
+
      //
      //  Constructors
      //
 
-     public Rocket(String name, Point charPosition, Point cursorPosition, JPanel gamePanel){
-          super(name, charPosition, new Dimension(40, 50), gamePanel);
+     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
+          super(name, charPosition, new Dimension(10, 10), g);
           this.charPosition = charPosition;
+          this.type = type;
           this.trajectory = new ArrayList<Point>();
+          this.c = c;
           this.cursorPosition = cursorPosition;
 
-          this.rocket=new JLabel();
-          this.rocket.setOpaque(false);
-          this.rocket.setIcon(ROCKET);
-          this.add(rocket);
-          this.setLoc(charPosition);
+          this.setBackground(Color.BLACK);
 
-          this.setOpaque(false);
+          this.setLoc(charPosition);
           this.gamePanel.add(this);
 
           this.getTrajectory();
@@ -132,14 +131,14 @@ public class Rocket extends MovingObject{
      public void run(){
           for(Point p : trajectory){
 
-               try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
-               this.setLoc(p);
+               if(this.alive){
+                    try{Thread.sleep(5);}catch(Exception e){e.printStackTrace();};
+                    this.setLoc(p);
+               }
                
           }
-
           this.g.getGameObjects().remove(this);
           this.c.setTimeZero();
-
           setVisible(false);
      }
 
