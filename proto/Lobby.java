@@ -26,7 +26,6 @@ public class Lobby extends JPanel{
      JButton choice2;
      JButton choice3;
 
-
      Image newimg;
      ImageIcon startIcon;
      ImageIcon exitIcon;
@@ -51,7 +50,7 @@ public class Lobby extends JPanel{
      Player user;
      boolean connected = false;
 
-
+     int selectedChar = 0;
 
      //
      //  CONSTRUCTORS
@@ -101,7 +100,9 @@ public class Lobby extends JPanel{
 
                if(!lobby_id.equals("You are not part of any lobby.")){     
 
-                    ChatUtils.setChat(this.chat);
+                    this.chat = new Chat(server, user.getName());
+                    ChatUtils.addConnectedChat(this.chat);
+                    // ChatUtils.setChat(this.chat);
 
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                     if(!connected){
@@ -122,11 +123,14 @@ public class Lobby extends JPanel{
 
      public void connectToLobby(String lobby_id){
 
-          ChatUtils.listenToServer(server, user);                               // initializes all ui components
+          ChatUtils.listenToServer(server, user);  
+                             
 
           if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
                
-               ChatUtils.setChat(this.chat);
+               // ChatUtils.setChat(this.chat);
+               this.chat = new Chat(server, user.getName());
+               ChatUtils.addConnectedChat(this.chat);
                
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                
@@ -213,6 +217,7 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent e){
 
+               ChatUtils.removeChat(chat);
                ChatUtils.invokeDisconnect(server, user);
                cgw.setVisible(false);
                cgw.getMainGUI().setVisible(true);
@@ -237,7 +242,6 @@ public class Lobby extends JPanel{
      //
      
      private void initUIComponents(){        // Inintializes all UI components
-          this.chat = new Chat(server, user.getName());
 
           this.startIcon = new ImageIcon("./src/START.png");  
           this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
@@ -260,10 +264,9 @@ public class Lobby extends JPanel{
           this.right = new GridBagConstraints();
           this.right.anchor = GridBagConstraints.LINE_END;
 
-
-          this.choice1 = createChoice(PIG_STANDBY,PIG_ATTACK);
-          this.choice2 = createChoice(LUB_STANDBY,LUB_ATTACK);
-          this.choice3 = createChoice(DYNA_STANDBY,DYNA_ATTACK);
+          this.choice1 = createChoice(PIG_STANDBY,PIG_ATTACK,0);
+          this.choice2 = createChoice(LUB_STANDBY,LUB_ATTACK,1);
+          this.choice3 = createChoice(DYNA_STANDBY,DYNA_ATTACK,2);
 
           
           this.top = newTop(this.start, this.exit, this.right, this.left);
@@ -275,14 +278,32 @@ public class Lobby extends JPanel{
           this.add(bg);
      }
 
-     private JButton createChoice( Icon icn, Icon icn2){
+     private JButton createChoice( Icon icn, Icon icn2, int choiceType){
           JButton btn = new JButton(icn);
           btn.setRolloverEnabled(true);
           btn.setRolloverIcon(icn2);
           btn.setContentAreaFilled(false);
           btn.setBorderPainted(false);
+          btn.addActionListener((new SetChoice(choiceType, this)));
           btn.setPreferredSize(new Dimension(50,50));
           return btn;
+     }
+
+     static class SetChoice implements ActionListener{
+
+          int value;
+          Lobby l;
+
+          public SetChoice(int i, Lobby l){
+               this.value = i;
+               this.l = l;
+               // return this;
+          }
+
+          @Override
+          public void actionPerformed(ActionEvent e){
+               l.selectedChar = this.value;
+          }
      }
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button

@@ -56,11 +56,16 @@ public class CHPacket{
 		return this.packet.getMessage();
 	}
 
-	public void addMessageToBox(String message, Chat chat){
+	public String getSender(){
 		Player p = new Player(this.packet.getPlayer());
-		String username = p.getName();
-		chat.addMessageToBox(username, message);
+		return p.getName();
 	}
+
+	// public void addMessageToBox(String message, Chat chat){
+	// 	Player p = new Player(this.packet.getPlayer());
+	// 	String username = p.getName();
+	// 	chat.addMessageToBox(username, message);
+	// }
 
 	public byte[] serialize(){
 		return this.packet.toByteArray();

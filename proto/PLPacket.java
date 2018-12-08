@@ -36,7 +36,7 @@ public class PLPacket{
 	}
 
 	public Player getPlayerAt(int index){
-		return new Player(this.packet.getPlayerList(index));
+		return new Player(this.packet.getPlayerList(index), index);
 	}
 
 	public Player[] getPlayerList(){

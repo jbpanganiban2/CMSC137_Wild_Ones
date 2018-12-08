@@ -34,6 +34,7 @@ public class Game extends JPanel implements Runnable{
 	Character userCharacter;
 	Player userPlayer;
 	boolean isFinished;
+	UDPServer server;
 
 	//
 	//	Constructors
@@ -46,6 +47,8 @@ public class Game extends JPanel implements Runnable{
 		this.chars = new ArrayList<Character>();
 		this.gameObjects = new ArrayList<GameObject>();
 		this.playerPanel = new JPanel();
+
+		this.server = new UDPServer(this);
 
 		this.isFinished = false;
 		createGame();
@@ -82,9 +85,10 @@ public class Game extends JPanel implements Runnable{
 	public void init_Players(Player[] players){						// initializes players
 		int i = 0;
 		Character toAdd = null;
+		System.out.println("players = "+players.length);
 		for(Player p : players){
 			if(p == null)continue;
-			// System.out.println(p.getID()+" : "+this.userPlayer.getID());
+			System.out.println(p.getID()+" : "+this.userPlayer.getID());
 			if(!p.getID().equals(this.userPlayer.getID())){
 				System.out.println("enters");
 				this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
@@ -147,25 +151,16 @@ public class Game extends JPanel implements Runnable{
 	public synchronized void run(){
 		int time;
 		this.userCharacter.enable();
-		while(this.chars.size() >= 1){
-			// int alive = 0;
-			// for(Character c : tis.chars){
-			// 	// play a turn -- this will only activate for player
-			// 	if(c.isAlive()){
-			// 		alive += 1;
-			// 	}
-			// }
-			// if(alive == 100){
-			// 	isFinished = true;
-			// }
-		}
+		while(this.chars.size() >= 1){}
 		this.userCharacter.disable();
 		System.out.println(this.chars.get(0).getName()+" won.");
 	}
 
 	public void deploy(){
 		Thread t = new Thread(this);
+		this.server.start();
 		t.start();
+
 	}
 
 	//
