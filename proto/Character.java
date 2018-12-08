@@ -410,6 +410,8 @@ public class Character extends MovingObject{
 						// System.out.println("rocket cooldown: "+time);
 						time--;
 						Thread.sleep(1000);
+					setCharacterUI(STANDBY);
+
 					}catch(Exception e){
 						e.printStackTrace();
 					}
