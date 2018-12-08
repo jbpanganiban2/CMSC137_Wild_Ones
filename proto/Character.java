@@ -62,12 +62,12 @@ public class Character extends MovingObject{
 	//
 
 	public Character(String name, Point init, Game g, int type){
-		super(name, init, new Dimension(50, 50), g);
+		super(name, init, new Dimension(40, 50), g);
 		this.initchar(type);
 	}
 
 	public Character(Player p, Point init, Game g, int type){
-		super(p.getName(), init, new Dimension(50, 50), g);
+		super(p.getName(), init, new Dimension(40, 50), g);
 		this.id = p.getID();
 		System.out.println(this.name+"'s id = "+this.id);
 		this.initchar(type);
@@ -145,44 +145,44 @@ public class Character extends MovingObject{
 		case ATTACK:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_ATTACK);
+				this.charr.setIcon(LUB_ATTACK);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_ATTACK);
 			}else{
-				this.charr.setIcon(LUB_ATTACK);
+				this.charr.setIcon(PIG_ATTACK);
 			}
 		break;
 
 		case STANDBY:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_STANDBY);
+				this.charr.setIcon(LUB_STANDBY);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_STANDBY);
 			}else{
-				this.charr.setIcon(LUB_STANDBY);
+				this.charr.setIcon(PIG_STANDBY);
 			}
 		break;
 
 		case WALKLEFT:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_WALKLEFT);
+				this.charr.setIcon(LUB_WALKLEFT);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_WALKLEFT);
 			}else{
-				this.charr.setIcon(LUB_WALKLEFT);
+				this.charr.setIcon(PIG_WALKLEFT);
 			}
 		break;
 
 		case WALKRIGHT:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_WALKRIGHT);
+				this.charr.setIcon(LUB_WALKRIGHT);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_WALKRIGHT);
 			}else{
-				this.charr.setIcon(LUB_WALKRIGHT);
+				this.charr.setIcon(PIG_WALKRIGHT);
 			}
 		break;
 
@@ -410,7 +410,7 @@ public class Character extends MovingObject{
 						// System.out.println("rocket cooldown: "+time);
 						time--;
 						Thread.sleep(1000);
-					setCharacterUI(STANDBY);
+						setCharacterUI(STANDBY);
 
 					}catch(Exception e){
 						e.printStackTrace();
