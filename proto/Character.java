@@ -30,6 +30,9 @@ public class Character extends MovingObject{
 	private final static int WALKRIGHT = 3;
 	private JLabel charr;
 
+	private UDPClient udpclient;
+
+
 	// 0 stands for pressed, 1 stands for released
 	private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;  
 	static final int JUMP0 = 01;
@@ -68,7 +71,8 @@ public class Character extends MovingObject{
 	public Character(Player p, Point init, Game g, int type){
 		super(p.getName(), init, new Dimension(50, 50), g);
 		this.id = p.getID();
-		System.out.println(this.name+"'s id = "+this.id);
+		this.udpclient = new UDPClient(p.getName());
+		// System.out.println(this.name+"'s id = "+this.id);
 		this.initchar(type);
 	}
 
@@ -348,6 +352,7 @@ public class Character extends MovingObject{
 	public synchronized void enable(){ // enables keyBindings for Character
 
 	// this.time = 25;
+	this.udpclient.start();
 	this.enabled = true;
 	this.deployedRocket = false;
 	this.getActionMap().get(JUMP0).setEnabled(true);
@@ -385,6 +390,7 @@ public class Character extends MovingObject{
 		if(this.enabled && !this.cooldown/*&& this.time != 0 && !this.deployedRocket*/){
 			new Rocket("rocket", this, new Point(this.position), p, this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
 			this.rocketCooldown();
+			this.udpclient.send("motherfuckerssss");
 			// this.time = 0;
 			// this.deployedRocket = true;
 		}
@@ -393,7 +399,7 @@ public class Character extends MovingObject{
 	private synchronized void rocketCooldown(){
 		this.cooldown = true;
 		(new Thread(){
-			int time = 4;
+			int time = 3;
 			@Override
 			public void run(){
 				while(time > 0){

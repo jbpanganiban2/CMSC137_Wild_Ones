@@ -8,7 +8,7 @@ import proto.*;
 
 import java.net.*;
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class ChatUtils{
 
@@ -19,7 +19,7 @@ public class ChatUtils{
      public static boolean chatting = false;
      public static Player[] online = null;
      public static int oldPlayerCount = 0;
-     public static Chat chat;
+     public static ArrayList<Chat> connectedChats = new ArrayList<Chat>();
 
      public static int intAsker(String args){
           System.out.print(args+"> ");
@@ -100,6 +100,26 @@ public class ChatUtils{
           }
      }
 
+     public static void addConnectedChat(Chat c){
+          connectedChats.add(c);
+     }
+
+     public static void removeChat(Chat c){
+          connectedChats.remove(c);
+     }
+
+     public static void sendChatToAll(String username, String string){
+
+          (new Thread(){
+               @Override
+               public void run(){
+                    for(Chat c : connectedChats){
+                         c.addMessageToBox(username, string);
+                    }
+               }    
+          }).start();
+     }
+
      public synchronized static Player[] getOnlinePlayers(Socket server){
 
           getPlayers(server);
@@ -112,9 +132,7 @@ public class ChatUtils{
           return TcpPacketProtos.TcpPacket.PacketType.forNumber(i);
      }
 
-     public static void setChat(Chat toSet){
-          ChatUtils.chat = toSet;
-     }
+     // p/
 
      synchronized public static void listenToServer(Socket server, Player user) {         // listens to all possible packets, then sets the according packet
           Thread thread = new Thread(){
@@ -139,26 +157,24 @@ public class ChatUtils{
                                         DCPacket disconnectpacket = new DCPacket(received);
                                         System.out.println();
                                    break;
-                                   case CONNECT:                                               // if packetType is CONNECT
+                                   case CONNECT:                                               // if packetType is Connected
                                         connectPacketReceived = new ConnectPacket(received);
                                         String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" connected";     
-                                        sendMessage(server,temp);                              // sends a message to everyone that someone has connected
-                                        // System.out.println(temp);                              // prints a message that someone has connected
+                                        sendMessage(server,temp);                              //    at someone has connected
                                    break;
                                    case CREATE_LOBBY:                                          // if packetType is CREATE_LOBBY
-                                        createLobbyPacketReceived = new CLPacket(received);
+                                        createLobbyPacketReceived = new CLPacket(received);    // edi good
                                    break;
                                    case CHAT:                                                  // if packetType is CHAT
+                                        
                                         CHPacket chatpacket = new CHPacket(received);
-                                        // chatpacket.showMessage(user);
-                                        chatpacket.addMessageToBox(chatpacket.getMessage(), chat);
-                                        // getPlayers(server);
+                                        
+                                        sendChatToAll(chatpacket.getSender(), chatpacket.getMessage());
+
                                    break;
                                    case PLAYER_LIST:                                           // if packetType is PLAYER_LIST
-                                        // System.out.println("player list packet received");
                                         PLPacket r = new PLPacket(received);
                                         online = r.getPlayerList();
-
                                    break;
                                    case ERR_LDNE:                                              // if packetType is ERR_LDNE                                        
                                         System.out.println("\nERROR: LOBBY DOES NOT EXIST");
