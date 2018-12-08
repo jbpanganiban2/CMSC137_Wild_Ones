@@ -9,17 +9,17 @@ public class Character extends MovingObject{
 	//
 	//  Attributes
 	//
-	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
 	private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
 	private final static Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
 	private final static Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
-	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
-	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
+	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
 	private final static Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
 	private final static Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
 
-	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
 	private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
 	private final static Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
 	private final static Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
@@ -38,6 +38,7 @@ public class Character extends MovingObject{
 	static final int LEFT1 = 31;  
 	static final int RIGHT0 = 40;
 	static final int RIGHT1 = 41;
+
 	private static int movement = 3;
 
 	private int health;
@@ -100,6 +101,14 @@ public class Character extends MovingObject{
 	//
 	//  Methods
 	//
+
+	public void attack(){
+		setCharacterUI(ATTACK);
+	}
+
+	public void afterAttack(){
+		setCharacterUI(STANDBY);
+	}
 
 	public synchronized void endTurn(){
 		this.movingLeft = false;
@@ -411,11 +420,13 @@ public class Character extends MovingObject{
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			attack();
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			deployRocket(e);
+			afterAttack();
 		}
 	}
 

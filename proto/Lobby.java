@@ -14,11 +14,11 @@ public class Lobby extends JPanel{
      // ATTRIBUTES
      //
      private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
-     private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+     private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
      private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
-     private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
-     private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
-     private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+     private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
+     private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
+     private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
 
      // gui components
 
