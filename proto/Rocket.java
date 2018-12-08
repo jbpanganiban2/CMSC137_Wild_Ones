@@ -23,12 +23,16 @@ public class Rocket extends MovingObject{
      //
 
      public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
+
           super(name, charPosition, new Dimension(30, 20), g);
           this.charPosition = charPosition;
+
           this.type = type;
-          this.trajectory = new ArrayList<Point>();
-          this.c = c;
+
+          this.charPosition = charPosition;
           this.cursorPosition = cursorPosition;
+          this.c = c;
+
 
           this.rocket = new JLabel();
           this.rocket.setIcon(this.ROCKET);
@@ -36,10 +40,13 @@ public class Rocket extends MovingObject{
           this.setLayout(new BorderLayout());
           this.add(this.rocket, BorderLayout.CENTER);
           this.setOpaque(false);
+
           this.setLoc(charPosition);
           this.gamePanel.add(this);
 
+          this.trajectory = new ArrayList<Point>();
           this.getTrajectory();
+          // this.printTrajectory();
           this.deploy();
 
      }
@@ -49,8 +56,11 @@ public class Rocket extends MovingObject{
      //
 
      private void getTrajectory(){
+
           int start = (int)this.charPosition.getX();                  //   character X pos
-          int cX = (int)cursorPosition.getX();                        //   cursor X pos
+          int cX = (int)this.cursorPosition.getX();                        //   cursor X pos
+          System.out.println(start);
+          System.out.println(cX);
           int right = 720;                                            //   right bound of the window 
           int left = 0;                                               //   left bound of the window
           int increment = 0;                                          //   increment of domain
@@ -70,8 +80,29 @@ public class Rocket extends MovingObject{
 
           Point y = null;
           int yVal;
+
+          // (new Thread(){
+
+          //      int start;
+          //      int end;
+          //      int increment;
+
+          //      public Thread setValues(int s, int e, int i){
+          //           this.start = s;
+          //           this.end = e;
+          //           this.increment = i;
+          //           return this;
+          //      }
+
+          //      @Override
+          //      public void run(){
+          //           for(int i = this.start; i != this.end; i+=this.increment ){
+          //                trajectory.add(getPositionAtX(i));
+          //           }
+          //      }
+          // }).setValues(start, end, increment).start();
           for(int i = start; i != end; i+=increment ){
-               this.trajectory.add(getPositionAtX(i));
+               trajectory.add(getPositionAtX(i));
           }
      }
 
@@ -89,7 +120,7 @@ public class Rocket extends MovingObject{
 
      public void printTrajectory(){
           for(Point p : this.trajectory){
-               System.out.println(p);
+               System.out.print(p);
           }
      }
 
@@ -136,6 +167,7 @@ public class Rocket extends MovingObject{
      }
 
      public void run(){
+          System.out.println(trajectory.size());
           for(Point p : trajectory){
 
                if(this.alive){
