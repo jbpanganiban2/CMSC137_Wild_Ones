@@ -69,12 +69,6 @@ public class Game extends JPanel implements Runnable{
 			gameObjects.add(obs);
 		}
 
-        // this.playerPanel.setPreferredSize(new Dimension(150,50));
-        // this.playerPanel.setBounds(0,480,210,65);
-        // this.playerPanel.setLayout(new GridBagLayout());
-        // JLabel
-        // gamePanel.add(playerPanel);
-
 		ImagePanel bg = new ImagePanel(newIcon.getImage());
 		bg.setPreferredSize(new Dimension(730,550));
 		bg.setLayout(new BorderLayout());
@@ -87,9 +81,14 @@ public class Game extends JPanel implements Runnable{
 
 	public void init_Players(Player[] players){						// initializes players
 		int i = 0;
+		Character toAdd = null;
 		for(Player p : players){
-
-			this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
+			if(p == null)continue;
+			// System.out.println(p.getID()+" : "+this.userPlayer.getID());
+			if(!p.getID().equals(this.userPlayer.getID())){
+				System.out.println("enters");
+				this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
+			}
 			i+=1;
 		}
 	}
@@ -104,7 +103,8 @@ public class Game extends JPanel implements Runnable{
 	}
 
 	public void addUserPlayer(Player user, int type){
-		this.userCharacter = new Character(user, this.respawns.get(Character.rng(5,1)), this, type);
+		this.userPlayer = user;
+		this.userCharacter = new Character(user, this.respawns.get(Character.rng(4,0)), this, type);
 		// System.out.println("user Char ID == "+this.userCharacter.getID());
 		this.chars.add(this.userCharacter);
 	}
@@ -146,23 +146,21 @@ public class Game extends JPanel implements Runnable{
 
 	public synchronized void run(){
 		int time;
-		while(!isFinished){
-			int alive = 0;
-			for(Character c : this.chars){
-				// play a turn -- this will only activate for player
-				if(c.isAlive()){
-					alive += 1;
-					new Prompt(c.getUserName()+"'s turn", 750);
-					c.enable();
-					while((time = c.getTimeLeft()) > 0){
-						// System.out.println(time+" left");
-						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();};
-					}c.endTurn();
-				}
-			}
-			if(alive == 1)isFinished = true;
+		this.userCharacter.enable();
+		while(this.chars.size() >= 1){
+			// int alive = 0;
+			// for(Character c : tis.chars){
+			// 	// play a turn -- this will only activate for player
+			// 	if(c.isAlive()){
+			// 		alive += 1;
+			// 	}
+			// }
+			// if(alive == 100){
+			// 	isFinished = true;
+			// }
 		}
-		System.out.println(this.chars.get(0)+" won.");
+		this.userCharacter.disable();
+		System.out.println(this.chars.get(0).getName()+" won.");
 	}
 
 	public void deploy(){

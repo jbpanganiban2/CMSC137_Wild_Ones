@@ -138,7 +138,7 @@ public class Rocket extends MovingObject{
                
           }
           this.g.getGameObjects().remove(this);
-          this.c.setTimeZero();
+          // this.c.setTimeZero();
           setVisible(false);
      }
 
@@ -148,3 +148,4 @@ public class Rocket extends MovingObject{
 
 
 }
+
