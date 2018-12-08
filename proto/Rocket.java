@@ -8,9 +8,12 @@ public class Rocket extends MovingObject{
      //
      //  Attributes
      //
+     private final static Icon ROCKET = new ImageIcon("src/fire/fire.gif");
+
 
      private Point charPosition;
      private Point cursorPosition;
+     private JLabel rocket;
      private int type;                       // 0 if gravity rocket, 1 if normal rocket
      private ArrayList<Point> trajectory;
      private Character c;
@@ -20,14 +23,24 @@ public class Rocket extends MovingObject{
      //
 
      public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
-          super(name, charPosition, new Dimension(10, 10), g);
+
+          super(name, charPosition, new Dimension(30, 20), g);
+          this.charPosition = charPosition;
+
           this.type = type;
 
           this.charPosition = charPosition;
           this.cursorPosition = cursorPosition;
           this.c = c;
 
-          this.setBackground(Color.BLACK);
+
+          this.rocket = new JLabel();
+          this.rocket.setIcon(this.ROCKET);
+          this.rocket.setBounds(0,0,30,20);
+          this.setLayout(new BorderLayout());
+          this.add(this.rocket, BorderLayout.CENTER);
+          this.setOpaque(false);
+
           this.setLoc(charPosition);
           this.gamePanel.add(this);
 

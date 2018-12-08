@@ -85,7 +85,7 @@ public class Game extends JPanel implements Runnable{
 		gamePanel.setOpaque(false); 
 		gamePanel.setPreferredSize(new Dimension(730,550));
 
-		for (int i=1;i<21 ;i++ ) {
+		for (int i=1;i<22 ;i++ ) {
 			Obstacles obs = new Obstacles(i);
 			obs.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
 			gamePanel.add(obs);
@@ -147,7 +147,7 @@ public class Game extends JPanel implements Runnable{
 						this.add(new Point(97, 146));
 
 						this.add(new Point(549, 361));
-						this.add(new Point(33, 416));
+						this.add(new Point(0, 416));
 						return this;
 					}
 				}).addAll();
