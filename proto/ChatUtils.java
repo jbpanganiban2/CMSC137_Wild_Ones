@@ -108,11 +108,10 @@ public class ChatUtils{
           connectedChats.remove(c);
      }
 
-     public static void sendChatToAll(String username, String string){
-
+     public synchronized static void sendChatToAll(String username, String string){
           (new Thread(){
                @Override
-               public void run(){
+               public synchronized void run(){
                     for(Chat c : connectedChats){
                          c.addMessageToBox(username, string);
                     }

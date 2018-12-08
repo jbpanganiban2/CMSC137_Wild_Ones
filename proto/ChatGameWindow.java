@@ -28,7 +28,6 @@ public class ChatGameWindow extends JFrame{
      boolean isFinished;
      Lobby lobby;
      Chat chat;
-     Game game;
      Socket server;
      Player user;
 
@@ -87,10 +86,7 @@ public class ChatGameWindow extends JFrame{
 
           this.isFinished = true;
 
-          this.game = new Game(this);
-
-          // this.chat = new Chat(this.server,  this.user.getName());
-
+          // this.game = new Game(this);
           
           this.playerPanel = this.pPanel();
 
@@ -103,7 +99,7 @@ public class ChatGameWindow extends JFrame{
           this.cardPanel.setBounds(0,-10,730,550);
           this.cardPanel.setOpaque(false); 
           this.cardPanel.add(lobby,"LOBBY");
-          this.cardPanel.add(game,"GAME");
+          // this.cardPanel.add(game,"GAME");
 
           this.chatPanel = new JPanel();
           this.chatPanel.setFocusable(false);
@@ -181,10 +177,6 @@ public class ChatGameWindow extends JFrame{
 
      public JFrame getMainGUI(){
           return this.mainGUI;
-     }
-
-     public Game getGame(){
-          return this.game;
      }
 
      //

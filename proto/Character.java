@@ -71,8 +71,8 @@ public class Character extends MovingObject{
 	public Character(Player p, Point init, Game g, int type){
 		super(p.getName(), init, new Dimension(50, 50), g);
 		this.id = p.getID();
-		this.udpclient = new UDPClient(p.getName());
 		// System.out.println(this.name+"'s id = "+this.id);
+		this.udpclient = g.getUDPclient();
 		this.initchar(type);
 	}
 
@@ -197,6 +197,7 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(movement, 0);
+		this.udpclient.send(new Point(this.position));
 	}
 
 	public synchronized void moveLeft(){
@@ -208,6 +209,7 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(-movement, 0);
+		this.udpclient.send(new Point(this.position));
 	}
 	public synchronized void moveUp(){
 
@@ -220,6 +222,7 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(0, -movement);
+		this.udpclient.send(new Point(this.position));
 	}
 
 	public synchronized int moveUp(int movement){
@@ -233,6 +236,7 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(0, -movement);
+		this.udpclient.send(new Point(this.position));
 		return 1;
 	}
 	public synchronized void moveDown(){
@@ -244,6 +248,7 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(0, movement);
+		this.udpclient.send(new Point(this.position));
 	}
 	public synchronized void jump(){
 	// thread that continuosly adds then subtracts y values at this position
@@ -352,7 +357,7 @@ public class Character extends MovingObject{
 	public synchronized void enable(){ // enables keyBindings for Character
 
 	// this.time = 25;
-	this.udpclient.start();
+	// this.udpclient.start();
 	this.enabled = true;
 	this.deployedRocket = false;
 	this.getActionMap().get(JUMP0).setEnabled(true);
@@ -385,15 +390,20 @@ public class Character extends MovingObject{
 	return this.movingRight;
 	}
 
-	private void deployRocket(Point p){
+	public void deployRocket(Point p){
 
 		if(this.enabled && !this.cooldown/*&& this.time != 0 && !this.deployedRocket*/){
 			new Rocket("rocket", this, new Point(this.position), p, this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+			this.udpclient.send(new Point(this.position),p);
 			this.rocketCooldown();
-			this.udpclient.send("motherfuckerssss");
 			// this.time = 0;
 			// this.deployedRocket = true;
 		}
+	}
+
+	public void deployRocket(Point o, Point p){
+		new Rocket("rocket", this, new Point(o), new Point(p), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+		System.out.println("a rocket has been created");
 	}
 
 	private synchronized void rocketCooldown(){

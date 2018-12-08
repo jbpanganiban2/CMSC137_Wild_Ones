@@ -13,7 +13,7 @@ public class UDPServer implements Runnable{
    private Client[] clients;
    private int clientNum = 0;
    private boolean gameRunning;
-   private Game g;
+   private Lobby l;
 
    //
    // Constructors
@@ -31,15 +31,15 @@ public class UDPServer implements Runnable{
 
    }
 
-   public UDPServer(Game g){
+   public UDPServer(Lobby l){
 
       try{
          this.serverSocket = new DatagramSocket(1975);
-         this.receiveData = new byte[1024];
-         this.clients = new Client[4];
+         this.receiveData = new byte[128];
+         this.clients = new Client[5];
          this.clientNum = 0;
          this.gameRunning = true;
-         this.g = g;
+         this.l = l;
       }catch(Exception e){}
 
    }
@@ -52,7 +52,7 @@ public class UDPServer implements Runnable{
       this.gameRunning = false;
    }
 
-   public static void sendToEveryone(String toSend, Client[] everyone, DatagramSocket serverSocket){
+   public static void sendToEveryone(String sender, String toSend, Client[] everyone, DatagramSocket serverSocket){
       (new Thread(){
          @Override
          public void run(){
@@ -60,7 +60,7 @@ public class UDPServer implements Runnable{
             // int length = 0;
             try{
                for(Client i : everyone){
-                  if(i != null){
+                  if(i != null && !i.isEqual(sender)){ // sends only to receivers that are not the sender
                      // length++;
                      serverSocket.send(new DatagramPacket(sendData, sendData.length, i.address, i.port));
                   }
@@ -96,7 +96,7 @@ public class UDPServer implements Runnable{
                if(isConnect /*clientNum == 0 || !toAdd.in(clients)*/){
                   this.clients[this.clientNum++] = toAdd;
                }else{
-                  sendToEveryone(sentence, clients, serverSocket);
+                  sendToEveryone(name, sentence, clients, serverSocket);
                }
             }
          }catch(Exception e){
@@ -128,6 +128,9 @@ public class UDPServer implements Runnable{
 
       public boolean isEqual(Client e){
          return this.name.equals(e.name);
+      }
+      public boolean isEqual(String s){
+         return this.name.equals(s);
       }
 
       public boolean in(Client[] c){
