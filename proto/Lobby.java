@@ -47,6 +47,7 @@ public class Lobby extends JPanel{
      // chat needed Components
      Chat chat;
      Socket server;
+     UDPServer udpserver;
      Player user;
      boolean connected = false;
 
@@ -64,6 +65,7 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
+          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
           
           createLobby();
@@ -77,6 +79,7 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
+          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
 
           connectToLobby(lobby_Id);
@@ -94,15 +97,13 @@ public class Lobby extends JPanel{
           clpacket = ChatUtils.createLobbyPacketReceived;
           ChatUtils.createLobbyPacketReceived = null;
 
+          this.udpserver = new UDPServer(this);
+          this.udpserver.start();
           
           if(clpacket != null){    // if there is no clpacket received
                lobby_id = clpacket.getLobbyId();
 
                if(!lobby_id.equals("You are not part of any lobby.")){     
-
-                    this.chat = new Chat(server, user.getName());
-                    ChatUtils.addConnectedChat(this.chat);
-                    // ChatUtils.setChat(this.chat);
 
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                     if(!connected){
@@ -128,18 +129,15 @@ public class Lobby extends JPanel{
 
           if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
                
-               // ChatUtils.setChat(this.chat);
-               this.chat = new Chat(server, user.getName());
-               ChatUtils.addConnectedChat(this.chat);
-               
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                
-               // System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
                          new Prompt("Error Connecting to Lobby", 750);
                          return;
-               }this.connected = true;
+               }
+
+               this.connected = true;
 
           }else System.out.println("Error: "+lobby_id);
 
@@ -181,22 +179,39 @@ public class Lobby extends JPanel{
           }
      }
 
+     private Player getUser(Player[] online){
+          for(Player p : online){
+               if(p == null)continue;
+               if(user.getName().equals(p.getName()))return p;
+          }return user;
+     }
+
+     private void newGame(){
+          Player[] online = ChatUtils.getOnlinePlayers(server);
+
+          // System.out.println(online.length);
+          // if(online.length == 1){
+
+          //      new Prompt("Add more players", 1000);
+          //      return;
+          // }
+
+          Player realUser = getUser(online);
+
+          Game newg = new Game(this.udpserver, mainPanel);
+          newg.addUserPlayer(realUser, selectedChar);
+          newg.init_Players(online);
+          
+          mainPanel.add(newg, "GAME");
+          cardLayout.next(mainPanel);
+
+          newg.deploy();
+     }
+
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
-               Player[] online = ChatUtils.getOnlinePlayers(server);
-
-               // System.out.println(online.length);
-               // if(online.length == 1){
-
-               //      new Prompt("Add more players", 1000);
-               //      return;
-               // }
-
-               cardLayout.next(mainPanel);
-               cgw.getGame().addUserPlayer(user, 0);
-               cgw.getGame().init_Players(online);
-               cgw.getGame().deploy();
+               newGame();
           }
      }
 
@@ -242,6 +257,11 @@ public class Lobby extends JPanel{
      //
      
      private void initUIComponents(){        // Inintializes all UI components
+
+          this.chat = new Chat(server, user.getName());
+          ChatUtils.addConnectedChat(this.chat);
+
+          // this.udpserver = new UDPServer(this);
 
           this.startIcon = new ImageIcon("./src/START.png");  
           this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
@@ -291,7 +311,7 @@ public class Lobby extends JPanel{
 
      static class SetChoice implements ActionListener{
 
-          int value;
+          int value = 0;
           Lobby l;
 
           public SetChoice(int i, Lobby l){

@@ -22,11 +22,10 @@ public class Game extends JPanel implements Runnable{
 	private final static int DYNAMIGHT = 2;
 	private final static int LUBGLUB = 3;
 
-	
+	JPanel parentPanel;
 	JPanel gamePanel;
 	JPanel chatPanel;
 	JPanel playerPanel;
-
 
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
@@ -34,13 +33,15 @@ public class Game extends JPanel implements Runnable{
 	Character userCharacter;
 	Player userPlayer;
 	boolean isFinished;
+
 	UDPServer server;
+	UDPClient client;
 
 	//
 	//	Constructors
 	//
 
-	Game(ChatGameWindow cgw){
+	Game(){
 
 		this.gamePanel = new JPanel();
 		this.respawns = respawnZoneGenerate();
@@ -48,7 +49,26 @@ public class Game extends JPanel implements Runnable{
 		this.gameObjects = new ArrayList<GameObject>();
 		this.playerPanel = new JPanel();
 
-		this.server = new UDPServer(this);
+		// this.server = new UDPServer(this);
+
+		this.isFinished = false;
+		createGame();
+
+	}
+
+	Game(UDPServer server, JPanel parentPanel){
+
+		this.gamePanel = new JPanel();
+		this.parentPanel = parentPanel;
+		this.respawns = respawnZoneGenerate();
+		this.chars = new ArrayList<Character>();
+		this.gameObjects = new ArrayList<GameObject>();
+		this.playerPanel = new JPanel();
+		this.server = server;
+
+		// this.client = new UDPClient(user.getName(), this);
+
+		// this.server = new UDPServer(this);
 
 		this.isFinished = false;
 		createGame();
@@ -90,8 +110,8 @@ public class Game extends JPanel implements Runnable{
 			if(p == null)continue;
 			System.out.println(p.getID()+" : "+this.userPlayer.getID());
 			if(!p.getID().equals(this.userPlayer.getID())){
-				System.out.println("enters");
-				this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
+				// System.out.println("enters");
+				this.chars.add(new Character(p, this.respawns.get(p.getIntID()), this, i%3));
 			}
 			i+=1;
 		}
@@ -108,7 +128,8 @@ public class Game extends JPanel implements Runnable{
 
 	public void addUserPlayer(Player user, int type){
 		this.userPlayer = user;
-		this.userCharacter = new Character(user, this.respawns.get(Character.rng(4,0)), this, type);
+		this.client = new UDPClient(user.getName(), this);
+		this.userCharacter = new Character(user, this.respawns.get(user.getIntID()), this, type);
 		// System.out.println("user Char ID == "+this.userCharacter.getID());
 		this.chars.add(this.userCharacter);
 	}
@@ -140,6 +161,10 @@ public class Game extends JPanel implements Runnable{
 		return this.gamePanel;
 	}
 
+	public UDPClient getUDPclient(){
+		return this.client;
+	}
+
 	public synchronized void dead(Character c){
 		this.chars.remove(c);
 	}
@@ -148,17 +173,58 @@ public class Game extends JPanel implements Runnable{
 		return (new Rectangle(new Point(0,0), new Dimension(730, 550))).contains(o);
 	}
 
+	private Character getCharacterByName(String name){
+
+		// returns the character if found, else returns null
+		// System.out.println("enters gcbn");
+		// System.out.println(this.chars.size());
+		// int i = 0;
+		for(Character c : this.chars){
+			// System.out.println(i++);
+			if(c == null)continue;
+			// System.out.println(c.getName());
+			if(c.getObjName().equals(name))return c;
+		}
+
+		return null;
+	}
+
+	public void moveChar(String name, Point p){
+		Character test = this.getCharacterByName(name);
+		System.out.println("test "+test.getObjName()+" wus selected");
+		test.setLoc(p);
+	}
+
+	public void deployCharRocket(String name, Point o, Point d){
+		Character test = this.getCharacterByName(name);
+		test.deployRocket(o,d);
+	}
+
 	public synchronized void run(){
 		int time;
+		this.client.start();
 		this.userCharacter.enable();
+		this.isFinished = false;
+
 		while(this.chars.size() >= 1){}
+
 		this.userCharacter.disable();
+		this.client.kill();
+		this.isFinished = true;
+
 		System.out.println(this.chars.get(0).getName()+" won.");
+
+		((CardLayout)this.parentPanel.getLayout()).next(this.parentPanel);
+		this.parentPanel.remove(this);
+		// this.server.stopServer();
+	}
+
+	public synchronized boolean isGameFinished(){
+		return this.isFinished;
 	}
 
 	public void deploy(){
 		Thread t = new Thread(this);
-		this.server.start();
 		t.start();
 
 	}
