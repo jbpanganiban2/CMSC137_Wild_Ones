@@ -19,6 +19,7 @@ public class ChatGameWindow extends JFrame{
      JPanel cardPanel;   // panel that alter
      JPanel chatPanel;
      JPanel playerPanel;
+     int numOfPlayers;
 
      // Chat and Game Related Attributes
 
@@ -39,6 +40,8 @@ public class ChatGameWindow extends JFrame{
 
      ChatGameWindow(JFrame mainGUI, String name){          // host ChatGameWindow constructor
           super("Wild Ones");
+
+          this.numOfPlayers=0;
 
           this.setFocusable(false);                         // prevents program to listen to the ChatGameWindow
 
@@ -138,14 +141,47 @@ public class ChatGameWindow extends JFrame{
 
      public JPanel subPanel(){
           JPanel sp = new JPanel();
+          sp.setLayout(null);
           sp.setPreferredSize(new Dimension(185,50));
           sp.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 1,true));
           return sp;
      }
 
+     public void insertPlayer(JPanel p){
+          Icon icn = new ImageIcon("src/pig/pigStandby.gif");
+          JTextArea username = new JTextArea();
+          JLabel pic = new JLabel();
+          JPanel health = new JPanel();
+          JPanel healthLevel = new JPanel();
+
+          pic.setIcon(icn);
+          pic.setPreferredSize(new Dimension(45,50));
+          pic.setBounds(3,0,45,50);
+
+          username.setText("Mr. Pig xoxo");
+          username.setEditable(false);
+          username.setPreferredSize(new Dimension(140,20));
+          username.setBounds(46,2,140,20);
+          
+          healthLevel.setBackground(Color.RED);
+          healthLevel.setBounds(1,1,100,18);
+
+          health.setPreferredSize(new Dimension(150,20));
+          health.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 1,true));
+          health.setLayout(null);
+          health.setBounds(46,23,145,20);
+          health.add(healthLevel);
+
+          if(this.numOfPlayers<=3){
+               p.add(pic);
+               p.add(username);
+               p.add(health);
+          }
+          this.numOfPlayers+=1;
+     }
+
      public JPanel pPanel(){
 
-          Icon icn = new ImageIcon("src/pig/pigStandby.gif");
           JPanel jpanel = new JPanel();
           BorderLayout bl = new BorderLayout();
           JPanel sp1 = subPanel();
@@ -163,6 +199,8 @@ public class ChatGameWindow extends JFrame{
           jpanel.add(sp1, BorderLayout.NORTH);
           jpanel.add(sp2, BorderLayout.CENTER);
           jpanel.add(sp3, BorderLayout.SOUTH);
+
+          insertPlayer(sp1);
           
           return jpanel;
      }
