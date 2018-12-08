@@ -160,14 +160,15 @@ public class ChatGameWindow extends JFrame{
 
           username.setText("Mr. Pig xoxo");
           username.setEditable(false);
-          username.setPreferredSize(new Dimension(140,20));
-          username.setBounds(46,2,140,20);
-          
+          username.setFont(new Font("Serif", Font.BOLD, 12));
+          username.setPreferredSize(new Dimension(140,18));
+          username.setBounds(46,3,140,20);
+
           healthLevel.setBackground(Color.RED);
-          healthLevel.setBounds(1,1,100,18);
+          healthLevel.setBounds(2,2,100,16);
 
           health.setPreferredSize(new Dimension(150,20));
-          health.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 1,true));
+          health.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
           health.setLayout(null);
           health.setBounds(46,23,145,20);
           health.add(healthLevel);
@@ -200,7 +201,19 @@ public class ChatGameWindow extends JFrame{
           jpanel.add(sp2, BorderLayout.CENTER);
           jpanel.add(sp3, BorderLayout.SOUTH);
 
-          insertPlayer(sp1);
+          switch(this.numOfPlayers){
+               case 0:
+                    insertPlayer(sp1);
+               break;
+               case 1:
+                    insertPlayer(sp2);
+               break;
+               case 2:
+                    insertPlayer(sp3);
+               break;
+               default:
+               break;
+          }
           
           return jpanel;
      }
