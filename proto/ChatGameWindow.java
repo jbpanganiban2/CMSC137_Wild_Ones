@@ -19,7 +19,7 @@ public class ChatGameWindow extends JFrame{
      JPanel cardPanel;   // panel that alter
      JPanel chatPanel;
      JPanel playerPanel;
-     int numOfPlayers;
+     int numOfPlayers; //number of players connected
 
      // Chat and Game Related Attributes
 
@@ -144,7 +144,7 @@ public class ChatGameWindow extends JFrame{
      }
 
      public void insertPlayer(JPanel p){
-          Icon icn = new ImageIcon("src/pig/pigStandby.gif");
+          Icon icn = new ImageIcon("src/pig/pigStandby.gif"); //players' chosen character
           JTextArea username = new JTextArea();
           JLabel pic = new JLabel();
           JPanel health = new JPanel();
@@ -154,7 +154,7 @@ public class ChatGameWindow extends JFrame{
           pic.setPreferredSize(new Dimension(45,50));
           pic.setBounds(3,0,45,50);
 
-          username.setText("Mr. Pig xoxo");
+          username.setText("Mr. Pig xoxo"); //players username
           username.setEditable(false);
           username.setFont(new Font("Serif", Font.BOLD, 12));
           username.setPreferredSize(new Dimension(140,18));
