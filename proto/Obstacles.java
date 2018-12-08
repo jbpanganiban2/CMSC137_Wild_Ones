@@ -2,12 +2,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Obstacles extends JPanel{
+public class Obstacles extends JPanel implements GameObject{
 	int block;
 	int xPos;
 	int yPos;
 	int width;
 	int height;
+
 	Obstacles(int num){
 		this.block=num;
 		createObstacle(this.block);
@@ -27,6 +28,13 @@ public class Obstacles extends JPanel{
 	public int getHeight(){
 		return this.height;
 	}
+	public Rectangle getRectangle(){
+		return new Rectangle(new Point(this.xPos, this.yPos), new Dimension(this.width,this.height));
+	}
+
+	public boolean intersects(GameObject o){
+		return this.getRectangle().intersects(o.getRectangle());
+	}
 
 	public void render(int a, int b, int c, int d){
 		this.setPreferredSize(new Dimension(c,d));
@@ -39,7 +47,7 @@ public class Obstacles extends JPanel{
 	public void createObstacle(int blk){
 		switch(blk){
 			case 1:
-				render(0,466,312,83);
+				render(0,466,312,33);
 				break;
 			case 2:
 				render(351,373,119,190);
@@ -51,30 +59,31 @@ public class Obstacles extends JPanel{
 				render(514,411,84,131);
 				break;
 			case 5:
-				render(0,208,200,57);
+				render(0,208,200,24);
 				break;
 			case 6:
-				render(78,60,250,45);
+				render(78,60,252,20);
 				break;
 			case 7:
-				render(426,158,64,64);
+				render(396,124,64,40);
 				break;
-			case 8:
-				render(193,269,78,78);
-				break;
+			// case 8:
+			// 	render(193,269,78,78);
+			// 	break;
 			case 9:
-				render(482,248,140,50);
+				render(482,248,140,17);
 				break;
 			case 10:
 				render(630,320,82,28);
 				break;
-			case 11:
-				render(644,294,27,27);
+			// case 11:
+			// 	render(644,294,27,27);
+			// 	break;
 			case 12:
-				render(300,118,127,19);
+				render(252,252,127,19);
 				break;
 			case 13:
-				render(584,156,127,19);
+				render(584,156,127,9);
 				break;
 			case 14:
 				render(500,220,60,30);
@@ -89,7 +98,7 @@ public class Obstacles extends JPanel{
 				render(40,180,30,30);
 				break;
 			case 18:
-				render(644,292,27,27);
+				render(674,292,17,27);
 				break;
 			case 19:
 				render(216,438,90,30);

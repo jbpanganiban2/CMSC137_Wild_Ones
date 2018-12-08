@@ -19,8 +19,8 @@ public class Rocket extends MovingObject{
      //  Constructors
      //
 
-     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, JPanel gamePanel, int type){
-          super(name, charPosition, new Dimension(10, 10), gamePanel);
+     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
+          super(name, charPosition, new Dimension(10, 10), g);
           this.charPosition = charPosition;
           this.type = type;
           this.trajectory = new ArrayList<Point>();
@@ -61,6 +61,8 @@ public class Rocket extends MovingObject{
                return;
           }
 
+          Point y = null;
+          int yVal;
           for(int i = start; i != end; i+=increment ){
                this.trajectory.add(getPositionAtX(i));
           }
@@ -84,18 +86,46 @@ public class Rocket extends MovingObject{
           }
      }
 
-     public synchronized MovingObject hasCollision(ArrayList<MovingObject> m){     // returns the object collided with, else returns null
-          for(MovingObject o : m){
-               if(this.intersects(o) && !o.equals(this) && !o.equals(this.c)){
-                    return o;
-               }
-          }return null;
+     public synchronized GameObject hasCollision(ArrayList<GameObject> m){     // returns the GameObject collided with, else returns null
+          try{
+               for(GameObject o : m){
+                    if(o instanceof MovingObject){
+                         MovingObject mo = (MovingObject)o;
+                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }
+                    else if(o instanceof Obstacles){
+                         Obstacles mo = (Obstacles)o;
+                         if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
+                              /*
+                                   invoke some things
+                               */
+                              return mo;
+                         }
+                    }
+               }return null;
+          }catch(Exception e){}
+          return null;
      }
 
-     public void hasCollided(MovingObject m){                  // main method that will do something with both the collided objects
-          // System.out.println(this.name+" kaboomed with "+m.getObjName());
+     @Override
+     public void hasCollided(MovingObject m){                    // what will happen after this hasCollided with a MovingObject m
           // explosion animation
           this.alive = false;
+          this.collided = true;
+          if(m instanceof Character)
+               ((Character)m).damaged();
+     }
+
+     @Override
+     public void hasCollided(Obstacles m){                       // what will happen after this hasCollided with Obstacle
+          System.out.println(this.name+" hit an obstacle");
+          this.alive = false;
+          this.collided = true;
      }
 
      public void run(){
@@ -107,6 +137,8 @@ public class Rocket extends MovingObject{
                }
                
           }
+          this.g.getGameObjects().remove(this);
+          this.c.setTimeZero();
           setVisible(false);
      }
 

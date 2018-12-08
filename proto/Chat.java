@@ -12,15 +12,11 @@ public class Chat extends JPanel{
     //
     //  ATTRIBUTES
     //
+    private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;  
+    static final int ENTER0 = 01;
+    static final int ENTER1 = 02;
+    private boolean chatting;
     
-    //
-    //
-    //  FIX CHAT ENABLING PROBLEM
-    //
-    //
-
-    public static final int ENTER = 0;
-
     static JButton sendMessage;
     static JScrollPane jpane;
     static JTextArea chatBox;
@@ -30,8 +26,7 @@ public class Chat extends JPanel{
     static Socket server;
     static String pusername;                            // the "player" username
     static String rusername;                            // the username of other players that will invoke addMessageToBox function
-    static boolean chatting;
-    static Character c;
+
     //
     //  CONSTRUCTORS
     //
@@ -39,48 +34,43 @@ public class Chat extends JPanel{
     Chat(Socket s, String pu){
         
         createChat(s, pu);
-
     }
 
     public void createChat(Socket s, String pu) {
+        BorderLayout bl = new BorderLayout();
+        bl.setVgap(-3);
         server = s;
         pusername = pu;
 
-        messageBox = new JTextField(50);
+        messageBox = new JTextField(35);
+        messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+        messageBox.setBackground(new Color(0,0,0,0));
         messageBox.setOpaque(false);
-        this.chatting = true;
-        // messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
+        messageBox.requestFocus();
         this.sendMessage = new JButton("send");
+        this.sendMessage.setContentAreaFilled(false);
         this.sendMessage.setOpaque(false);
         this.sendMessage.addActionListener(new sendMessageButtonListener());
+        this.sendMessage.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+       
         this.chatBox = newChatBox();
         this.jpane = newJPane();
+
         this.southPanel = newSouthPanel(messageBox, sendMessage);
-        this.setLayout(new BorderLayout());    
-        this.add(BorderLayout.SOUTH, southPanel);
-        this.add(jpane, BorderLayout.CENTER);
-        // this.setPreferredSize(new Dimension(250, 270));
+// <<<<<<< HEAD
+//         this.setLayout(new BorderLayout());    
+//         this.add(BorderLayout.SOUTH, southPanel);
+//         this.add(jpane, BorderLayout.CENTER);
+//         this.setPreferredSize(new Dimension(730, 150));
 
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ENTER"), ENTER);
-        this.getActionMap().put(ENTER, new Move());
+// =======
+        this.setLayout(bl);    
+        this.add(southPanel,BorderLayout.CENTER);
+        this.add(jpane, BorderLayout.NORTH);
+        this.setPreferredSize(new Dimension(250, 150));
+        this.setBackground(new Color(255,206,120));
 
-    }
-
-    public synchronized void setCharacter(Character charac){
-        this.c = charac;
-        (new Thread(){                      // thread that allows the messagebox to be used ONLY when player is not playing
-            @Override
-            public void run(){
-                int i = 0;
-                while(true){
-                    if(charac.isEnable()){
-                        messageBox.setFocusable(false);
-                    }else{
-                        messageBox.setFocusable(true);
-                    }
-                }
-            } 
-        }).start();
+        this.addKeyBindings();
     }
 
     //
@@ -90,25 +80,19 @@ public class Chat extends JPanel{
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             ChatUtils.sendMessage(server, messageBox.getText());
+            // addMessageToBox("test", messageBox.getText());
             messageBox.setText("");
         }
     }
 
-    class Move extends AbstractAction {             //  sets the chatbox focus
+    class Move extends AbstractAction{
+
         @Override
-        public void actionPerformed(ActionEvent e) {
-            if(c.isEnable())return;
-            if(messageBox.hasFocus()){
-                if(messageBox.getText().equals(""))return;
-                ChatUtils.sendMessage(server, messageBox.getText());
-                messageBox.setText("");
-                chatting = true;
-            }else{
-                messageBox.requestFocus();
-                chatting = false;
-            }
+        public void actionPerformed(ActionEvent e){
+            enterPressed();
         }
-     }
+
+    }
 
     //
     // METHODS
@@ -116,7 +100,20 @@ public class Chat extends JPanel{
 
     synchronized public static void setChatterUsername(String newName){
         rusername = newName;
-    } 
+    }
+
+    public void enterPressed(){
+        if(this.chatting){
+            // if(!messageBox.getText().equals("")){
+                ChatUtils.sendMessage(server, messageBox.getText());
+                this.messageBox.setText("");
+            // }
+            this.chatting = false;
+        }else{
+            this.messageBox.requestFocus();
+            this.chatting = true;
+        }
+    }
 
     public static void addMessageToBox(String username, String message){    // function that puts the name and the message of sender to the chatbox
         if (message.length() >= 1) {
@@ -129,8 +126,12 @@ public class Chat extends JPanel{
         }
     }
 
-    public boolean isChatting(){
-        return this.chatting;
+    public void addKeyBindings(){
+        this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER0);
+        this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER1);
+
+        this.getActionMap().put(ENTER0, new Move());
+        this.getActionMap().put(ENTER1, new Move()); 
     }
 
     //
@@ -140,15 +141,16 @@ public class Chat extends JPanel{
     private static JTextArea newChatBox(){                                 // Initializes a new Chatbox
         JTextArea chatBox = new JTextArea();
         chatBox.setEditable(false);
-        chatBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
         chatBox.setOpaque(false);
         chatBox.setLineWrap(true);
-        chatBox.setFont(new Font("Serif", Font.PLAIN, 15));
+        chatBox.setFont(new Font("Serif", Font.BOLD, 15));
         return chatBox;
     }
 
     private static JScrollPane newJPane(){
         JScrollPane jpane = new JScrollPane(chatBox);
+        jpane.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+        jpane.setPreferredSize(new Dimension(250,120));
         jpane.getViewport().setOpaque(false);
         jpane.setOpaque(false);
         return jpane;
@@ -156,6 +158,8 @@ public class Chat extends JPanel{
     private static JPanel newSouthPanel(JTextField messageBox, JButton sendMessage){
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        southPanel.setPreferredSize(new Dimension(250,20));
+        southPanel.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true)); 
         southPanel.setOpaque(false);
         southPanel.add(messageBox);
         southPanel.add(sendMessage);

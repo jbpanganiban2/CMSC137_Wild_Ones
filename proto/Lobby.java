@@ -13,8 +13,20 @@ public class Lobby extends JPanel{
      //
      // ATTRIBUTES
      //
+     private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
+     private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+     private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
+     private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+     private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
+     private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
 
      // gui components
+
+     JButton choice1;
+     JButton choice2;
+     JButton choice3;
+
+
      Image newimg;
      ImageIcon startIcon;
      ImageIcon exitIcon;
@@ -24,6 +36,7 @@ public class Lobby extends JPanel{
 
      ChatGameWindow cgw;
      JPanel top;
+     JPanel center;
      JPanel mainPanel;
      static JButton start;
      static JButton exit;
@@ -75,7 +88,7 @@ public class Lobby extends JPanel{
           String lobby_id = null;
           ChatUtils.listenToServer(server, user);
 
-          CLPacket clpacket = new CLPacket(4);
+          CLPacket clpacket = new CLPacket(5);
           System.out.println("Waiting for server response(clpacket)");
           ChatUtils.CreateNewLobby(server,clpacket);
           while(ChatUtils.createLobbyPacketReceived == null)System.out.print("\0");                      // waiting to receive packet  
@@ -117,9 +130,10 @@ public class Lobby extends JPanel{
                
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                
-               System.out.println(connected);
+               // System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
+                         new Prompt("Error Connecting to Lobby", 750);
                          return;
                }this.connected = true;
 
@@ -134,6 +148,10 @@ public class Lobby extends JPanel{
 
      public boolean connected(){
           return this.connected;
+     }
+
+     public Chat getChat(){
+          return this.chat;
      }
 
 
@@ -162,7 +180,18 @@ public class Lobby extends JPanel{
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
+               Player[] online = ChatUtils.getOnlinePlayers(server);
+
+               // System.out.println(online.length);
+               // if(online.length == 1){
+
+               //      new Prompt("Add more players", 1000);
+               //      return;
+               // }
+
                cardLayout.next(mainPanel);
+               cgw.getGame().addUserPlayer(user, 0);
+               cgw.getGame().init_Players(online);
                cgw.getGame().deploy();
           }
      }
@@ -209,7 +238,6 @@ public class Lobby extends JPanel{
      
      private void initUIComponents(){        // Inintializes all UI components
           this.chat = new Chat(server, user.getName());
-          this.chat.setOpaque(false);
 
           this.startIcon = new ImageIcon("./src/START.png");  
           this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
@@ -231,16 +259,31 @@ public class Lobby extends JPanel{
           
           this.right = new GridBagConstraints();
           this.right.anchor = GridBagConstraints.LINE_END;
+
+
+          this.choice1 = createChoice(PIG_STANDBY,PIG_ATTACK);
+          this.choice2 = createChoice(LUB_STANDBY,LUB_ATTACK);
+          this.choice3 = createChoice(DYNA_STANDBY,DYNA_ATTACK);
+
           
           this.top = newTop(this.start, this.exit, this.right, this.left);
-          this.bg = newBG(this.newIcon, this.top, this.chat);
+          this.center = newCenter(this.choice1,this.choice2,this.choice3);
+          this.bg = newBG(this.newIcon, this.top, this.center, this.chat);
 
           this.setPreferredSize(new Dimension(730,550));
           this.setOpaque(false);
           this.add(bg);
      }
-     
 
+     private JButton createChoice( Icon icn, Icon icn2){
+          JButton btn = new JButton(icn);
+          btn.setRolloverEnabled(true);
+          btn.setRolloverIcon(icn2);
+          btn.setContentAreaFilled(false);
+          btn.setBorderPainted(false);
+          btn.setPreferredSize(new Dimension(50,50));
+          return btn;
+     }
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
           JButton toReturn = new JButton();
@@ -250,6 +293,24 @@ public class Lobby extends JPanel{
           toReturn.setBorderPainted(false);
           toReturn.setIcon(icn);
           return toReturn;
+     }
+
+     private JPanel newCenter(JButton a, JButton b, JButton c){
+          JPanel center = new JPanel();
+          center.setOpaque(false);
+          center.setLayout(null);
+          center.setPreferredSize(new Dimension(730,480));
+
+          a.setBounds(136,325,70,50);
+          b.setBounds(338,325,70,50);
+          c.setBounds(538,325,70,50);
+
+          center.add(a);
+          center.add(b);
+          center.add(c);
+
+
+          return center;
      }
 
      private JPanel newTop(JButton start, JButton exit, GridBagConstraints right, GridBagConstraints left){       // creates a new Top
@@ -262,12 +323,13 @@ public class Lobby extends JPanel{
           return top;
      }
 
-     private ImagePanel newBG(ImageIcon newIcon, JPanel top, Chat chat){   // creates a new Background
+     private ImagePanel newBG(ImageIcon newIcon, JPanel top, JPanel center, Chat chat){   // creates a new Background
           ImagePanel bg = new ImagePanel(newIcon.getImage());
           bg.setPreferredSize(new Dimension(730,700));
           bg.setLayout(new BorderLayout());
 
           bg.add(top,BorderLayout.NORTH); 
+          bg.add(center, BorderLayout.CENTER);
           bg.add(this.chat,BorderLayout.SOUTH); 
           return bg;
      }

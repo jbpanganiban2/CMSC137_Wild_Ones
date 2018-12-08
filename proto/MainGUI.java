@@ -9,10 +9,11 @@ import javax.swing.*;
 
 //   List of things to do
 //        merge Character to Player Class
+//             fix startbutton bug
+//             find way to make sure only user is enabled
+//             
 //             merge login player to one player in game player list
-//             merge l
 //        create udp server
-//        
 //        
 
 public class MainGUI{
@@ -143,9 +144,10 @@ public class MainGUI{
 
                          ChatGameWindow window = new ChatGameWindow(mainFrame, name.getText(), l_id);
                          getLobbyId.dispose();
+                         // mainFrame.setVisible(false);
+                         
                     }
                });
-               mainFrame.setVisible(false);
           }
      }
 

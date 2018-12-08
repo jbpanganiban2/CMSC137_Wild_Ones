@@ -5,13 +5,12 @@ import java.util.*;
 
 public class Prompt extends JFrame{
 
-     Prompt(String s, int time){     
-          super();    
-          this.setFocusable(false);
+     public Prompt(String str, int time){
+          super();
           this.setLayout(new FlowLayout());
-          this.add(new JLabel(s));
+          this.add(new JLabel(str));
+          this.setSize(new Dimension(str.length() * 10,20));
           this.setDefaultCloseOperation(0);
-          this.setSize(new Dimension(s.length()*10,25));
           (new Thread(){
                @Override
                public void run(){

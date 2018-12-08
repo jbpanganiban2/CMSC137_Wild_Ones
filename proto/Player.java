@@ -3,25 +3,24 @@ import proto.*;
 public class Player{
 	
 	private PlayerProtos.Player p;
-	private boolean mainPlayer = true;
+	private int pID;
+	private static int pNum;
 
 	public Player(String name){
 		this.p = PlayerProtos.Player.newBuilder()
 						.setName(name)
 						.build();
-	}
-
-	public Player(String name, boolean mainPlayer){
-		this.p = PlayerProtos.Player.newBuilder()
-						.setName(name)
-						.build();
-		this.mainPlayer = mainPlayer;
+		this.pID = pNum++;
 	}
 
 	public Player(){
 		this.p = PlayerProtos.Player.newBuilder()
 						.setName("host")
 						.build();
+	}
+
+	public Player(PlayerProtos.Player p){
+		this.p = p;
 	}
 
 	public Player(byte[] b){
@@ -37,16 +36,16 @@ public class Player{
 		this.p = n;
 	}
 
-	public Player(PlayerProtos.Player p){
-		this.p = p;
-	}
-
 	public PlayerProtos.Player getPlayer(){
 		return this.p;
 	}
 
 	public String getName(){
 		return this.p.getName();
+	}
+
+	public String getID(){
+		return Integer.toString(this.pID);
 	}
 
 	public void self(){
@@ -58,3 +57,6 @@ public class Player{
 	}
 
 }
+
+// TODO
+// remove start button in Lobby of Client

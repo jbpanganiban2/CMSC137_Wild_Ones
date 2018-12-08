@@ -9,13 +9,11 @@ import proto.*;
 public class PLPacket{
 
 	private TcpPacketProtos.TcpPacket.PlayerListPacket packet;
-	private Player p;
 
 	public PLPacket(){
 		this.packet = TcpPacketProtos.TcpPacket.PlayerListPacket.newBuilder()
 					.setType(TcpPacketProtos.TcpPacket.PacketType.forNumber(4))
 					.build();
-		this.p = null;
 	}
 
 	public PLPacket(byte[] b){                                           // receiving constructor
@@ -43,12 +41,11 @@ public class PLPacket{
 
 	public Player[] getPlayerList(){
 		int count = this.packet.getPlayerListCount();
-		System.out.println("countofplayers: "+count);
+		// System.out.println("countofplayers: "+count);
 		Player[] p = new Player[count];
 
 		for(int i = 0; i < count; i++){
 			p[i] = this.getPlayerAt(i);
-			// p[i].self();
 		}
 
 		return p;
