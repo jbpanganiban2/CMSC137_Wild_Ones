@@ -133,6 +133,7 @@ public class Lobby extends JPanel{
                // System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
+                         new Prompt("Error Connecting to Lobby", 750);
                          return;
                }this.connected = true;
 
@@ -180,6 +181,7 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent event) {
                Player[] online = ChatUtils.getOnlinePlayers(server);
+
                // System.out.println(online.length);
                // if(online.length == 1){
 
@@ -188,6 +190,7 @@ public class Lobby extends JPanel{
                // }
 
                cardLayout.next(mainPanel);
+               cgw.getGame().addUserPlayer(user, 0);
                cgw.getGame().init_Players(online);
                cgw.getGame().deploy();
           }

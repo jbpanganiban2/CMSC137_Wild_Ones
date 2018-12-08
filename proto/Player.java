@@ -3,11 +3,14 @@ import proto.*;
 public class Player{
 	
 	private PlayerProtos.Player p;
+	private int pID;
+	private static int pNum;
 
 	public Player(String name){
 		this.p = PlayerProtos.Player.newBuilder()
 						.setName(name)
 						.build();
+		this.pID = pNum++;
 	}
 
 	public Player(){
@@ -41,6 +44,10 @@ public class Player{
 		return this.p.getName();
 	}
 
+	public String getID(){
+		return Integer.toString(this.pID);
+	}
+
 	public void self(){
 		System.out.println(this.p);
 	}
@@ -50,3 +57,6 @@ public class Player{
 	}
 
 }
+
+// TODO
+// remove start button in Lobby of Client

@@ -25,12 +25,14 @@ public class Game extends JPanel implements Runnable{
 	
 	JPanel gamePanel;
 	JPanel chatPanel;
-    JPanel playerPanel;
+	JPanel playerPanel;
 
 
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
 	ArrayList<GameObject> gameObjects;
+	Character userCharacter;
+	Player userPlayer;
 	boolean isFinished;
 
 	//
@@ -86,9 +88,25 @@ public class Game extends JPanel implements Runnable{
 	public void init_Players(Player[] players){						// initializes players
 		int i = 0;
 		for(Player p : players){
+
 			this.chars.add(new Character(p, this.respawns.get(i), this, i%3));
 			i+=1;
 		}
+	}
+
+	public void init_Players(int max){						// initializes players
+		int i = 0;
+		Character toAdd = null;
+		for(i = 0; i < max; i++){
+			toAdd = new Character(Integer.toString(i), this.respawns.get(i), this, i%3);
+			this.chars.add(toAdd);
+		}
+	}
+
+	public void addUserPlayer(Player user, int type){
+		this.userCharacter = new Character(user, this.respawns.get(Character.rng(5,1)), this, type);
+		// System.out.println("user Char ID == "+this.userCharacter.getID());
+		this.chars.add(this.userCharacter);
 	}
 
 	//

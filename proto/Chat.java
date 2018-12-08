@@ -104,10 +104,10 @@ public class Chat extends JPanel{
 
     public void enterPressed(){
         if(this.chatting){
-            if(!messageBox.getText().equals("")){
+            // if(!messageBox.getText().equals("")){
                 ChatUtils.sendMessage(server, messageBox.getText());
                 this.messageBox.setText("");
-            }
+            // }
             this.chatting = false;
         }else{
             this.messageBox.requestFocus();

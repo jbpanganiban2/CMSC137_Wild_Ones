@@ -40,7 +40,10 @@ public class Character extends MovingObject{
 	static final int RIGHT1 = 41;
 	private static int movement = 3;
 
+	private int time;
 	private int health;
+	private int type;
+	private String id;
 	private boolean jumping;
 	private boolean movingRight;
 	private boolean movingLeft;
@@ -48,11 +51,9 @@ public class Character extends MovingObject{
 	private boolean falling;	// prevents double jumping
 	private boolean enabled;
 	private boolean deployedRocket;
-	private int time;
 	private boolean xCollide;
 	private boolean yCollide;
 
-	private int type;
 
 
 	//
@@ -66,6 +67,8 @@ public class Character extends MovingObject{
 
 	public Character(Player p, Point init, Game g, int type){
 		super(p.getName(), init, new Dimension(50, 50), g);
+		this.id = p.getID();
+		System.out.println(this.name+"'s id = "+this.id);
 		this.initchar(type);
 	}
 
@@ -109,6 +112,14 @@ public class Character extends MovingObject{
 
 	public int getType(){
 		return this.type;
+	}
+
+	public String getID(){
+		return this.id;
+	}
+
+	public boolean isEqual(Character c){
+		return this.name == c.name;
 	}
 
 	private void setCharacterUI(int type){
@@ -381,7 +392,7 @@ public class Character extends MovingObject{
 		return this.time;
 	}
 
-	private static int rng(int max, int min){ // produces a random number between [max, min]
+	public static int rng(int max, int min){ // produces a random number between [max, min]
 		return (new Random()).nextInt((max - min) + 1) + min;
 	}
 
