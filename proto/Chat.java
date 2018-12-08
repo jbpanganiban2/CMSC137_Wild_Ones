@@ -33,22 +33,32 @@ public class Chat extends JPanel{
     }
 
     public void createChat(Socket s, String pu) {
+        BorderLayout bl = new BorderLayout();
+        bl.setVgap(-3);
         server = s;
         pusername = pu;
 
-        messageBox = new JTextField(50);
+        messageBox = new JTextField(35);
+        messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+        messageBox.setBackground(new Color(0,0,0,0));
         messageBox.setOpaque(false);
-        // messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
+        // messageBox.setContentAreaFilled(false);
+
         this.sendMessage = new JButton("send");
+        this.sendMessage.setContentAreaFilled(false);
         this.sendMessage.setOpaque(false);
         this.sendMessage.addActionListener(new sendMessageButtonListener());
+        this.sendMessage.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+       
         this.chatBox = newChatBox();
         this.jpane = newJPane();
+
         this.southPanel = newSouthPanel(messageBox, sendMessage);
-        this.setLayout(new BorderLayout());    
-        this.add(BorderLayout.SOUTH, southPanel);
-        this.add(jpane, BorderLayout.CENTER);
-        this.setPreferredSize(new Dimension(250, 270));
+        this.setLayout(bl);    
+        this.add(southPanel,BorderLayout.CENTER);
+        this.add(jpane, BorderLayout.NORTH);
+        this.setPreferredSize(new Dimension(250, 150));
+        this.setBackground(new Color(255,206,120));
     }
 
     //
@@ -89,15 +99,16 @@ public class Chat extends JPanel{
     private static JTextArea newChatBox(){                                 // Initializes a new Chatbox
         JTextArea chatBox = new JTextArea();
         chatBox.setEditable(false);
-        chatBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0)));
         chatBox.setOpaque(false);
         chatBox.setLineWrap(true);
-        chatBox.setFont(new Font("Serif", Font.PLAIN, 15));
+        chatBox.setFont(new Font("Serif", Font.BOLD, 15));
         return chatBox;
     }
 
     private static JScrollPane newJPane(){
         JScrollPane jpane = new JScrollPane(chatBox);
+        jpane.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
+        jpane.setPreferredSize(new Dimension(250,120));
         jpane.getViewport().setOpaque(false);
         jpane.setOpaque(false);
         return jpane;
@@ -105,6 +116,8 @@ public class Chat extends JPanel{
     private static JPanel newSouthPanel(JTextField messageBox, JButton sendMessage){
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        southPanel.setPreferredSize(new Dimension(250,20));
+        southPanel.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true)); 
         southPanel.setOpaque(false);
         southPanel.add(messageBox);
         southPanel.add(sendMessage);

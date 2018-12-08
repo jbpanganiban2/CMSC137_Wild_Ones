@@ -60,12 +60,12 @@ public class Character extends MovingObject{
 	//
 
 	public Character(String name, Point init, Game g, int type){
-		super(name, init, new Dimension(30, 50), g);
+		super(name, init, new Dimension(50, 50), g);
 		this.initchar(type);
 	}
 
 	public Character(Player p, Point init, Game g, int type){
-		super(p.getName(), init, new Dimension(30, 50), g);
+		super(p.getName(), init, new Dimension(50, 50), g);
 		this.initchar(type);
 	}
 
