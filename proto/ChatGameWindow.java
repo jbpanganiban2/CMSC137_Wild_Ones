@@ -153,10 +153,6 @@ public class ChatGameWindow extends JFrame{
           JPanel sp3 = subPanel();
 
 
-          // JLabel label1 = new JLabel();
-          // JLabel label2 = new JLabel();
-          // JLabel label3 = new JLabel();
-
           bl.setVgap(2);
           jpanel.setPreferredSize(new Dimension(200,160));
           jpanel.setLayout(bl);
@@ -168,20 +164,6 @@ public class ChatGameWindow extends JFrame{
           jpanel.add(sp2, BorderLayout.CENTER);
           jpanel.add(sp3, BorderLayout.SOUTH);
           
-
-          // label1.setIcon(icn);
-          // label2.setIcon(icn);
-          // label3.setIcon(icn);
-
-          // c.gridx=0;
-          // c.gridy=0;
-          // jpanel.add(label1,c);
-          // c.gridx=0;
-          // c.gridy=1;
-          // jpanel.add(label2,c);
-          // c.gridx=0;
-          // c.gridy=2;
-          // jpanel.add(label3,c);
           return jpanel;
      }
 

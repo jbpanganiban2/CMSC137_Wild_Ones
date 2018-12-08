@@ -12,6 +12,10 @@ public class Chat extends JPanel{
     //
     //  ATTRIBUTES
     //
+    private static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;  
+    static final int ENTER0 = 01;
+    static final int ENTER1 = 02;
+    private boolean chatting;
     
     static JButton sendMessage;
     static JScrollPane jpane;
@@ -42,8 +46,7 @@ public class Chat extends JPanel{
         messageBox.setBorder(BorderFactory.createLineBorder(new Color(150, 75, 0), 2,true));
         messageBox.setBackground(new Color(0,0,0,0));
         messageBox.setOpaque(false);
-        // messageBox.setContentAreaFilled(false);
-
+        messageBox.requestFocus();
         this.sendMessage = new JButton("send");
         this.sendMessage.setContentAreaFilled(false);
         this.sendMessage.setOpaque(false);
@@ -54,11 +57,20 @@ public class Chat extends JPanel{
         this.jpane = newJPane();
 
         this.southPanel = newSouthPanel(messageBox, sendMessage);
+// <<<<<<< HEAD
+//         this.setLayout(new BorderLayout());    
+//         this.add(BorderLayout.SOUTH, southPanel);
+//         this.add(jpane, BorderLayout.CENTER);
+//         this.setPreferredSize(new Dimension(730, 150));
+
+// =======
         this.setLayout(bl);    
         this.add(southPanel,BorderLayout.CENTER);
         this.add(jpane, BorderLayout.NORTH);
         this.setPreferredSize(new Dimension(250, 150));
         this.setBackground(new Color(255,206,120));
+
+        this.addKeyBindings();
     }
 
     //
@@ -73,13 +85,35 @@ public class Chat extends JPanel{
         }
     }
 
+    class Move extends AbstractAction{
+
+        @Override
+        public void actionPerformed(ActionEvent e){
+            enterPressed();
+        }
+
+    }
+
     //
     // METHODS
     //
 
     synchronized public static void setChatterUsername(String newName){
         rusername = newName;
-    } 
+    }
+
+    public void enterPressed(){
+        if(this.chatting){
+            // if(!messageBox.getText().equals("")){
+                ChatUtils.sendMessage(server, messageBox.getText());
+                this.messageBox.setText("");
+            // }
+            this.chatting = false;
+        }else{
+            this.messageBox.requestFocus();
+            this.chatting = true;
+        }
+    }
 
     public static void addMessageToBox(String username, String message){    // function that puts the name and the message of sender to the chatbox
         if (message.length() >= 1) {
@@ -90,6 +124,14 @@ public class Chat extends JPanel{
                 System.out.println(username + ":  " + message);
             }
         }
+    }
+
+    public void addKeyBindings(){
+        this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER0);
+        this.getInputMap(IFW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER1);
+
+        this.getActionMap().put(ENTER0, new Move());
+        this.getActionMap().put(ENTER1, new Move()); 
     }
 
     //

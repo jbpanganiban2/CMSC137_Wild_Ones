@@ -41,6 +41,9 @@ public class Character extends MovingObject{
 	private static int movement = 3;
 
 	private int health;
+	private int type;
+	private String id;
+	private boolean cooldown;
 	private boolean jumping;
 	private boolean movingRight;
 	private boolean movingLeft;
@@ -48,11 +51,9 @@ public class Character extends MovingObject{
 	private boolean falling;	// prevents double jumping
 	private boolean enabled;
 	private boolean deployedRocket;
-	private int time;
 	private boolean xCollide;
 	private boolean yCollide;
 
-	private int type;
 
 
 	//
@@ -66,6 +67,8 @@ public class Character extends MovingObject{
 
 	public Character(Player p, Point init, Game g, int type){
 		super(p.getName(), init, new Dimension(50, 50), g);
+		this.id = p.getID();
+		System.out.println(this.name+"'s id = "+this.id);
 		this.initchar(type);
 	}
 
@@ -89,6 +92,7 @@ public class Character extends MovingObject{
 		this.movingLeft = false;
 		this.movingRight = false;
 		this.movingDown = false;
+		this.cooldown = false;
 		this.falling = false;
 		this.health = 10;
 
@@ -109,6 +113,18 @@ public class Character extends MovingObject{
 
 	public int getType(){
 		return this.type;
+	}
+
+	public String getID(){
+		return this.id;
+	}
+
+	public boolean is(Character c){
+		return this.id == c.id;
+	}
+
+	public boolean isEqual(Character c){
+		return this.name == c.name;
 	}
 
 	private void setCharacterUI(int type){
@@ -331,7 +347,7 @@ public class Character extends MovingObject{
 
 	public synchronized void enable(){ // enables keyBindings for Character
 
-	this.time = 25;
+	// this.time = 25;
 	this.enabled = true;
 	this.deployedRocket = false;
 	this.getActionMap().get(JUMP0).setEnabled(true);
@@ -364,24 +380,45 @@ public class Character extends MovingObject{
 	return this.movingRight;
 	}
 
-	private void deployRocket(MouseEvent e){
+	private void deployRocket(Point p){
 
-		if(this.enabled && this.time != 0 && !this.deployedRocket){
-			new Rocket("rocket", this, new Point(this.position), e.getPoint(), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+		if(this.enabled && !this.cooldown/*&& this.time != 0 && !this.deployedRocket*/){
+			new Rocket("rocket", this, new Point(this.position), p, this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+			this.rocketCooldown();
 			// this.time = 0;
-			this.deployedRocket = true;
+			// this.deployedRocket = true;
 		}
 	}
 
-	public void setTimeZero(){
-		this.time = 0;
+	private synchronized void rocketCooldown(){
+		this.cooldown = true;
+		(new Thread(){
+			int time = 4;
+			@Override
+			public void run(){
+				while(time > 0){
+					try{
+						// System.out.println("rocket cooldown: "+time);
+						time--;
+						Thread.sleep(1000);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				cooldown = false;
+			}
+		}).start();
 	}
 
-	public int getTimeLeft(){
-		return this.time;
-	}
+	// public void setTimeZero(){
+	// 	this.time = 0;
+	// }
 
-	private static int rng(int max, int min){ // produces a random number between [max, min]
+	// public int getTimeLeft(){
+	// 	return this.time;
+	// }
+
+	public static int rng(int max, int min){ // produces a random number between [max, min]
 		return (new Random()).nextInt((max - min) + 1) + min;
 	}
 
@@ -393,8 +430,8 @@ public class Character extends MovingObject{
 			System.out.println(this.name+" is now dead.");
 			this.alive = false;
 			this.g.getGameObjects().remove(this);
-			this.g.dead(this);
 			this.g.getGamePanel().remove(this);
+			this.g.dead(this);
 			this.setVisible(false);
 			this.g.getGamePanel().invalidate();
 			this.g.getGamePanel().validate();
@@ -406,7 +443,6 @@ public class Character extends MovingObject{
 	//
 
 
-
 	class RocketListener extends MouseAdapter{                  // listens to Rockets
 
 		@Override
@@ -415,7 +451,10 @@ public class Character extends MovingObject{
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			deployRocket(e);
+			deployRocket(e.getPoint());
+			falling = true;
+			jumping = false;		
+			gravity();
 		}
 	}
 
@@ -445,8 +484,9 @@ public class Character extends MovingObject{
 				break;
 
 				case JUMP1:           // space released
-					this.ch.gravity();
 					falling = true;
+					jumping = false;
+					this.ch.gravity();
 				break;
 
 				case LEFT0:           // when key is pressed, enables the character to move 
