@@ -34,8 +34,7 @@ public class Game extends JPanel implements Runnable{
 	Player userPlayer;
 	boolean isFinished;
 
-	UDPServer server;
-	UDPClient client;
+	UDPClient udpclient;
 
 	//
 	//	Constructors
@@ -49,26 +48,20 @@ public class Game extends JPanel implements Runnable{
 		this.gameObjects = new ArrayList<GameObject>();
 		this.playerPanel = new JPanel();
 
-		// this.server = new UDPServer(this);
-
 		this.isFinished = false;
 		createGame();
 
 	}
 
-	Game(UDPServer server, JPanel parentPanel){
+	Game(Lobby l){
 
 		this.gamePanel = new JPanel();
-		this.parentPanel = parentPanel;
+		this.parentPanel = l.getGamePanel();
+		this.udpclient = l.getUDPClient();
 		this.respawns = respawnZoneGenerate();
 		this.chars = new ArrayList<Character>();
 		this.gameObjects = new ArrayList<GameObject>();
 		this.playerPanel = new JPanel();
-		this.server = server;
-
-		// this.client = new UDPClient(user.getName(), this);
-
-		// this.server = new UDPServer(this);
 
 		this.isFinished = false;
 		createGame();
@@ -105,12 +98,9 @@ public class Game extends JPanel implements Runnable{
 	public void init_Players(Player[] players){						// initializes players
 		int i = 0;
 		Character toAdd = null;
-		System.out.println("players = "+players.length);
 		for(Player p : players){
 			if(p == null)continue;
-			System.out.println(p.getID()+" : "+this.userPlayer.getID());
 			if(!p.getID().equals(this.userPlayer.getID())){
-				// System.out.println("enters");
 				this.chars.add(new Character(p, this.respawns.get(p.getIntID()), this, i%3));
 			}
 			i+=1;
@@ -128,7 +118,6 @@ public class Game extends JPanel implements Runnable{
 
 	public void addUserPlayer(Player user, int type){
 		this.userPlayer = user;
-		this.client = new UDPClient(user.getName(), this);
 		this.userCharacter = new Character(user, this.respawns.get(user.getIntID()), this, type);
 		// System.out.println("user Char ID == "+this.userCharacter.getID());
 		this.chars.add(this.userCharacter);
@@ -162,8 +151,9 @@ public class Game extends JPanel implements Runnable{
 	}
 
 	public UDPClient getUDPclient(){
-		return this.client;
+		return this.udpclient;
 	}
+
 
 	public synchronized void dead(Character c){
 		this.chars.remove(c);
@@ -191,7 +181,6 @@ public class Game extends JPanel implements Runnable{
 
 	public void moveChar(String name, Point p){
 		Character test = this.getCharacterByName(name);
-		System.out.println("test "+test.getObjName()+" wus selected");
 		test.setLoc(p);
 	}
 
@@ -202,21 +191,19 @@ public class Game extends JPanel implements Runnable{
 
 	public synchronized void run(){
 		int time;
-		this.client.start();
 		this.userCharacter.enable();
+		this.userCharacter.deploy();
 		this.isFinished = false;
 
 		while(this.chars.size() >= 1){}
 
 		this.userCharacter.disable();
-		this.client.kill();
 		this.isFinished = true;
 
 		System.out.println(this.chars.get(0).getName()+" won.");
 
 		((CardLayout)this.parentPanel.getLayout()).next(this.parentPanel);
 		this.parentPanel.remove(this);
-		// this.server.stopServer();
 	}
 
 	public synchronized boolean isGameFinished(){

@@ -15,7 +15,7 @@ public class UDPClient
 
    private boolean alive;
    // private Character c;
-   private Game g;
+   private Lobby l;
 
    public UDPClient(String name){
       try{
@@ -29,14 +29,14 @@ public class UDPClient
       }
    }
 
-   public UDPClient(String name, Game g){
+   public UDPClient(String name, Lobby l){
       try{
          this.clientSocket = new DatagramSocket();
          this.ipaddress = InetAddress.getByName("localhost");
          this.alive = true;
          this.port = 1975;
          this.name = name;
-         this.g = g;
+         this.l = l;
       }catch(Exception e){
          e.printStackTrace();
       }
@@ -51,23 +51,42 @@ public class UDPClient
    }
 
    private void commandChar(String command){
+
+      System.out.println("command = "+command);
+
       String[] commandArray = command.split("\\.");
-      // if( != )
-      // this.g.commandChar()
-      // System.out.println("length: "+ commandArray.length);
-      switch(commandArray.length){
-         case 2:
-            System.out.println("etners movecerh");
-            this.g.moveChar(commandArray[0],extractPoint(commandArray[1]));
-         break;
+      // switch(commandArray.length){
+      //    case 2:
+      //       System.out.println("enters movecharacter");
+      //       this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[1]));
+      //    break;
 
-         case 3:
-            System.out.println("enters deployCharRocket");
-            this.g.deployCharRocket(commandArray[0], extractPoint(commandArray[1]), extractPoint(commandArray[2]));
-         break;
+      //    case 3:
+      //       System.out.println("enters deployCharRocket");
+      //       this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[1]), extractPoint(commandArray[2]));
+      //    break;
 
+      //    default:
+      //       System.out.println("error received packet");
+      // }
+      switch(commandArray[1]){
+         case "start":
+            System.out.println("startGame");
+            this.l.startHostGame();
+         break;
+         case "setChar":   
+            System.out.println("setCharacterType");
+         break;
+         case "cmove":
+            System.out.println("moveChar");
+            this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
+         break;
+         case "rocket":
+            System.out.println("deployRocket");
+            this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]));
+         break;
          default:
-            System.out.println("error received packet");
+            System.out.println("error packet received");
       }
    }
 
@@ -90,16 +109,16 @@ public class UDPClient
 
                   if(receivePacket.getLength() > 0){
 
-                     modifiedSentence = new String(receivePacket.getData());
+                     int sentencelen = receivePacket.getLength();
+                     if(sentencelen > 0){
 
-                     System.out.println(modifiedSentence);
-                     commandChar(modifiedSentence);
-                     // String[] toPrint = modifiedSentence.split("\\.");
+                        String sentence = new String(receivePacket.getData()).substring(0, sentencelen);
 
-                     // if(toPrint.length > 1){
-                     //    System.out.print(toPrint[0]+": ");
-                     //    System.out.println(toPrint[1]);
-                     // }
+                        System.out.println(sentence);
+                        commandChar(sentence);
+                     }
+
+
                   }
 
                }catch( Exception e ){
@@ -143,13 +162,26 @@ public class UDPClient
       }
    }
 
+   public void sendStart(){
+
+      System.out.println("sent Start");
+
+      String start = this.name+".start";
+      byte[] sendData = start.getBytes();
+      try{
+         clientSocket.send(new DatagramPacket(sendData, sendData.length, this.ipaddress, this.port));
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+
    public void send(Point p){ // send a character movement packet
-      String toSend = "("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
+      String toSend = "cmove.("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
       this.send(toSend);
    }
 
    public void send(Point o, Point p){ // send a rocket Deployment packet
-      String toSend = "("+Integer.toString((int)o.getX())+","+Integer.toString((int)o.getY())+").";
+      String toSend = "rocket.("+Integer.toString((int)o.getX())+","+Integer.toString((int)o.getY())+").";
       toSend += "("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
 
       this.send(toSend);
