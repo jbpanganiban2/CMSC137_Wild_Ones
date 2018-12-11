@@ -20,6 +20,7 @@ public class ChatUtils{
      public static Player[] online = null;
      public static int oldPlayerCount = 0;
      public static ArrayList<Chat> connectedChats = new ArrayList<Chat>();
+     public static InetAddress udpserveraddress = null;
 
      public static int intAsker(String args){
           System.out.print(args+"> ");
@@ -131,7 +132,9 @@ public class ChatUtils{
           return TcpPacketProtos.TcpPacket.PacketType.forNumber(i);
      }
 
-     // p/
+     public static void setUdpAddress(InetAddress i){
+          udpserveraddress = i;
+     }
 
      synchronized public static void listenToServer(Socket server, Player user) {         // listens to all possible packets, then sets the according packet
           Thread thread = new Thread(){
@@ -158,8 +161,15 @@ public class ChatUtils{
                                    break;
                                    case CONNECT:                                               // if packetType is Connected
                                         connectPacketReceived = new ConnectPacket(received);
+
                                         String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" connected";     
                                         sendMessage(server,temp);                              //    at someone has connected
+
+                                        // try{Thread.sleep(2000);}catch(Exception e){};
+                                        if(udpserveraddress != null){
+                                             temp = "<SERVERIPADDRESS> "+udpserveraddress;
+                                             sendMessage(server,temp);
+                                        }
                                    break;
                                    case CREATE_LOBBY:                                          // if packetType is CREATE_LOBBY
                                         createLobbyPacketReceived = new CLPacket(received);    // edi good
