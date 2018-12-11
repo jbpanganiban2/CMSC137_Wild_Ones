@@ -9,17 +9,17 @@ public class Character extends MovingObject{
 	//
 	//  Attributes
 	//
-	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
+	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
 	private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
 	private final static Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
 	private final static Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
-	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
-	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
+	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
 	private final static Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
 	private final static Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
 
-	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
 	private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
 	private final static Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
 	private final static Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
@@ -61,12 +61,12 @@ public class Character extends MovingObject{
 	//
 
 	public Character(String name, Point init, Game g, int type){
-		super(name, init, new Dimension(50, 50), g);
+		super(name, init, new Dimension(40, 50), g);
 		this.initchar(type);
 	}
 
 	public Character(Player p, Point init, Game g, int type){
-		super(p.getName(), init, new Dimension(50, 50), g);
+		super(p.getName(), init, new Dimension(40, 50), g);
 		this.id = p.getID();
 		// System.out.println(this.name+"'s id = "+this.id);
 		this.udpclient = g.getUDPclient();
@@ -110,6 +110,14 @@ public class Character extends MovingObject{
 	//  Methods
 	//
 
+	public void attack(){
+		setCharacterUI(ATTACK);
+	}
+
+	public void afterAttack(){
+		setCharacterUI(STANDBY);
+	}
+
 
 	public int getType(){
 		return this.type;
@@ -136,44 +144,44 @@ public class Character extends MovingObject{
 		case ATTACK:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_ATTACK);
+				this.charr.setIcon(LUB_ATTACK);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_ATTACK);
 			}else{
-				this.charr.setIcon(LUB_ATTACK);
+				this.charr.setIcon(PIG_ATTACK);
 			}
 		break;
 
 		case STANDBY:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_STANDBY);
+				this.charr.setIcon(LUB_STANDBY);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_STANDBY);
 			}else{
-				this.charr.setIcon(LUB_STANDBY);
+				this.charr.setIcon(PIG_STANDBY);
 			}
 		break;
 
 		case WALKLEFT:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_WALKLEFT);
+				this.charr.setIcon(LUB_WALKLEFT);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_WALKLEFT);
 			}else{
-				this.charr.setIcon(LUB_WALKLEFT);
+				this.charr.setIcon(PIG_WALKLEFT);
 			}
 		break;
 
 		case WALKRIGHT:
 
 			if(this.type==1){
-				this.charr.setIcon(PIG_WALKRIGHT);
+				this.charr.setIcon(LUB_WALKRIGHT);
 			}else if(this.type==2){
 				this.charr.setIcon(DYNA_WALKRIGHT);
 			}else{
-				this.charr.setIcon(LUB_WALKRIGHT);
+				this.charr.setIcon(PIG_WALKRIGHT);
 			}
 		break;
 
@@ -301,7 +309,7 @@ public class Character extends MovingObject{
 
 	public synchronized void startJump(){
 		if(this.onGround){
-			this.yvelocity = 12;
+			this.yvelocity = 24;
 			this.onGround = false;
 		}
 	}
@@ -352,6 +360,8 @@ public class Character extends MovingObject{
 						System.out.println("rocket cooldown: "+time);
 						time--;
 						Thread.sleep(1000);
+						setCharacterUI(STANDBY);
+
 					}catch(Exception e){
 						e.printStackTrace();
 					}
@@ -390,10 +400,12 @@ public class Character extends MovingObject{
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			attack();
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+
 			deployRocket(e.getPoint());
 		}
 	}

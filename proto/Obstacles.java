@@ -47,16 +47,16 @@ public class Obstacles extends JPanel implements GameObject{
 	public void createObstacle(int blk){
 		switch(blk){
 			case 1:
-				render(0,466,312,33);
+				render(0,466,277,87);
 				break;
 			case 2:
-				render(351,373,119,190);
+				render(344,373,119,190);
 				break;
 			case 3:
-				render(597,347,134,194);
+				render(607,347,124,194);
 				break;
 			case 4:
-				render(514,411,84,131);
+				render(524,411,84,131);
 				break;
 			case 5:
 				render(0,208,200,24);
@@ -65,16 +65,16 @@ public class Obstacles extends JPanel implements GameObject{
 				render(78,60,252,20);
 				break;
 			case 7:
-				render(396,124,64,40);
+				render(377,124,64,40);
 				break;
 			// case 8:
 			// 	render(193,269,78,78);
 			// 	break;
 			case 9:
-				render(482,248,140,17);
+				render(462,248,140,17);
 				break;
 			case 10:
-				render(630,320,82,28);
+				render(650,320,82,28);
 				break;
 			// case 11:
 			// 	render(644,294,27,27);
@@ -92,22 +92,22 @@ public class Obstacles extends JPanel implements GameObject{
 				render(500,190,30,30);
 				break;
 			case 16:
-				render(88,436,90,30);
+				render(44,436,90,30);
 				break;
 			case 17:
 				render(40,180,30,30);
 				break;
 			case 18:
-				render(674,292,17,27);
+				render(704,292,27,27);
 				break;
 			case 19:
-				render(216,438,90,30);
+				render(183,438,90,30);
 				break;
 			case 20:
-				render(246,406,60,30);
+				render(214,406,60,30);
 				break;
 			case 21:
-				render(276,376,30,30);
+				render(244,376,30,30);
 				break;
 			default:
 				break;
