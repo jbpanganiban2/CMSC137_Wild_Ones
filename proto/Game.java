@@ -22,6 +22,11 @@ public class Game extends JPanel implements Runnable{
 	private final static int DYNAMIGHT = 2;
 	private final static int LUBGLUB = 3;
 
+	private final static int ATTACK = 0;
+	private final static int STANDBY = 1;
+	private final static int WALKLEFT = 2;
+	private final static int WALKRIGHT = 3;
+
 	JPanel parentPanel;
 	JPanel gamePanel;
 	JPanel chatPanel;
@@ -97,13 +102,14 @@ public class Game extends JPanel implements Runnable{
 
 	}
 
-	public void init_Players(Player[] players){						// initializes players
+	public void init_Players(Player[] players, HashMap hm){						// initializes players
 		int i = 0;
 		Character toAdd = null;
 		for(Player p : players){
 			if(p == null)continue;
 			if(!p.getID().equals(this.userPlayer.getID())){
-				this.chars.add(new Character(p, this.respawns.get(p.getIntID()), this, i%3));
+				int type = (int) hm.get(p.getName());
+				this.chars.add(new Character(p, this.respawns.get(p.getIntID()), this, type));
 			}
 			i+=1;
 		}
@@ -183,15 +189,25 @@ public class Game extends JPanel implements Runnable{
 		return null;
 	}
 
-	public Character getUserCharacter(){
-		return this.userCharacter;
-	}
+
 
 	public void moveChar(String name, Point p){
 		Character test = this.getCharacterByName(name);
-		if(test != null){
-			test.setLoc(p);
+		Point prev = test.getPosition();
+		if(prev.getX()< p.getX()){
+			test.setCharacterUI(WALKRIGHT);
+		}else if(prev.getX()> p.getX()){
+			test.setCharacterUI(WALKLEFT);
+		}else{
+			test.setCharacterUI(STANDBY);
 		}
+		test.setLoc(p);
+		
+
+	}
+
+	public Character getUserCharacter(){
+		return this.userCharacter;
 	}
 
 	public void deployCharRocket(String name, Point o, Point d, int damage){

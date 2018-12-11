@@ -53,6 +53,14 @@ public class Player{
 		// this.pID = Player.pNum++;
 	}
 
+	public void setType(int i){
+		this.type=i;
+	}
+
+	public int getType(){
+		return this.type;
+	}
+
 	public PlayerProtos.Player getPlayer(){
 		return this.p;
 	}
@@ -70,6 +78,7 @@ public class Player{
 	public String getID(){
 		return Integer.toString(this.pID);
 	}
+
 
 	public void self(){
 		System.out.println(this.p);

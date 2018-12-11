@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.net.*;
 import java.io.*;
+import java.util.*;
 import java.util.Scanner;
 
 
@@ -44,27 +45,38 @@ public class Lobby extends JPanel{
      GridBagConstraints left;
      GridBagConstraints right;
 
+
      // chat needed Components
      Chat chat;
-     Socket server;
+     static Socket server;
      
      UDPServer udpserver;
+
      UDPClient udpclient;
      InetAddress serverAddress;
      Game g;
 
      Player user;
+    
+
+
      boolean connected = false;
      boolean isSet = false;
 
      int selectedChar = 0;
+
+     HashMap nameType;
+
+     boolean enableStart;
 
      //
      //  CONSTRUCTORS
      //
 
      Lobby(ChatGameWindow cgw){                                                              //   host constructor
-          
+               
+          this.enableStart=true;
+
           this.cgw = cgw;
 
           this.mainPanel = cgw.getCardPanel();
@@ -72,12 +84,14 @@ public class Lobby extends JPanel{
 
           this.server = cgw.getServer();
           this.user = cgw.getUser();
+
+          this.nameType = new HashMap();
           
           createLobby();
      }
 
      Lobby(ChatGameWindow cgw, String lobby_Id){                                             //   client constructor
-
+          this.enableStart=false;
           this.cgw = cgw;
           
           this.mainPanel = cgw.getCardPanel();
@@ -86,7 +100,11 @@ public class Lobby extends JPanel{
           this.server = cgw.getServer();
           this.user = cgw.getUser();
 
+
           this.serverAddress = null;
+
+          this.nameType = new HashMap();
+
 
           connectToLobby(lobby_Id);
      }
@@ -170,6 +188,10 @@ public class Lobby extends JPanel{
      //   Methods
      //
 
+     public HashMap getHashMap(){
+          return this.nameType;
+     }
+
      public boolean connected(){
           return this.connected;
      }
@@ -222,15 +244,27 @@ public class Lobby extends JPanel{
           }
      }
 
-     private Player getUser(Player[] online){
+     private static Player getUser(Player[] online){
           for(Player p : online){
                if(p == null)continue;
                if(user.getName().equals(p.getName()))return p;
           }return user;
      }
 
+ 
+
+
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
+
+
+          
+          System.out.println(online.length);
+          if(online.length == 1){
+
+               new Prompt("Add more players", 1000);
+               return;
+          }
 
 
           this.udpclient.sendStart();
@@ -244,8 +278,12 @@ public class Lobby extends JPanel{
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-          this.g.init_Players(online);
+
+          // System.out.println(nameType.values());
+
+          this.g.init_Players(online, nameType);
           
+
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
           this.g.deploy();    
@@ -254,14 +292,18 @@ public class Lobby extends JPanel{
 
      public void startHostGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
-          
 
           Player realUser = getUser(online);
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-          this.g.init_Players(online);
+
+          // System.out.println(nameType.values());
+
+          this.g.init_Players(online,nameType);
           
+
+
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
           this.g.deploy();
@@ -384,7 +426,9 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent e){
                l.selectedChar = this.value;
-               // udpclient.sendType(l.selectedChar);
+
+               udpclient.sendType(l.selectedChar);
+
           }
      }
 
@@ -421,9 +465,12 @@ public class Lobby extends JPanel{
           top.setLayout(new GridBagLayout());
           top.setPreferredSize(new Dimension(730,70));
           top.add(exit,left);
-          // if(this.enableStart==true){
+
+
+          if(this.enableStart==true){
                top.add(start,right);
-          // }
+          }
+
           top.setOpaque(false);
           return top;
      }

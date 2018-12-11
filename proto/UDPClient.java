@@ -65,19 +65,29 @@ public class UDPClient
 
    private void commandChar(String command){
 
+
+
+      System.out.println("command = "+command);
+
+      String[] commandArray = command.split("\\.");
+
+
+
+      // System.out.println("command = "+command);
+
       try{
-
-         String[] commandArray = command.split("\\.");
-
          switch(commandArray[1]){
             case "start":
                System.out.println("startGame");
                this.l.startHostGame();
             break;
-            case "setChar":   
+            case "cType":   
                System.out.println("setCharacterType");
+               this.l.getHashMap().put(commandArray[0],Integer.parseInt(commandArray[2]));
+               // System.out.println("type = "+commandArray[2]);
             break;
             case "cmove":
+               System.out.println("moveChar");
                this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
             break;
             case "rocket":
@@ -87,7 +97,10 @@ public class UDPClient
             default:
                System.out.println("error packet received");
          }
+
+   
       }catch(Exception e){}
+
    }
 
 
@@ -172,6 +185,11 @@ public class UDPClient
       String toSend = "rocket.("+Integer.toString((int)o.getX())+","+Integer.toString((int)o.getY())+")";
       toSend += ".("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
       toSend += "."+Integer.toString(damage);
+      this.send(toSend);
+   }
+
+   public void sendType(int typ){
+      String toSend = "cType."+Integer.toString(typ);
       this.send(toSend);
    }
 

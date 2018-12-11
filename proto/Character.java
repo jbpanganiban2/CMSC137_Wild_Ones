@@ -140,7 +140,7 @@ public class Character extends MovingObject{
 		return this.name == c.name;
 	}
 
-	private void setCharacterUI(int type){
+	public void setCharacterUI(int type){
 
 		// sets the character icon the situation needs
 		// types will be determined in constants above

@@ -22,6 +22,7 @@ public class MainGUI{
      private static JTextField name;
      private static JButton host;
      private static JButton client;
+     private static JButton manual;
      private static JPanel container;
 
 
@@ -35,21 +36,21 @@ public class MainGUI{
           name = newNameTextField();
           host = newHostButton();
           client = newClientButton();
+          manual = newManualButton();
           container = newGridContainer();
 
-          GridBagConstraints center = new GridBagConstraints();
-          center.gridx = 0;
+          name.setBounds(0,0,135,50);
+          host.setBounds(0,60,150,50);
+          client.setBounds(0,120,150,50);
+          manual.setBounds(0,180,150,50);
 
-          center.insets = new Insets(0,0,10,0);                       //top padding
-          center.anchor = GridBagConstraints.PAGE_START;
-          container.add(name,center);
-          center.anchor = GridBagConstraints.CENTER;
-          container.add(host,center);
-          center.anchor = GridBagConstraints.PAGE_END;
+          container.add(name);
+          container.add(host);
           
-          center.insets = new Insets(0,0,0,0);                        //top padding
-          container.add(client,center);
+          container.add(client);
+          container.add(manual);
 
+          GridBagConstraints center = new GridBagConstraints();
                                                                       // for background
           ImageIcon icon = new ImageIcon("./src/BG.png"); 
           Image newimg = icon.getImage().getScaledInstance(600, 600,  java.awt.Image.SCALE_SMOOTH);
@@ -57,7 +58,8 @@ public class MainGUI{
           ImagePanel thumb = new ImagePanel(newIcon.getImage());
           thumb.setPreferredSize(new Dimension(600,600));
           thumb.setLayout(new GridBagLayout());
-          center.insets = new Insets(150,0,0,0);                      //top padding
+          center.weighty=4.0;
+          center.insets = new Insets(200,0,0,0);                      //top padding
           thumb.add(container, center);
 
           mainFrame.setVisible(true);
@@ -110,6 +112,7 @@ public class MainGUI{
 
      }
 
+
      static class clientCharMouse extends MouseAdapter{
           @Override
           public void mouseEntered(MouseEvent e){
@@ -122,6 +125,7 @@ public class MainGUI{
                client.setIcon(clientIcon);
           }
      }
+
 
      static class clientChar implements ActionListener {
           @Override
@@ -150,6 +154,30 @@ public class MainGUI{
                });
           }
      }
+     static class manualChar implements ActionListener {
+          @Override
+          public void actionPerformed(ActionEvent event) {
+
+
+               Manual man = new Manual();
+               man.setLocationRelativeTo(mainFrame) ;
+              
+          }
+
+     }
+
+     static class manualCharMouse extends MouseAdapter{
+          @Override
+          public void mouseEntered(MouseEvent e){
+               ImageIcon manualIcon = new ImageIcon("./src/MANUALHOVER.png");
+               manual.setIcon(manualIcon);
+          }
+          @Override
+          public void mouseExited(MouseEvent e){
+               ImageIcon manualIcon = new ImageIcon("./src/MANUAL.png");
+               manual.setIcon(manualIcon);
+          }
+     }
 
      //
      //   UI Inintialization Methods
@@ -166,7 +194,7 @@ public class MainGUI{
      private JButton newHostButton(){
           ImageIcon hostIcon = new ImageIcon("./src/HOST.png");
           JButton host = new JButton("HOST");
-          host.setPreferredSize(new Dimension(140,50));
+          host.setPreferredSize(new Dimension(150,50));
           host.setOpaque(false);
           host.setContentAreaFilled(false);
           host.setBorderPainted(false);
@@ -189,10 +217,23 @@ public class MainGUI{
           return client;
      }
 
+     private JButton newManualButton(){
+          ImageIcon clientIcon = new ImageIcon("./src/MANUAL.png"); 
+          JButton client = new JButton("MANUAL");
+          client.setPreferredSize(new Dimension(150,50));
+          client.setOpaque(false);
+          client.setContentAreaFilled(false);
+          client.setBorderPainted(false);
+          client.setIcon(clientIcon);
+          client.addActionListener(new manualChar());
+          client.addMouseListener(new manualCharMouse());
+          return client;
+     }
+
      private JPanel newGridContainer(){
           JPanel container = new JPanel();
-          container.setLayout(new GridBagLayout());
-          container.setPreferredSize(new Dimension(150,170));
+          // container.setLayout(null);
+          container.setPreferredSize(new Dimension(150,230));
           container.setOpaque(false);
           return container;
      }
