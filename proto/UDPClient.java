@@ -52,48 +52,27 @@ public class UDPClient
 
    private void commandChar(String command){
 
-<<<<<<< HEAD
+
       System.out.println("command = "+command);
 
       String[] commandArray = command.split("\\.");
 
-      switch(commandArray[1]){
-         case "start":
-            System.out.println("startGame");
-            this.l.startHostGame();
-         break;
-         case "cType":   
-            System.out.println("setCharacterType");
-            this.l.getHashMap().put(commandArray[0],Integer.parseInt(commandArray[2]));
-            // System.out.println("type = "+commandArray[2]);
-         break;
-         case "cmove":
-            System.out.println("moveChar");
-            this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
-         break;
-         case "rocket":
-            System.out.println("deployRocket");
-            this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]),Integer.parseInt(commandArray[4]));
-         break;
-         default:
-            System.out.println("error packet received");
-      }
-=======
+
       // System.out.println("command = "+command);
 
       try{
-
-         String[] commandArray = command.split("\\.");
-
          switch(commandArray[1]){
             case "start":
                System.out.println("startGame");
                this.l.startHostGame();
             break;
-            case "setChar":   
+            case "cType":   
                System.out.println("setCharacterType");
+               this.l.getHashMap().put(commandArray[0],Integer.parseInt(commandArray[2]));
+               // System.out.println("type = "+commandArray[2]);
             break;
             case "cmove":
+               System.out.println("moveChar");
                this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
             break;
             case "rocket":
@@ -103,8 +82,10 @@ public class UDPClient
             default:
                System.out.println("error packet received");
          }
+
+   
       }catch(Exception e){}
->>>>>>> 30537c7939b5399d6a0ca8a0c4b31f22144776e5
+
    }
 
 

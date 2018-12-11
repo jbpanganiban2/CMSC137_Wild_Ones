@@ -201,8 +201,11 @@ public class Game extends JPanel implements Runnable{
 		}
 		test.setLoc(p);
 		
-		
 
+	}
+
+	public Character getUserCharacter(){
+		return this.userCharacter;
 	}
 
 	public void deployCharRocket(String name, Point o, Point d, int damage){
