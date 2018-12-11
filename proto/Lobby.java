@@ -47,7 +47,12 @@ public class Lobby extends JPanel{
      // chat needed Components
      Chat chat;
      Socket server;
+     
      UDPServer udpserver;
+     UDPClient udpclient;
+     Game g;
+
+
      Player user;
      boolean connected = false;
 
@@ -103,6 +108,7 @@ public class Lobby extends JPanel{
 
           this.udpserver = new UDPServer(this);
           this.udpserver.start();
+
           
           if(clpacket != null){    // if there is no clpacket received
                lobby_id = clpacket.getLobbyId();
@@ -113,7 +119,11 @@ public class Lobby extends JPanel{
                     if(!connected){
                          // create prompt that shows error
                          return;
-                    }this.connected = true;
+                    }
+
+                    this.connected = true;
+                    this.udpclient = new UDPClient(user.getName(), this);
+                    this.udpclient.start();
 
                }else{
                     System.out.println("Error: "+lobby_id);
@@ -142,6 +152,8 @@ public class Lobby extends JPanel{
                }
 
                this.connected = true;
+               this.udpclient = new UDPClient(user.getName(), this);
+               this.udpclient.start();
 
           }else System.out.println("Error: "+lobby_id);
 
@@ -158,6 +170,22 @@ public class Lobby extends JPanel{
 
      public Chat getChat(){
           return this.chat;
+     }
+
+     public Game getActiveGame(){
+          return this.g;
+     }
+
+     public JPanel getGamePanel(){
+          return this.mainPanel;
+     }
+
+     public UDPServer getUDPServer(){
+          return this.udpserver;
+     }
+
+     public UDPClient getUDPClient(){
+          return this.udpclient;
      }
 
 
@@ -193,24 +221,41 @@ public class Lobby extends JPanel{
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
 
-          // System.out.println(online.length);
-          // if(online.length == 1){
+          System.out.println(online.length);
+          if(online.length == 1){
 
-          //      new Prompt("Add more players", 1000);
-          //      return;
-          // }
+               new Prompt("Add more players", 1000);
+               return;
+          }
+
+          this.udpclient.sendStart();
 
           Player realUser = getUser(online);
 
-          Game newg = new Game(this.udpserver, mainPanel);
-          newg.addUserPlayer(realUser, selectedChar);
-          newg.init_Players(online);
+          this.g = new Game(this);
+          this.g.addUserPlayer(realUser, selectedChar);
+          this.g.init_Players(online);
           
-          mainPanel.add(newg, "GAME");
+          mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
-
-          newg.deploy();
+          this.g.deploy();    
      }
+
+
+     public void startHostGame(){
+          Player[] online = ChatUtils.getOnlinePlayers(server);
+          
+          Player realUser = getUser(online);
+
+          this.g = new Game(this);
+          this.g.addUserPlayer(realUser, selectedChar);
+          this.g.init_Players(online);
+          
+          mainPanel.add(this.g, "GAME");
+          cardLayout.next(mainPanel);
+          this.g.deploy();
+     }
+
 
      class startGame implements ActionListener {
           @Override
@@ -218,6 +263,7 @@ public class Lobby extends JPanel{
                newGame();
           }
      }
+
 
      static class startMouse extends MouseAdapter{
           @Override
