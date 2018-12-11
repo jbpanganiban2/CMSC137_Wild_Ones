@@ -201,6 +201,11 @@ public class Game extends JPanel implements Runnable{
 		}
 		test.setLoc(p);
 		
+		for (int i=0;i<500 ;i++ ) {
+			
+		}
+		
+		test.setCharacterUI(STANDBY);
 
 	}
 

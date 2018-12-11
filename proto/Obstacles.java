@@ -13,7 +13,7 @@ public class Obstacles extends JPanel implements GameObject{
 		this.block=num;
 		createObstacle(this.block);
 		// this.setBackground(Color.BLACK);
-		// this.setOpaque(false);
+		this.setOpaque(false);
 	}
 
 	public int getX(){

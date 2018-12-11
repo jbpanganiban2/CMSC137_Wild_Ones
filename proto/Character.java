@@ -9,20 +9,20 @@ public class Character extends MovingObject{
 	//
 	//  Attributes
 	//
-	private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
-	private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
-	private final static Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
-	private final static Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
+	private final  Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
+	private final  Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
+	private final  Icon PIG_WALKLEFT = new ImageIcon("src/pig/pigWalkLeft.gif");
+	private final  Icon PIG_WALKRIGHT = new ImageIcon("src/pig/pigWalkRight.gif");
 
-	private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
-	private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
-	private final static Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
-	private final static Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
+	private final  Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
+	private final  Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
+	private final  Icon LUB_WALKLEFT = new ImageIcon("src/lubglub/lubWalkLeft.gif");
+	private final  Icon LUB_WALKRIGHT = new ImageIcon("src/lubglub/lubWalkRight.gif");
 
-	private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
-	private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
-	private final static Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
-	private final static Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
+	private final  Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
+	private final  Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
+	private final  Icon DYNA_WALKLEFT = new ImageIcon("src/dyna/dynaWalkLeft.gif");
+	private final  Icon DYNA_WALKRIGHT = new ImageIcon("src/dyna/dynaWalkRight.gif");
 
 	private final static int ATTACK = 0;
 	private final static int STANDBY = 1;
