@@ -184,9 +184,9 @@ public class Game extends JPanel implements Runnable{
 		test.setLoc(p);
 	}
 
-	public void deployCharRocket(String name, Point o, Point d){
+	public void deployCharRocket(String name, Point o, Point d, int damage){
 		Character test = this.getCharacterByName(name);
-		test.deployRocket(o,d);
+		test.deployRocket(o,d,damage);
 	}
 
 	public synchronized void run(){
@@ -195,7 +195,7 @@ public class Game extends JPanel implements Runnable{
 		this.userCharacter.deploy();
 		this.isFinished = false;
 
-		while(this.chars.size() >= 1){}
+		while(this.chars.size() > 1){}
 
 		this.userCharacter.disable();
 		this.isFinished = true;
