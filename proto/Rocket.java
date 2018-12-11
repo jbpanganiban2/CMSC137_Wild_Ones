@@ -15,6 +15,7 @@ public class Rocket extends MovingObject{
      private Point cursorPosition;
      private JLabel rocket;
      private int type;                       // 0 if gravity rocket, 1 if normal rocket
+     private int damage;
      private ArrayList<Point> trajectory;
      private Character c;
 
@@ -22,12 +23,13 @@ public class Rocket extends MovingObject{
      //  Constructors
      //
 
-     public Rocket(String name, Character c, Point charPosition, Point cursorPosition, Game g, int type){
+     public Rocket(String name, int damage, Character c, Point charPosition, Point cursorPosition, Game g, int type){
 
           super(name, charPosition, new Dimension(30, 20), g);
           this.charPosition = charPosition;
 
           this.type = type;
+          this.damage = damage;
 
           this.charPosition = charPosition;
           this.cursorPosition = cursorPosition;
@@ -73,34 +75,12 @@ public class Rocket extends MovingObject{
                end = 10;
                increment = -1;
           }else{
-               // rocket is perfectly going down/up
-               // setTrajectory to a downard/upward line
                return;
           }
 
           Point y = null;
           int yVal;
 
-          // (new Thread(){
-
-          //      int start;
-          //      int end;
-          //      int increment;
-
-          //      public Thread setValues(int s, int e, int i){
-          //           this.start = s;
-          //           this.end = e;
-          //           this.increment = i;
-          //           return this;
-          //      }
-
-          //      @Override
-          //      public void run(){
-          //           for(int i = this.start; i != this.end; i+=this.increment ){
-          //                trajectory.add(getPositionAtX(i));
-          //           }
-          //      }
-          // }).setValues(start, end, increment).start();
           for(int i = start; i != end; i+=increment ){
                trajectory.add(getPositionAtX(i));
           }
@@ -130,18 +110,12 @@ public class Rocket extends MovingObject{
                     if(o instanceof MovingObject){
                          MovingObject mo = (MovingObject)o;
                          if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }
                     else if(o instanceof Obstacles){
                          Obstacles mo = (Obstacles)o;
                          if(this.intersects(mo) && !mo.equals(this) && !mo.equals(this.c)){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }
@@ -156,7 +130,8 @@ public class Rocket extends MovingObject{
           this.alive = false;
           this.collided = true;
           if(m instanceof Character)
-               ((Character)m).damaged();
+               ((Character)m).damaged(this.damage);
+               ((Character)m).addPoints(this.damage);
      }
 
      @Override
