@@ -53,6 +53,7 @@ public class UDPClient
       }catch(Exception e){
          e.printStackTrace();
       }
+      System.out.println(i);
    }
 
    private Point extractPoint(String s){

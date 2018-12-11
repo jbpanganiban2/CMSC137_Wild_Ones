@@ -53,6 +53,7 @@ public class Lobby extends JPanel{
      UDPServer udpserver;
 
      UDPClient udpclient;
+     
      InetAddress serverAddress;
      Game g;
 
@@ -256,17 +257,7 @@ public class Lobby extends JPanel{
 
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
-
-
           
-          System.out.println(online.length);
-          if(online.length == 1){
-
-               new Prompt("Add more players", 1000);
-               return;
-          }
-
-
           this.udpclient.sendStart();
 
           if(online.length <= 1){
@@ -278,12 +269,8 @@ public class Lobby extends JPanel{
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-
-          // System.out.println(nameType.values());
-
-          this.g.init_Players(online, nameType);
+          this.g.init_Players(online, this.nameType);
           
-
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
           this.g.deploy();    
@@ -297,12 +284,7 @@ public class Lobby extends JPanel{
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-
-          // System.out.println(nameType.values());
-
-          this.g.init_Players(online,nameType);
-          
-
+          this.g.init_Players(online,this.nameType);
 
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
@@ -412,7 +394,7 @@ public class Lobby extends JPanel{
           return btn;
      }
 
-     class SetChoice implements ActionListener{
+     static class SetChoice implements ActionListener{
 
           int value = 0;
           Lobby l;
@@ -427,7 +409,7 @@ public class Lobby extends JPanel{
           public void actionPerformed(ActionEvent e){
                l.selectedChar = this.value;
 
-               udpclient.sendType(l.selectedChar);
+               l.getUDPClient().sendType(l.selectedChar);
 
           }
      }
