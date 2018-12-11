@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.net.*;
 import java.io.*;
+import java.util.*;
 import java.util.Scanner;
 
 
@@ -44,19 +45,22 @@ public class Lobby extends JPanel{
      GridBagConstraints left;
      GridBagConstraints right;
 
+
      // chat needed Components
      Chat chat;
-     Socket server;
+     static Socket server;
      
      UDPServer udpserver;
-     UDPClient udpclient;
+     static UDPClient udpclient;
      Game g;
 
 
-     Player user;
+     static Player user;
      boolean connected = false;
 
      int selectedChar = 0;
+
+     HashMap nameType;
 
      boolean enableStart;
 
@@ -76,6 +80,8 @@ public class Lobby extends JPanel{
           this.server = cgw.getServer();
           // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
+
+          this.nameType = new HashMap();
           
           createLobby();
      }
@@ -90,6 +96,9 @@ public class Lobby extends JPanel{
           this.server = cgw.getServer();
           // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
+
+          this.nameType = new HashMap();
+
 
           connectToLobby(lobby_Id);
      }
@@ -164,6 +173,10 @@ public class Lobby extends JPanel{
      //   Methods
      //
 
+     public HashMap getHashMap(){
+          return this.nameType;
+     }
+
      public boolean connected(){
           return this.connected;
      }
@@ -211,16 +224,19 @@ public class Lobby extends JPanel{
           }
      }
 
-     private Player getUser(Player[] online){
+     private static Player getUser(Player[] online){
           for(Player p : online){
                if(p == null)continue;
                if(user.getName().equals(p.getName()))return p;
           }return user;
      }
 
+ 
+
+
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
-
+          
           System.out.println(online.length);
           if(online.length == 1){
 
@@ -234,8 +250,12 @@ public class Lobby extends JPanel{
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-          this.g.init_Players(online);
+
+          // System.out.println(nameType.values());
+
+          this.g.init_Players(online, nameType);
           
+
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
           this.g.deploy();    
@@ -244,13 +264,18 @@ public class Lobby extends JPanel{
 
      public void startHostGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
-          
+            
           Player realUser = getUser(online);
 
           this.g = new Game(this);
           this.g.addUserPlayer(realUser, selectedChar);
-          this.g.init_Players(online);
+
+          // System.out.println(nameType.values());
+
+          this.g.init_Players(online,nameType);
           
+
+
           mainPanel.add(this.g, "GAME");
           cardLayout.next(mainPanel);
           this.g.deploy();
@@ -373,6 +398,7 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent e){
                l.selectedChar = this.value;
+               udpclient.sendType(l.selectedChar);
           }
      }
 
