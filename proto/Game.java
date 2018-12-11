@@ -41,6 +41,8 @@ public class Game extends JPanel implements Runnable{
 	boolean isFinished;
 	int alivePlayers;
 
+	Character mainChar;
+
 	UDPClient udpclient;
 
 	//
@@ -100,6 +102,14 @@ public class Game extends JPanel implements Runnable{
 		this.setSize(730,700);
 		this.add(this.bg);
 
+	}
+
+	public void setMainChar(Character ch){
+		this.mainChar = ch;
+	}
+
+	public Character getMainChar(Character ch){
+		return this.mainChar;
 	}
 
 	public void init_Players(Player[] players, HashMap hm){						// initializes players
@@ -203,6 +213,7 @@ public class Game extends JPanel implements Runnable{
 		}
 		test.setLoc(p);
 		
+
 
 	}
 
