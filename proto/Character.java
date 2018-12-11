@@ -205,40 +205,40 @@ public class Character extends MovingObject{
 		}
 
 		this.movePosition(movement, 0);
-		if(this.xvelocity != 0 && this.yvelocity != 0)
-			this.udpclient.send(new Point(this.position));
+		// if(this.xvelocity != 0 && this.yvelocity != 0)
+		// 	this.udpclient.send(new Point(this.position));
 	}
 
 	public synchronized void moveY(int movement){
 				
-		if(movement > 0){ // going downwards
-			moveUp();
-		}else if(movement < 0){ // going upwards
-			moveDown();
+		if(movement < 0){ // going upwards if movement is negative
+			moveUp(movement);
+		}else if(movement > 0){ // going downwards if movement is positive
+			moveDown(movement);
 		}
 
-		if(this.xvelocity != 0 && this.yvelocity != 0)
-			this.udpclient.send(new Point(this.position));
+		// if(this.xvelocity != 0 && this.yvelocity != 0)
+		// 	this.udpclient.send(new Point(this.position));
 	}
 
-	public synchronized void moveUp(){
+	public synchronized void moveUp(int movement){
 
 	// checks first if there will be a collision before moving
 
-		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())-(movement+2));
+		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+movement);
 		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
 			this.yCollide = true;
 			this.yvelocity = 0;
 			return;
 		}
 
-		this.movePosition(0, -(movement+2));
+		this.movePosition(0, +movement);
 		// this.udpclient.send(new Point(this.position));
 	}
 
-	public synchronized void moveDown(){
+	public synchronized void moveDown(int movement){
 
-		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+(movement+4));
+		Point test = new Point((int)this.position.getX(), ((int)this.position.getY())+movement);
 		if((this.hasCollision(new Rectangle(test, this.size),this.g.getGameObjects())) != null){
 			this.yCollide = true;
 			this.onGround = true;
@@ -246,7 +246,7 @@ public class Character extends MovingObject{
 			return;
 		}
 
-		this.movePosition(0, movement+4);
+		this.movePosition(0, movement);
 		// this.udpclient.send(new Point(this.position));
 	}
 
@@ -312,27 +312,32 @@ public class Character extends MovingObject{
 		this.yvelocity = 0;
 	}
 
+	// int origin;
 	public synchronized void startJump(){
+		// System.out.println("jumpstarted");
 		if(this.onGround){
-			this.yvelocity = 18;
+			// System.out.println("enters?");
+			this.yvelocity = -12;
 			this.onGround = false;
+			// System.out.println(this.yvelocity);
 		}
 	}
 
 	public synchronized void endJump(){
-	    if(this.yvelocity > 6)
-	        this.yvelocity = 6;
+	    if(this.yvelocity < -6)
+	        this.yvelocity = -6;
 	}
 
 	public synchronized void run(){
 		(new Thread(){
 			@Override
-			public void run(){
+			public synchronized void run(){
 				while(alive){
-					// System.out.println("running");
-					yvelocity -= GRAVITY;
+					yvelocity += GRAVITY;
 					moveX((int)xvelocity);
 					moveY((int)yvelocity);
+					if(xvelocity != 0 && yvelocity != 0)
+						udpclient.send(new Point(position));
 					try{Thread.sleep(33);}catch(Exception e){e.printStackTrace();};
 				}
 			}
@@ -380,18 +385,16 @@ public class Character extends MovingObject{
 	}
 
 	public synchronized void damaged(int dmg){
-		// int dmg = rng(10,1);
 		System.out.println(this.name+" damaged by "+Integer.toString(dmg));
 		this.health -= dmg;
 		if(this.health <= 0){
 			System.out.println(this.name+" is now dead.");
 			this.alive = false;
 			this.g.getGameObjects().remove(this);
-			this.g.getGamePanel().remove(this);
-			this.g.dead(this);
+			this.g.getGamePanel().remove(this);		
+			this.g.getChars().remove(this);
 			this.setVisible(false);
-			this.g.getGamePanel().invalidate();
-			this.g.getGamePanel().validate();
+			this.g.refreshPanel();
 		}
 	}
 

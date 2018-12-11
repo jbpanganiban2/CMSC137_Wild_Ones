@@ -179,6 +179,10 @@ public class ChatGameWindow extends JFrame{
           return this.mainGUI;
      }
 
+     public Lobby getLobby(){
+          return this.lobby;
+     }
+
      //
      //  Internal Classes
      //

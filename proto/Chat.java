@@ -17,6 +17,7 @@ public class Chat extends JPanel{
     static final int ENTER1 = 02;
     private boolean chatting;
     
+    static Lobby l;
     static JButton sendMessage;
     static JScrollPane jpane;
     static JTextArea chatBox;
@@ -31,8 +32,9 @@ public class Chat extends JPanel{
     //  CONSTRUCTORS
     //
 
-    Chat(Socket s, String pu){
+    Chat(Lobby l, Socket s, String pu){
         
+        this.l = l;
         createChat(s, pu);
     }
 
@@ -57,13 +59,7 @@ public class Chat extends JPanel{
         this.jpane = newJPane();
 
         this.southPanel = newSouthPanel(messageBox, sendMessage);
-// <<<<<<< HEAD
-//         this.setLayout(new BorderLayout());    
-//         this.add(BorderLayout.SOUTH, southPanel);
-//         this.add(jpane, BorderLayout.CENTER);
-//         this.setPreferredSize(new Dimension(730, 150));
 
-// =======
         this.setLayout(bl);    
         this.add(southPanel,BorderLayout.CENTER);
         this.add(jpane, BorderLayout.NORTH);
@@ -80,7 +76,6 @@ public class Chat extends JPanel{
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             ChatUtils.sendMessage(server, messageBox.getText());
-            // addMessageToBox("test", messageBox.getText());
             messageBox.setText("");
         }
     }
@@ -104,14 +99,20 @@ public class Chat extends JPanel{
 
     public void enterPressed(){
         if(this.chatting){
-            // if(!messageBox.getText().equals("")){
-                ChatUtils.sendMessage(server, messageBox.getText());
-                this.messageBox.setText("");
-            // }
+            ChatUtils.sendMessage(server, messageBox.getText());
+            this.messageBox.setText("");
             this.chatting = false;
+            try{
+                this.l.getActiveGame().getUserCharacter().enable();
+                System.out.println("enabled");
+            }catch(Exception e){}
         }else{
             this.messageBox.requestFocus();
             this.chatting = true;
+            try{
+                this.l.getActiveGame().getUserCharacter().disable();
+                System.out.println("disabled");
+            }catch(Exception e){}
         }
     }
 

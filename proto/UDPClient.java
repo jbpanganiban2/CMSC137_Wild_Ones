@@ -54,26 +54,29 @@ public class UDPClient
 
       // System.out.println("command = "+command);
 
-      String[] commandArray = command.split("\\.");
+      try{
 
-      switch(commandArray[1]){
-         case "start":
-            System.out.println("startGame");
-            this.l.startHostGame();
-         break;
-         case "setChar":   
-            System.out.println("setCharacterType");
-         break;
-         case "cmove":
-            this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
-         break;
-         case "rocket":
-            System.out.println("deployRocket");
-            this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]),Integer.parseInt(commandArray[4]));
-         break;
-         default:
-            System.out.println("error packet received");
-      }
+         String[] commandArray = command.split("\\.");
+
+         switch(commandArray[1]){
+            case "start":
+               System.out.println("startGame");
+               this.l.startHostGame();
+            break;
+            case "setChar":   
+               System.out.println("setCharacterType");
+            break;
+            case "cmove":
+               this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
+            break;
+            case "rocket":
+               System.out.println("deployRocket");
+               this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]),Integer.parseInt(commandArray[4]));
+            break;
+            default:
+               System.out.println("error packet received");
+         }
+      }catch(Exception e){}
    }
 
 
