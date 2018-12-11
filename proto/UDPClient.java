@@ -65,12 +65,6 @@ public class UDPClient
 
    private void commandChar(String command){
 
-      // System.out.println("command = "+command);
-      // 
-      // aaron.ctype.1
-
-      System.out.println(command);
-
       try{
 
          String[] commandArray = command.split("\\.");

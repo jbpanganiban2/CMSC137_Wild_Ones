@@ -165,7 +165,7 @@ public class ChatUtils{
                                         String temp = "\n!ALERT! Player "+connectPacketReceived.getPlayerName()+" connected";     
                                         sendMessage(server,temp);                              //    at someone has connected
 
-                                        // try{Thread.sleep(2000);}catch(Exception e){};
+                                        try{Thread.sleep(500);}catch(Exception e){};
                                         if(udpserveraddress != null){
                                              temp = "<SERVERIPADDRESS> "+udpserveraddress;
                                              sendMessage(server,temp);
