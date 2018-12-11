@@ -256,8 +256,6 @@ public class Lobby extends JPanel{
 
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
-
-
           
           System.out.println(online.length);
           if(online.length == 1){
@@ -281,7 +279,7 @@ public class Lobby extends JPanel{
 
           // System.out.println(nameType.values());
 
-          this.g.init_Players(online, nameType);
+          this.g.init_Players(online, this.nameType);
           
 
           mainPanel.add(this.g, "GAME");
