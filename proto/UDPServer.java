@@ -13,6 +13,7 @@ public class UDPServer implements Runnable{
    private Client[] clients;
    private int clientNum = 0;
    private boolean gameRunning;
+   private InetAddress serverAddress;
    private Lobby l;
 
    //
@@ -32,6 +33,13 @@ public class UDPServer implements Runnable{
    }
 
    public UDPServer(Lobby l){
+
+      try(final DatagramSocket socket = new DatagramSocket()){                                       // gets the UDP server address
+         socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+         String ss = socket.getLocalAddress().getHostAddress();
+         // System.out.println(ss + " new serverAddress");
+         this.serverAddress = InetAddress.getByName(ss);
+      }catch(Exception e){}
 
       try{
          this.serverSocket = new DatagramSocket(1975);
@@ -73,6 +81,11 @@ public class UDPServer implements Runnable{
       }).start();
    }
 
+   public InetAddress getInetAddress(){
+      return this.serverAddress;
+   }
+
+
    public synchronized void run(){
 
       System.out.println("Server is now Listening...");
@@ -95,6 +108,7 @@ public class UDPServer implements Runnable{
                Client toAdd = new Client(name,receivePacket.getAddress(), receivePacket.getPort());
                if(isConnect /*clientNum == 0 || !toAdd.in(clients)*/){
                   this.clients[this.clientNum++] = toAdd;
+                  System.out.println("someone connected");
                }else{
                   sendToEveryone(name, sentence, clients, serverSocket);
                }

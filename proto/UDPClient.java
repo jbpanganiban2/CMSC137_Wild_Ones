@@ -42,6 +42,19 @@ public class UDPClient
       }
    }
 
+   public UDPClient(String name, Lobby l, InetAddress i){
+      try{
+         this.clientSocket = new DatagramSocket();
+         this.ipaddress = i;
+         this.alive = true;
+         this.port = 1975;
+         this.name = name;
+         this.l = l;
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+
    private Point extractPoint(String s){
       String[] position = s.split("\\(|,|\\)");
       int x = Integer.parseInt(position[1]);
@@ -53,9 +66,11 @@ public class UDPClient
    private void commandChar(String command){
 
 
+
       System.out.println("command = "+command);
 
       String[] commandArray = command.split("\\.");
+
 
 
       // System.out.println("command = "+command);
