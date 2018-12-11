@@ -14,18 +14,17 @@ public class Lobby extends JPanel{
      // ATTRIBUTES
      //
      private final static Icon PIG_STANDBY = new ImageIcon("src/pig/pigStandby.gif");
-     private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/standby.gif");
+     private final static Icon LUB_STANDBY = new ImageIcon("src/lubglub/lubStandby.gif");
      private final static Icon DYNA_STANDBY = new ImageIcon("src/dyna/dynaStandby.gif");
-     private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttackLeft.gif");
-     private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttackLeft.gif");
-     private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttackLeft.gif");
+     private final static Icon PIG_ATTACK = new ImageIcon("src/pig/pigAttack.gif");
+     private final static Icon LUB_ATTACK = new ImageIcon("src/lubglub/lubAttack.gif");
+     private final static Icon DYNA_ATTACK = new ImageIcon("src/dyna/dynaAttack.gif");
 
      // gui components
 
      JButton choice1;
      JButton choice2;
      JButton choice3;
-
 
      Image newimg;
      ImageIcon startIcon;
@@ -48,10 +47,16 @@ public class Lobby extends JPanel{
      // chat needed Components
      Chat chat;
      Socket server;
+     
+     UDPServer udpserver;
+     UDPClient udpclient;
+     Game g;
+
+
      Player user;
      boolean connected = false;
 
-
+     int selectedChar = 0;
 
      //
      //  CONSTRUCTORS
@@ -65,6 +70,7 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
+          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
           
           createLobby();
@@ -78,6 +84,7 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
+          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
 
           connectToLobby(lobby_Id);
@@ -95,19 +102,24 @@ public class Lobby extends JPanel{
           clpacket = ChatUtils.createLobbyPacketReceived;
           ChatUtils.createLobbyPacketReceived = null;
 
+          this.udpserver = new UDPServer(this);
+          this.udpserver.start();
+
           
           if(clpacket != null){    // if there is no clpacket received
                lobby_id = clpacket.getLobbyId();
 
                if(!lobby_id.equals("You are not part of any lobby.")){     
 
-                    ChatUtils.setChat(this.chat);
-
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                     if(!connected){
                          // create prompt that shows error
                          return;
-                    }this.connected = true;
+                    }
+
+                    this.connected = true;
+                    this.udpclient = new UDPClient(user.getName(), this);
+                    this.udpclient.start();
 
                }else{
                     System.out.println("Error: "+lobby_id);
@@ -122,20 +134,22 @@ public class Lobby extends JPanel{
 
      public void connectToLobby(String lobby_id){
 
-          ChatUtils.listenToServer(server, user);                               // initializes all ui components
+          ChatUtils.listenToServer(server, user);  
+                             
 
           if(!lobby_id.equals("You are not part of any lobby.")){               // if successfully created lobby
                
-               ChatUtils.setChat(this.chat);
-               
                boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                
-               // System.out.println(connected);
                if(!connected){
                          // create prompt that shows error
                          new Prompt("Error Connecting to Lobby", 750);
                          return;
-               }this.connected = true;
+               }
+
+               this.connected = true;
+               this.udpclient = new UDPClient(user.getName(), this);
+               this.udpclient.start();
 
           }else System.out.println("Error: "+lobby_id);
 
@@ -152,6 +166,22 @@ public class Lobby extends JPanel{
 
      public Chat getChat(){
           return this.chat;
+     }
+
+     public Game getActiveGame(){
+          return this.g;
+     }
+
+     public JPanel getGamePanel(){
+          return this.mainPanel;
+     }
+
+     public UDPServer getUDPServer(){
+          return this.udpserver;
+     }
+
+     public UDPClient getUDPClient(){
+          return this.udpclient;
      }
 
 
@@ -177,24 +207,59 @@ public class Lobby extends JPanel{
           }
      }
 
+     private Player getUser(Player[] online){
+          for(Player p : online){
+               if(p == null)continue;
+               if(user.getName().equals(p.getName()))return p;
+          }return user;
+     }
+
+     private void newGame(){
+          Player[] online = ChatUtils.getOnlinePlayers(server);
+
+          System.out.println(online.length);
+          if(online.length == 1){
+
+               new Prompt("Add more players", 1000);
+               return;
+          }
+
+          this.udpclient.sendStart();
+
+          Player realUser = getUser(online);
+
+          this.g = new Game(this);
+          this.g.addUserPlayer(realUser, selectedChar);
+          this.g.init_Players(online);
+          
+          mainPanel.add(this.g, "GAME");
+          cardLayout.next(mainPanel);
+          this.g.deploy();    
+     }
+
+
+     public void startHostGame(){
+          Player[] online = ChatUtils.getOnlinePlayers(server);
+          
+          Player realUser = getUser(online);
+
+          this.g = new Game(this);
+          this.g.addUserPlayer(realUser, selectedChar);
+          this.g.init_Players(online);
+          
+          mainPanel.add(this.g, "GAME");
+          cardLayout.next(mainPanel);
+          this.g.deploy();
+     }
+
+
      class startGame implements ActionListener {
           @Override
           public void actionPerformed(ActionEvent event) {
-               Player[] online = ChatUtils.getOnlinePlayers(server);
-
-               // System.out.println(online.length);
-               // if(online.length == 1){
-
-               //      new Prompt("Add more players", 1000);
-               //      return;
-               // }
-
-               cardLayout.next(mainPanel);
-               cgw.getGame().addUserPlayer(user, 0);
-               cgw.getGame().init_Players(online);
-               cgw.getGame().deploy();
+               newGame();
           }
      }
+
 
      static class startMouse extends MouseAdapter{
           @Override
@@ -213,6 +278,7 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent e){
 
+               ChatUtils.removeChat(chat);
                ChatUtils.invokeDisconnect(server, user);
                cgw.setVisible(false);
                cgw.getMainGUI().setVisible(true);
@@ -237,7 +303,11 @@ public class Lobby extends JPanel{
      //
      
      private void initUIComponents(){        // Inintializes all UI components
+
           this.chat = new Chat(server, user.getName());
+          ChatUtils.addConnectedChat(this.chat);
+
+          // this.udpserver = new UDPServer(this);
 
           this.startIcon = new ImageIcon("./src/START.png");  
           this.exitIcon = new ImageIcon("./src/EXIT.png");                                      
@@ -260,10 +330,9 @@ public class Lobby extends JPanel{
           this.right = new GridBagConstraints();
           this.right.anchor = GridBagConstraints.LINE_END;
 
-
-          this.choice1 = createChoice(PIG_STANDBY,PIG_ATTACK);
-          this.choice2 = createChoice(LUB_STANDBY,LUB_ATTACK);
-          this.choice3 = createChoice(DYNA_STANDBY,DYNA_ATTACK);
+          this.choice1 = createChoice(PIG_STANDBY,PIG_ATTACK,0);
+          this.choice2 = createChoice(LUB_STANDBY,LUB_ATTACK,1);
+          this.choice3 = createChoice(DYNA_STANDBY,DYNA_ATTACK,2);
 
           
           this.top = newTop(this.start, this.exit, this.right, this.left);
@@ -275,14 +344,32 @@ public class Lobby extends JPanel{
           this.add(bg);
      }
 
-     private JButton createChoice( Icon icn, Icon icn2){
+     private JButton createChoice( Icon icn, Icon icn2, int choiceType){
           JButton btn = new JButton(icn);
           btn.setRolloverEnabled(true);
           btn.setRolloverIcon(icn2);
           btn.setContentAreaFilled(false);
           btn.setBorderPainted(false);
+          btn.addActionListener((new SetChoice(choiceType, this)));
           btn.setPreferredSize(new Dimension(50,50));
           return btn;
+     }
+
+     static class SetChoice implements ActionListener{
+
+          int value = 0;
+          Lobby l;
+
+          public SetChoice(int i, Lobby l){
+               this.value = i;
+               this.l = l;
+               // return this;
+          }
+
+          @Override
+          public void actionPerformed(ActionEvent e){
+               l.selectedChar = this.value;
+          }
      }
 
      private JButton createNewButton(ImageIcon icn){                  // creates a new Start button
