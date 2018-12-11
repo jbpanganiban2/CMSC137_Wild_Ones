@@ -215,9 +215,6 @@ public class Lobby extends JPanel{
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
 
-
-
-
           this.udpclient.sendStart();
 
           Player realUser = getUser(online);

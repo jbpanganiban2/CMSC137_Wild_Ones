@@ -26,6 +26,7 @@ public class Game extends JPanel implements Runnable{
 	JPanel gamePanel;
 	JPanel chatPanel;
 	JPanel playerPanel;
+	ImagePanel bg;
 
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
@@ -85,13 +86,13 @@ public class Game extends JPanel implements Runnable{
 			gameObjects.add(obs);
 		}
 
-		ImagePanel bg = new ImagePanel(newIcon.getImage());
-		bg.setPreferredSize(new Dimension(730,550));
-		bg.setLayout(new BorderLayout());
-		bg.add(gamePanel); 										//add gamePanel to panel with bg
+		this.bg = new ImagePanel(newIcon.getImage());
+		this.bg.setPreferredSize(new Dimension(730,550));
+		this.bg.setLayout(new BorderLayout());
+		this.bg.add(gamePanel); 										//add gamePanel to panel with bg
 
 		this.setSize(730,700);
-		this.add(bg);
+		this.add(this.bg);
 
 	}
 
@@ -114,6 +115,10 @@ public class Game extends JPanel implements Runnable{
 			toAdd = new Character(Integer.toString(i), this.respawns.get(i), this, i%3);
 			this.chars.add(toAdd);
 		}
+	}
+
+	public void refreshPanel(){
+		this.bg.refresh();
 	}
 
 	public void addUserPlayer(Player user, int type){
@@ -174,11 +179,14 @@ public class Game extends JPanel implements Runnable{
 
 	public void moveChar(String name, Point p){
 		Character test = this.getCharacterByName(name);
-		test.setLoc(p);
+		if(test != null){
+			test.setLoc(p);
+		}
 	}
 
 	public void deployCharRocket(String name, Point o, Point d, int damage){
 		Character test = this.getCharacterByName(name);
+		if(test != null)
 		test.deployRocket(o,d,damage);
 	}
 
@@ -213,9 +221,9 @@ public class Game extends JPanel implements Runnable{
 	//	Internal Classes
 	//
 
-	class ImagePanel extends JPanel {
+	class ImagePanel extends JPanel{
 
-	    	private Image img;
+	  private Image img;
 		public ImagePanel(Image img) {
 			this.img = img;
 			Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
@@ -229,5 +237,10 @@ public class Game extends JPanel implements Runnable{
 		public void paintComponent(Graphics g) {
 			g.drawImage(img, 0, 0, null);
 		}
+
+		public void refresh(){
+			this.repaint();
+		}
+
 	}
 }
