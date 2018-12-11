@@ -12,8 +12,8 @@ public class Obstacles extends JPanel implements GameObject{
 	Obstacles(int num){
 		this.block=num;
 		createObstacle(this.block);
-		// this.setBackground(Color.BLACK);
-		// this.setOpaque(false);
+		this.setBackground(Color.BLACK);
+		this.setOpaque(false);
 	}
 
 	public int getX(){

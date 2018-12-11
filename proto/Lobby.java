@@ -53,6 +53,7 @@ public class Lobby extends JPanel{
      UDPServer udpserver;
 
      UDPClient udpclient;
+     
      InetAddress serverAddress;
      Game g;
 
@@ -244,10 +245,10 @@ public class Lobby extends JPanel{
           }
      }
 
-     private static Player getUser(Player[] online){
+     private Player getUser(Player[] online){
           for(Player p : online){
                if(p == null)continue;
-               if(user.getName().equals(p.getName()))return p;
+               if(this.user.getName().equals(p.getName()))return p;
           }return user;
      }
 
@@ -408,7 +409,7 @@ public class Lobby extends JPanel{
           public void actionPerformed(ActionEvent e){
                l.selectedChar = this.value;
 
-               udpclient.sendType(l.selectedChar);
+               l.getUDPClient().sendType(l.selectedChar);
 
           }
      }
