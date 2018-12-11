@@ -42,13 +42,14 @@ public class Character extends MovingObject{
 	static final int RIGHT1 = 41;
 
 	private static int movement = 4; // character velocity
-	private final static float GRAVITY = 0.5f;
+	private final static float GRAVITY = 0.75f;
 	private static boolean onGround;
 	private static float xvelocity;
 	private static float yvelocity;
 
 	private int health;
 	private int type;
+	private int points;
 	private String id;
 	private boolean cooldown;
 	private boolean enabled;
@@ -68,7 +69,6 @@ public class Character extends MovingObject{
 	public Character(Player p, Point init, Game g, int type){
 		super(p.getName(), init, new Dimension(40, 50), g);
 		this.id = p.getID();
-		// System.out.println(this.name+"'s id = "+this.id);
 		this.udpclient = g.getUDPclient();
 		this.initchar(type);
 	}
@@ -116,6 +116,11 @@ public class Character extends MovingObject{
 
 	public void afterAttack(){
 		setCharacterUI(STANDBY);
+	}
+
+	public void addPoints(int p){
+		this.points += p;
+		System.out.println(this.name+"'s current points are: "+this.points);
 	}
 
 
@@ -309,7 +314,7 @@ public class Character extends MovingObject{
 
 	public synchronized void startJump(){
 		if(this.onGround){
-			this.yvelocity = 24;
+			this.yvelocity = 18;
 			this.onGround = false;
 		}
 	}
@@ -335,17 +340,17 @@ public class Character extends MovingObject{
 	}
 
 
-	public synchronized void deployRocket(Point p){
+	public synchronized void deployRocket(Point p, int damage){
 
 		if(this.enabled && !this.cooldown/*&& this.time != 0 && !this.deployedRocket*/){
-			new Rocket("rocket", this, new Point(this.position), p, this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
-			this.udpclient.send(new Point(this.position),p);
+			new Rocket("rocket", damage, this, new Point(this.position), p, this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+			this.udpclient.send(new Point(this.position),p, damage);
 			this.rocketCooldown();
 		}
 	}
 
-	public void deployRocket(Point o, Point p){
-		new Rocket("rocket", this, new Point(o), new Point(p), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
+	public void deployRocket(Point o, Point p, int damage){
+		new Rocket("rocket", damage, this, new Point(o), new Point(p), this.g, 0).alwaysOnCollisionChecker(MovingObject.gameObjects);
 		System.out.println("a rocket has been created");
 	}
 
@@ -361,7 +366,6 @@ public class Character extends MovingObject{
 						time--;
 						Thread.sleep(1000);
 						setCharacterUI(STANDBY);
-
 					}catch(Exception e){
 						e.printStackTrace();
 					}
@@ -375,8 +379,8 @@ public class Character extends MovingObject{
 		return (new Random()).nextInt((max - min) + 1) + min;
 	}
 
-	public synchronized void damaged(){
-		int dmg = rng(10,1);
+	public synchronized void damaged(int dmg){
+		// int dmg = rng(10,1);
 		System.out.println(this.name+" damaged by "+Integer.toString(dmg));
 		this.health -= dmg;
 		if(this.health <= 0){
@@ -405,8 +409,7 @@ public class Character extends MovingObject{
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-
-			deployRocket(e.getPoint());
+			deployRocket(e.getPoint(),rng(10,1));
 		}
 	}
 
