@@ -55,6 +55,7 @@ public class Lobby extends JPanel{
 
      Player user;
      boolean connected = false;
+     boolean isSet = false;
 
      int selectedChar = 0;
 
@@ -136,7 +137,7 @@ public class Lobby extends JPanel{
           this.udpclient.start();
      }
 
-     public synchronized void connectToLobby(String lobby_id){
+     public void connectToLobby(String lobby_id){
 
           ChatUtils.listenToServer(server, user);  
                              
@@ -158,42 +159,12 @@ public class Lobby extends JPanel{
           }else System.out.println("Error: "+lobby_id);
 
           this.initUIComponents();
-
-          // boolean serverAddressavail = false;
-          // this.serverAddressChecker(serverAddressavail);
           
-          while(this.serverAddress == null){System.out.print("\0");}
-
-          // while(this.serverAddress == null){System.out.print(this.serverAddress);}
-
-          System.out.println("what the ");
+          while(this.isSet == false){System.out.print("\0");}
 
           this.udpclient = new UDPClient(user.getName(), this, this.serverAddress);
-          System.out.println(this.serverAddress);
           this.udpclient.start();
      }
-
-     // private void serverAddressChecker(boolean isOkay){
-     //      (new Thread(){
-
-     //           boolean isOkay;
-
-     //           public Thread setIsokay(boolean b){
-     //                this.isOkay = b;
-     //                return this;
-     //           }
-
-     //           @Override
-     //           public synchronized void run(){
-     //                while(serverAddress == null){
-     //                     System.out.print("");
-     //                }
-     //                isOkay = true;
-     //                System.out.println("ended");
-     //           }
-
-     //      }).setIsokay(isOkay).start();
-     // }
 
      //
      //   Methods
@@ -224,8 +195,8 @@ public class Lobby extends JPanel{
      }
 
      public void setServerAddress(InetAddress i){
-          System.out.println(i);
           System.out.println("server address is set");
+          this.isSet = true;
           this.serverAddress = i;
      }
 
@@ -265,7 +236,7 @@ public class Lobby extends JPanel{
           this.udpclient.sendStart();
 
           if(online.length <= 1){
-               new Prompt("ADD MORE PLAYERS", 750);
+               new Prompt("ADD MORE PLAYERS", 1000);
                return;
           }
 

@@ -34,6 +34,7 @@ public class Game extends JPanel implements Runnable{
 	Character userCharacter;
 	Player userPlayer;
 	boolean isFinished;
+	int alivePlayers;
 
 	UDPClient udpclient;
 
@@ -106,6 +107,7 @@ public class Game extends JPanel implements Runnable{
 			}
 			i+=1;
 		}
+		this.alivePlayers = players.length;
 	}
 
 	public void init_Players(int max){						// initializes players
@@ -198,19 +200,25 @@ public class Game extends JPanel implements Runnable{
 		test.deployRocket(o,d,damage);
 	}
 
+	public void charDied(){
+		this.alivePlayers -= 1;
+	}
+
 	public synchronized void run(){
 		int time;
 		this.userCharacter.enable();
 		this.userCharacter.deploy();
 		this.isFinished = false;
 
-		this.setGameFinish();
-		while(this.isFinished == false){System.out.print("\0");};
+		// this.setGameFinish();
+		while(this.alivePlayers > 1){System.out.print("\0");};
 
 		this.userCharacter.disable();
 
-		System.out.println(this.chars.get(0).getName()+" won.");
-		new Prompt((this.chars.get(0).getName()+" won."), 1000);
+		// System.out.println(this.chars.get(0).getName()+" won.");
+		String t = "YOU LOST";
+		if(this.userCharacter.isAlive()) t = "YOU WIN";
+		new Prompt(t, 5000);
 
 		((CardLayout)this.parentPanel.getLayout()).next(this.parentPanel);
 		this.parentPanel.remove(this);

@@ -392,7 +392,8 @@ public class Character extends MovingObject{
 			this.alive = false;
 			this.g.getGameObjects().remove(this);
 			this.g.getGamePanel().remove(this);		
-			this.g.getChars().remove(this);
+			// this.g.getChars().remove(this);
+			this.g.charDied();
 			this.setVisible(false);
 			this.g.refreshPanel();
 		}
