@@ -154,7 +154,6 @@ public class Game extends JPanel implements Runnable{
 		return this.udpclient;
 	}
 
-
 	public synchronized void dead(Character c){
 		this.chars.remove(c);
 	}
@@ -165,14 +164,8 @@ public class Game extends JPanel implements Runnable{
 
 	private Character getCharacterByName(String name){
 
-		// returns the character if found, else returns null
-		// System.out.println("enters gcbn");
-		// System.out.println(this.chars.size());
-		// int i = 0;
 		for(Character c : this.chars){
-			// System.out.println(i++);
 			if(c == null)continue;
-			// System.out.println(c.getName());
 			if(c.getObjName().equals(name))return c;
 		}
 

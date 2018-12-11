@@ -42,7 +42,7 @@ public class Character extends MovingObject{
 	static final int RIGHT1 = 41;
 
 	private static int movement = 4; // character velocity
-	private final static float GRAVITY = 0.5f;
+	private final static float GRAVITY = 0.75f;
 	private static boolean onGround;
 	private static float xvelocity;
 	private static float yvelocity;
@@ -314,7 +314,7 @@ public class Character extends MovingObject{
 
 	public synchronized void startJump(){
 		if(this.onGround){
-			this.yvelocity = 24;
+			this.yvelocity = 18;
 			this.onGround = false;
 		}
 	}
