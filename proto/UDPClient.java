@@ -50,6 +50,9 @@ public class UDPClient
          this.port = 1975;
          this.name = name;
          this.l = l;
+
+         System.out.println("ipaddress of clientmade");
+         System.out.println(i);
       }catch(Exception e){
          e.printStackTrace();
       }
@@ -68,13 +71,9 @@ public class UDPClient
 
 
 
-      System.out.println("command = "+command);
+      // System.out.println("command = "+command);
 
       String[] commandArray = command.split("\\.");
-
-
-
-      // System.out.println("command = "+command);
 
       try{
          switch(commandArray[1]){
@@ -156,6 +155,7 @@ public class UDPClient
 
    private void connect(){
       String connect = this.name+".connect";
+      System.out.println("connect is sent");
       byte[] sendData = connect.getBytes();
       try{
          clientSocket.send(new DatagramPacket(sendData, sendData.length, this.ipaddress, this.port));

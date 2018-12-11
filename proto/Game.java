@@ -231,7 +231,6 @@ public class Game extends JPanel implements Runnable{
 
 		this.userCharacter.disable();
 
-		// System.out.println(this.chars.get(0).getName()+" won.");
 		String t = "YOU LOST";
 		if(this.userCharacter.isAlive()) t = "YOU WIN";
 		new Prompt(t, 5000);
