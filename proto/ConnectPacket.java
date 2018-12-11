@@ -38,6 +38,8 @@ public class ConnectPacket{
           return (new Player(this.packet.getPlayer())).getName();
      }
 
+     // public 
+
 	public void self(){
 		System.out.println(this.packet);
 	}

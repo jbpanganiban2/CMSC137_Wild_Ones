@@ -50,8 +50,8 @@ public class Lobby extends JPanel{
      
      UDPServer udpserver;
      UDPClient udpclient;
+     InetAddress serverAddress;
      Game g;
-
 
      Player user;
      boolean connected = false;
@@ -85,6 +85,8 @@ public class Lobby extends JPanel{
           this.server = cgw.getServer();
           this.user = cgw.getUser();
 
+          this.serverAddress = null;
+
           connectToLobby(lobby_Id);
      }
 
@@ -102,22 +104,22 @@ public class Lobby extends JPanel{
 
           this.udpserver = new UDPServer(this);
           this.udpserver.start();
+          this.serverAddress = this.udpserver.getInetAddress();
 
-          
           if(clpacket != null){    // if there is no clpacket received
                lobby_id = clpacket.getLobbyId();
 
                if(!lobby_id.equals("You are not part of any lobby.")){     
 
+                    ChatUtils.setUdpAddress(this.serverAddress);
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
-                    if(!connected){
-                         new Prompt("Error Connecting to Lobby", 750);
+                    if(!connected || this.serverAddress == null){
+                         new Prompt("Error Creating to Lobby", 750);
                          return;
                     }
 
                     this.connected = true;
-                    this.udpclient = new UDPClient(user.getName(), this);
-                    this.udpclient.start();
+
 
                }else{
                     System.out.println("Error: "+lobby_id);
@@ -125,12 +127,16 @@ public class Lobby extends JPanel{
 
           }else System.out.println("LobbyId not received properly.");
 
-          this.initUIComponents();                                                       //   initializes all ui components
+          this.initUIComponents();
+                                                                 //   initializes all ui components
+          while(this.serverAddress == null){System.out.print("\0");}
 
-
+          this.udpclient = new UDPClient(user.getName(), this, this.serverAddress);
+          System.out.println(this.serverAddress);
+          this.udpclient.start();
      }
 
-     public void connectToLobby(String lobby_id){
+     public synchronized void connectToLobby(String lobby_id){
 
           ChatUtils.listenToServer(server, user);  
                              
@@ -146,13 +152,48 @@ public class Lobby extends JPanel{
                }
 
                this.connected = true;
-               this.udpclient = new UDPClient(user.getName(), this);
-               this.udpclient.start();
+
+               // this.serverAddress = null;
 
           }else System.out.println("Error: "+lobby_id);
 
           this.initUIComponents();
+
+          // boolean serverAddressavail = false;
+          // this.serverAddressChecker(serverAddressavail);
+          
+          while(this.serverAddress == null){System.out.print("\0");}
+
+          // while(this.serverAddress == null){System.out.print(this.serverAddress);}
+
+          System.out.println("what the ");
+
+          this.udpclient = new UDPClient(user.getName(), this, this.serverAddress);
+          System.out.println(this.serverAddress);
+          this.udpclient.start();
      }
+
+     // private void serverAddressChecker(boolean isOkay){
+     //      (new Thread(){
+
+     //           boolean isOkay;
+
+     //           public Thread setIsokay(boolean b){
+     //                this.isOkay = b;
+     //                return this;
+     //           }
+
+     //           @Override
+     //           public synchronized void run(){
+     //                while(serverAddress == null){
+     //                     System.out.print("");
+     //                }
+     //                isOkay = true;
+     //                System.out.println("ended");
+     //           }
+
+     //      }).setIsokay(isOkay).start();
+     // }
 
      //
      //   Methods
@@ -182,6 +223,11 @@ public class Lobby extends JPanel{
           return this.udpclient;
      }
 
+     public void setServerAddress(InetAddress i){
+          System.out.println(i);
+          System.out.println("server address is set");
+          this.serverAddress = i;
+     }
 
      //
      //  INTERNAL CLASSES
@@ -215,7 +261,13 @@ public class Lobby extends JPanel{
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
 
+
           this.udpclient.sendStart();
+
+          if(online.length <= 1){
+               new Prompt("ADD MORE PLAYERS", 750);
+               return;
+          }
 
           Player realUser = getUser(online);
 
@@ -232,6 +284,7 @@ public class Lobby extends JPanel{
      public void startHostGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
           
+
           Player realUser = getUser(online);
 
           this.g = new Game(this);
@@ -360,6 +413,7 @@ public class Lobby extends JPanel{
           @Override
           public void actionPerformed(ActionEvent e){
                l.selectedChar = this.value;
+               // udpclient.sendType(l.selectedChar);
           }
      }
 
@@ -396,7 +450,9 @@ public class Lobby extends JPanel{
           top.setLayout(new GridBagLayout());
           top.setPreferredSize(new Dimension(730,70));
           top.add(exit,left);
-          top.add(start,right);
+          // if(this.enableStart==true){
+               top.add(start,right);
+          // }
           top.setOpaque(false);
           return top;
      }
