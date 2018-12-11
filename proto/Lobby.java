@@ -53,12 +53,16 @@ public class Lobby extends JPanel{
 
      int selectedChar = 0;
 
+     boolean enableStart;
+
      //
      //  CONSTRUCTORS
      //
 
      Lobby(ChatGameWindow cgw){                                                              //   host constructor
-          
+               
+          this.enableStart=true;
+
           this.cgw = cgw;
 
           this.mainPanel = cgw.getCardPanel();
@@ -72,7 +76,7 @@ public class Lobby extends JPanel{
      }
 
      Lobby(ChatGameWindow cgw, String lobby_Id){                                             //   client constructor
-
+          this.enableStart=false;
           this.cgw = cgw;
           
           this.mainPanel = cgw.getCardPanel();
@@ -359,7 +363,9 @@ public class Lobby extends JPanel{
           top.setLayout(new GridBagLayout());
           top.setPreferredSize(new Dimension(730,70));
           top.add(exit,left);
-          top.add(start,right);
+          if(this.enableStart==true){
+               top.add(start,right);
+          }
           top.setOpaque(false);
           return top;
      }
