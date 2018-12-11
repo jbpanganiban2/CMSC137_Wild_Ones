@@ -78,7 +78,6 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
-          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
 
           this.nameType = new HashMap();
@@ -94,7 +93,6 @@ public class Lobby extends JPanel{
           this.cardLayout = (CardLayout)this.mainPanel.getLayout();
 
           this.server = cgw.getServer();
-          // this.udpserver = new udpserver(this);
           this.user = cgw.getUser();
 
           this.nameType = new HashMap();
@@ -126,7 +124,7 @@ public class Lobby extends JPanel{
 
                     boolean connected = ChatUtils.chatNowGUI(server,user,lobby_id);
                     if(!connected){
-                         // create prompt that shows error
+                         new Prompt("Error Connecting to Lobby", 750);
                          return;
                     }
 
@@ -236,6 +234,7 @@ public class Lobby extends JPanel{
 
      private void newGame(){
           Player[] online = ChatUtils.getOnlinePlayers(server);
+
           
           System.out.println(online.length);
           if(online.length == 1){
@@ -333,7 +332,7 @@ public class Lobby extends JPanel{
      
      private void initUIComponents(){        // Inintializes all UI components
 
-          this.chat = new Chat(server, user.getName());
+          this.chat = new Chat(this, server, user.getName());
           ChatUtils.addConnectedChat(this.chat);
 
           // this.udpserver = new UDPServer(this);
