@@ -117,12 +117,33 @@ public class Chat extends JPanel{
     }
 
     public static void addMessageToBox(String username, String message){    // function that puts the name and the message of sender to the chatbox
+        
+
+        // System.out.println("message received == "+message);
+        if(message.contains("!ALERT!")){
+            int index = message.indexOf("\n");
+            message = message.substring(index+1, message.length());
+        }else if(message.contains("<SERVERIPADDRESS>")){
+            int index = message.indexOf("/");
+            message = message.substring(index+1, message.length());
+
+            System.out.println(message + " is the message");
+
+            InetAddress serverAddress = null;
+            try{serverAddress = InetAddress.getByName(message);}catch(Exception e){}
+            
+            l.setServerAddress(serverAddress);
+            return;
+        }else{
+            message = username + ":  " + message;                
+        }
+
         if (message.length() >= 1) {
             if (message.equals(".clear")) {
                 chatBox.setText("");
             } else {
-                chatBox.append(username + ":  " + message + "\n");
-                System.out.println(username + ":  " + message);
+                chatBox.append(message + "\n");
+                System.out.println(message);
             }
         }
     }
