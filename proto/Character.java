@@ -385,19 +385,16 @@ public class Character extends MovingObject{
 	}
 
 	public synchronized void damaged(int dmg){
-		// int dmg = rng(10,1);
 		System.out.println(this.name+" damaged by "+Integer.toString(dmg));
 		this.health -= dmg;
 		if(this.health <= 0){
 			System.out.println(this.name+" is now dead.");
 			this.alive = false;
 			this.g.getGameObjects().remove(this);
-			this.g.getGamePanel().remove(this);
-			this.g.dead(this);
-			this.g.refreshPanel();
+			this.g.getGamePanel().remove(this);		
+			this.g.getChars().remove(this);
 			this.setVisible(false);
-			this.g.getGamePanel().invalidate();
-			this.g.getGamePanel().validate();
+			this.g.refreshPanel();
 		}
 	}
 

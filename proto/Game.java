@@ -163,6 +163,10 @@ public class Game extends JPanel implements Runnable{
 		this.chars.remove(c);
 	}
 
+	public ArrayList<Character> getChars(){
+		return this.chars;
+	}
+
 	public boolean rectContains(Rectangle o){
 		return (new Rectangle(new Point(0,0), new Dimension(730, 550))).contains(o);
 	}
@@ -175,6 +179,10 @@ public class Game extends JPanel implements Runnable{
 		}
 
 		return null;
+	}
+
+	public Character getUserCharacter(){
+		return this.userCharacter;
 	}
 
 	public void moveChar(String name, Point p){
@@ -196,15 +204,26 @@ public class Game extends JPanel implements Runnable{
 		this.userCharacter.deploy();
 		this.isFinished = false;
 
-		while(this.chars.size() > 1){}
+		this.setGameFinish();
+		while(this.isFinished == false){System.out.print("\0");};
 
 		this.userCharacter.disable();
-		this.isFinished = true;
 
 		System.out.println(this.chars.get(0).getName()+" won.");
+		new Prompt((this.chars.get(0).getName()+" won."), 1000);
 
 		((CardLayout)this.parentPanel.getLayout()).next(this.parentPanel);
 		this.parentPanel.remove(this);
+	}
+
+	public synchronized void setGameFinish(){
+		(new Thread(){
+			@Override
+			public void run(){
+						while(chars.size() > 1){}
+						isFinished = true;
+			}
+		}).start();
 	}
 
 	public synchronized boolean isGameFinished(){
