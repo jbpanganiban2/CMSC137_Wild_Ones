@@ -52,34 +52,35 @@ public class UDPClient
 
    private void commandChar(String command){
 
-      System.out.println("command = "+command);
+      // System.out.println("command = "+command);
 
-      String[] commandArray = command.split("\\.");
+      try{
 
-      switch(commandArray[1]){
-         case "start":
-            System.out.println("startGame");
-            this.l.startHostGame();
-         break;
-         case "setChar":   
-            System.out.println("setCharacterType");
-         break;
-         case "cmove":
-            System.out.println("moveChar");
-            this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
-         break;
-         case "rocket":
-            System.out.println("deployRocket");
-            this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]),Integer.parseInt(commandArray[4]));
-         break;
-         default:
-            System.out.println("error packet received");
-      }
+         String[] commandArray = command.split("\\.");
+
+         switch(commandArray[1]){
+            case "start":
+               System.out.println("startGame");
+               this.l.startHostGame();
+            break;
+            case "setChar":   
+               System.out.println("setCharacterType");
+            break;
+            case "cmove":
+               this.l.getActiveGame().moveChar(commandArray[0],extractPoint(commandArray[2]));
+            break;
+            case "rocket":
+               System.out.println("deployRocket");
+               this.l.getActiveGame().deployCharRocket(commandArray[0], extractPoint(commandArray[2]), extractPoint(commandArray[3]),Integer.parseInt(commandArray[4]));
+            break;
+            default:
+               System.out.println("error packet received");
+         }
+      }catch(Exception e){}
    }
 
 
    public synchronized void startReceiving(){
-      // System.out.println("called");
       (new Thread(){
          DatagramPacket receivePacket;
          String modifiedSentence;
@@ -101,11 +102,9 @@ public class UDPClient
 
                         String sentence = new String(receivePacket.getData()).substring(0, sentencelen);
 
-                        System.out.println(sentence);
+                        // System.out.println(sentence);
                         commandChar(sentence);
                      }
-
-
                   }
 
                }catch( Exception e ){
@@ -153,11 +152,6 @@ public class UDPClient
       this.send("start");
    }
 
-   public void sendxVelocity(int x){
-      String toSend = "cmove."+Integer.toString(x);
-      this.send(toSend);
-   }
-
    public void send(Point p){ // send a character movement packet
       String toSend = "cmove.("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
       this.send(toSend);
@@ -167,7 +161,6 @@ public class UDPClient
       String toSend = "rocket.("+Integer.toString((int)o.getX())+","+Integer.toString((int)o.getY())+")";
       toSend += ".("+Integer.toString((int)p.getX())+","+Integer.toString((int)p.getY())+")";
       toSend += "."+Integer.toString(damage);
-
       this.send(toSend);
    }
 

@@ -75,17 +75,11 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
                     if(o instanceof MovingObject){
                          MovingObject mo = (MovingObject)o;
                          if(this.intersects(mo) && !mo.equals(this)){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }else if(o instanceof Obstacles){
                          Obstacles mo = (Obstacles)o;
                          if(this.intersects(mo)){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }
@@ -100,17 +94,11 @@ public class MovingObject extends JPanel implements Runnable, GameObject{
                     if(o instanceof MovingObject){
                          MovingObject mo = (MovingObject)o;
                          if(test.intersects(mo.getRectangle()) && !mo.equals(this)){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }else if(o instanceof Obstacles){
                          Obstacles mo = (Obstacles)o;
                          if(test.intersects(mo.getRectangle())){
-                              /*
-                                   invoke some things
-                               */
                               return mo;
                          }
                     }

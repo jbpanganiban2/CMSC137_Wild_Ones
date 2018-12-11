@@ -26,6 +26,7 @@ public class Game extends JPanel implements Runnable{
 	JPanel gamePanel;
 	JPanel chatPanel;
 	JPanel playerPanel;
+	ImagePanel bg;
 
 	ArrayList<Character> chars;
 	ArrayList<Point> respawns;
@@ -85,13 +86,13 @@ public class Game extends JPanel implements Runnable{
 			gameObjects.add(obs);
 		}
 
-		ImagePanel bg = new ImagePanel(newIcon.getImage());
-		bg.setPreferredSize(new Dimension(730,550));
-		bg.setLayout(new BorderLayout());
-		bg.add(gamePanel); 										//add gamePanel to panel with bg
+		this.bg = new ImagePanel(newIcon.getImage());
+		this.bg.setPreferredSize(new Dimension(730,550));
+		this.bg.setLayout(new BorderLayout());
+		this.bg.add(gamePanel); 										//add gamePanel to panel with bg
 
 		this.setSize(730,700);
-		this.add(bg);
+		this.add(this.bg);
 
 	}
 
@@ -114,6 +115,10 @@ public class Game extends JPanel implements Runnable{
 			toAdd = new Character(Integer.toString(i), this.respawns.get(i), this, i%3);
 			this.chars.add(toAdd);
 		}
+	}
+
+	public void refreshPanel(){
+		this.bg.refresh();
 	}
 
 	public void addUserPlayer(Player user, int type){
@@ -154,9 +159,12 @@ public class Game extends JPanel implements Runnable{
 		return this.udpclient;
 	}
 
-
 	public synchronized void dead(Character c){
 		this.chars.remove(c);
+	}
+
+	public ArrayList<Character> getChars(){
+		return this.chars;
 	}
 
 	public boolean rectContains(Rectangle o){
@@ -165,27 +173,28 @@ public class Game extends JPanel implements Runnable{
 
 	private Character getCharacterByName(String name){
 
-		// returns the character if found, else returns null
-		// System.out.println("enters gcbn");
-		// System.out.println(this.chars.size());
-		// int i = 0;
 		for(Character c : this.chars){
-			// System.out.println(i++);
 			if(c == null)continue;
-			// System.out.println(c.getName());
 			if(c.getObjName().equals(name))return c;
 		}
 
 		return null;
 	}
 
+	public Character getUserCharacter(){
+		return this.userCharacter;
+	}
+
 	public void moveChar(String name, Point p){
 		Character test = this.getCharacterByName(name);
-		test.setLoc(p);
+		if(test != null){
+			test.setLoc(p);
+		}
 	}
 
 	public void deployCharRocket(String name, Point o, Point d, int damage){
 		Character test = this.getCharacterByName(name);
+		if(test != null)
 		test.deployRocket(o,d,damage);
 	}
 
@@ -195,15 +204,26 @@ public class Game extends JPanel implements Runnable{
 		this.userCharacter.deploy();
 		this.isFinished = false;
 
-		while(this.chars.size() > 1){}
+		this.setGameFinish();
+		while(this.isFinished == false){System.out.print("\0");};
 
 		this.userCharacter.disable();
-		this.isFinished = true;
 
 		System.out.println(this.chars.get(0).getName()+" won.");
+		new Prompt((this.chars.get(0).getName()+" won."), 1000);
 
 		((CardLayout)this.parentPanel.getLayout()).next(this.parentPanel);
 		this.parentPanel.remove(this);
+	}
+
+	public synchronized void setGameFinish(){
+		(new Thread(){
+			@Override
+			public void run(){
+						while(chars.size() > 1){}
+						isFinished = true;
+			}
+		}).start();
 	}
 
 	public synchronized boolean isGameFinished(){
@@ -220,9 +240,9 @@ public class Game extends JPanel implements Runnable{
 	//	Internal Classes
 	//
 
-	class ImagePanel extends JPanel {
+	class ImagePanel extends JPanel{
 
-	    	private Image img;
+	  private Image img;
 		public ImagePanel(Image img) {
 			this.img = img;
 			Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
@@ -236,5 +256,10 @@ public class Game extends JPanel implements Runnable{
 		public void paintComponent(Graphics g) {
 			g.drawImage(img, 0, 0, null);
 		}
+
+		public void refresh(){
+			this.repaint();
+		}
+
 	}
 }
