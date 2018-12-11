@@ -244,10 +244,10 @@ public class Lobby extends JPanel{
           }
      }
 
-     private Player getUser(Player[] online){
+     private static Player getUser(Player[] online){
           for(Player p : online){
                if(p == null)continue;
-               if(this.user.getName().equals(p.getName()))return p;
+               if(user.getName().equals(p.getName()))return p;
           }return user;
      }
 
@@ -410,7 +410,7 @@ public class Lobby extends JPanel{
           return btn;
      }
 
-     class SetChoice implements ActionListener{
+     static class SetChoice implements ActionListener{
 
           int value = 0;
           Lobby l;
