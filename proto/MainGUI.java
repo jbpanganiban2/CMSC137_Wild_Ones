@@ -158,10 +158,10 @@ public class MainGUI{
           @Override
           public void actionPerformed(ActionEvent event) {
 
-               // if(name.getText().equals(""))return;
 
-               // ChatGameWindow window = new ChatGameWindow(mainFrame, name.getText());
-               // mainFrame.setVisible(false);
+               Manual man = new Manual();
+               man.setLocationRelativeTo(mainFrame) ;
+              
           }
 
      }
